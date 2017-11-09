@@ -1,0 +1,39 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZTMS_NEW_SRV" xml:lang="it" sap:schema-version="1">
+            <EntityType Name="Commessa" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Imvalue"/>
+                </Key>
+                <Property Name="Json" Type="Edm.String" Nullable="false" MaxLength="40000"/>
+                <Property Name="Imvalue" Type="Edm.String" Nullable="false" MaxLength="1"/>
+            </EntityType>
+            <EntityType Name="Calendar" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Tmsuser"/>
+                    <PropertyRef Name="Calmonth"/>
+                    <PropertyRef Name="Calyear"/>
+                    <PropertyRef Name="Giorno"/>
+                </Key>
+                <Property Name="Tmsuser" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Utente" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Mese" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Anno" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Giorno" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Mese" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Ore" Type="Edm.Decimal" Nullable="false" Precision="3" Scale="1" sap:label="Ore" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Data" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Data" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityContainer Name="ZTMS_NEW_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="CommessaSet" EntityType="ZTMS_NEW_SRV.Commessa" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="CalendarSet" EntityType="ZTMS_NEW_SRV.Calendar" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+            </EntityContainer>
+            <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZTMS_NEW_SRV/$metadata"/>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZTMS_NEW_SRV/$metadata"/>
+                </Schema>
+            </edmx:DataServices>
+        </edmx:Edmx>
