@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+   xmlns="sap.m"
+   xmlns:l="sap.ui.layout"
+   xmlns:core="sap.ui.core"
+   	xmlns:html="http://www.w3.org/1999/xhtml">
+		<Popover
+		title="Commesse"
+		class="sapUiContentPadding"
+		placement="Right"
+		verticalScrolling="true"
+		horizontalScrolling="false">
+		<content>
+			<Tree
+			id="Tree" includeItemInSelection="true"
+			mode="SingleSelect"
+			enableBusyIndicator="true">
+			</Tree>
+		</content>
+		</Popover>
+	</core:FragmentDefinition>

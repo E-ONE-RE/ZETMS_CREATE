@@ -1,0 +1,404 @@
+{
+					"CommessaCollection":[
+         {
+            "name":"Lista Commesse",
+            "icon":"sap-icon://collections-insight",
+            "selectable":false,
+            "id":"",
+            "nodes":[
+               {
+                  "name":"CPA1 - CPA",
+                  "icon":"com/sap/img/s_clofol.gif",
+                  "selectable":false,
+                  "id":"CPA1",
+                  "nodes":[
+                     {
+                        "name":"CPA11 - CPA Contratto Assistenza",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"CPA11",
+                        "nodes":[
+                           {
+                              "name":"CPA111 - CPA AMS Telefonico",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"CPA111"
+                           },
+                           {
+                              "name":"CPA112 - CPA AMS Correttiva",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"CPA112"
+                           },
+                           {
+                              "name":"CPA113 - CPA Evolutiva",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"CPA113"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"CPA12 - CPA Upgrade",
+                        "icon":"com/sap/img/s_b_tsak.gif",
+                        "selectable":true,
+                        "id":"CPA12"
+                     }
+                  ]
+               },
+               {
+                  "name":"EON1 - eOne Group",
+                  "icon":"com/sap/img/s_clofol.gif",
+                  "selectable":false,
+                  "id":"EON1",
+                  "nodes":[
+                     {
+                        "name":"EON11 - Attività Interna",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON11",
+                        "nodes":[
+                           {
+                              "name":"EON111 - Attesa Lavoro",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON111"
+                           },
+                           {
+                              "name":"EON112 - Attività non Produttive",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON112"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON12 - Formazione",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON12",
+                        "nodes":[
+                           {
+                              "name":"EON121 - Formazione Interna",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON121"
+                           },
+                           {
+                              "name":"EON122 - Partecipazione Corsi",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON122"
+                           },
+                           {
+                              "name":"EON123 - Preparazione e Docenza",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON123"
+                           },
+                           {
+                              "name":"EON124 - Tutorship e Supporto",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON124"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON13 - Progetti Interni",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON13",
+                        "nodes":[
+                           {
+                              "name":"EON131 - Assistenza Straordinaria SAP",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON131"
+                           },
+                           {
+                              "name":"EON132 - Attività Baseline",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON132"
+                           },
+                           {
+                              "name":"EON133 - Certificazione SAP",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON133"
+                           },
+                           {
+                              "name":"EON134 - eTile",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON134"
+                           },
+                           {
+                              "name":"EON135 - eFactory",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON135"
+                           },
+                           {
+                              "name":"EON136 - eFinance",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON136"
+                           },
+                           {
+                              "name":"EON137 - eACM",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON137"
+                           },
+                           {
+                              "name":"EON138 - WM-RF",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON138"
+                           },
+                           {
+                              "name":"EON139 - eConsumer",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON139"
+                           },
+                           {
+                              "name":"EON13B - IUNGO Connettore",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON13B"
+                           },
+                           {
+                              "name":"EON13C - BO per Piteco",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON13C"
+                           },
+                           {
+                              "name":"EON13D - eTimesheet",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON13D"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON14 - Presale",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON14",
+                        "nodes":[
+                           {
+                              "name":"EON141 - Presale B.U. eTile",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON141"
+                           },
+                           {
+                              "name":"EON142 - Presale B.U. Manufacturing",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON142"
+                           },
+                           {
+                              "name":"EON143 - Presale B.U. Consumer",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON143"
+                           },
+                           {
+                              "name":"EON144 - Presale B.U. Servizi",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON144"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON15 - Marketing",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON15",
+                        "nodes":[
+                           {
+                              "name":"EON151 - Management SAP",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON151"
+                           },
+                           {
+                              "name":"EON152 - Documenti Marketing",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON152"
+                           },
+                           {
+                              "name":"EON153 - Marketing SAP",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON153"
+                           },
+                           {
+                              "name":"EON154 - Marketing Partnership",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON154"
+                           },
+                           {
+                              "name":"EON155 - Presale Fiere-Eventi",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON155"
+                           },
+                           {
+                              "name":"EON156 - Sviluppo Sito Interno",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON156"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON16 - Assenza",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON16",
+                        "nodes":[
+                           {
+                              "name":"EON161 - Aspettativa",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON161"
+                           },
+                           {
+                              "name":"EON162 - Assenza per Invalidità",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON162"
+                           },
+                           {
+                              "name":"EON163 - Assenza per Lutto",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON163"
+                           },
+                           {
+                              "name":"EON164 - Congedo Matrimoniale",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON164"
+                           },
+                           {
+                              "name":"EON165 - Donazione Sangue",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON165"
+                           },
+                           {
+                              "name":"EON166 - Ferie",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON166"
+                           },
+                           {
+                              "name":"EON167 - Festività",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON167"
+                           },
+                           {
+                              "name":"EON168 - Malattia",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON168"
+                           },
+                           {
+                              "name":"EON169 - Maternità / Paternità",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON169"
+                           },
+                           {
+                              "name":"EON16A - Permesso",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON16A"
+                           },
+                           {
+                              "name":"EON16B - ROL",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON16B"
+                           },
+                           {
+                              "name":"EON16D - Altre Assenze",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON16D"
+                           }
+                        ]
+                     },
+                     {
+                        "name":"EON17 - Gest-Amm",
+                        "icon":"com/sap/img/s_clofol.gif",
+                        "selectable":false,
+                        "id":"EON17",
+                        "nodes":[
+                           {
+                              "name":"EON171 - Gest-Amm B.U. eTile",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON171"
+                           },
+                           {
+                              "name":"EON172 - Gest-Amm B.U. Consumer",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON172"
+                           },
+                           {
+                              "name":"EON173 - Gest-Amm B.U. Manufacturing",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON173"
+                           },
+                           {
+                              "name":"EON174 - Gest-Amm Meeting Interni",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON174"
+                           },
+                           {
+                              "name":"EON175 - Gest-Amm Team Leader Coordinamento",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON175"
+                           },
+                           {
+                              "name":"EON176 - HR Management",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON176"
+                           },
+                           {
+                              "name":"EON177 - Metodologia",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON177"
+                           },
+                           {
+                              "name":"EON178 - Gest-Amm B.U. Services",
+                              "icon":"com/sap/img/s_b_tsak.gif",
+                              "selectable":true,
+                              "id":"EON178"
+                           }
+                        ]
+                     }
+                  ]
+               }
+            ]
+         }
+      ]
+}

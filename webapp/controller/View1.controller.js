@@ -5,29 +5,30 @@ sap.ui.define([
 		'sap/m/Button',
 		'sap/m/Dialog',
 		'sap/m/Label',
-	//	'sap/m/MessageToast',
-	//	'sap/m/MessageBox',
+		//	'sap/m/MessageToast',
+		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
 	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, Dialog, Label, formatter) {
 		"use strict";
+		var sJson; //variabile per lo stringone Json
 
 		//	jQuery.sap.require("ZETMS_CREATE.utils.Formatters");
-	//	jQuery.sap.require("ZETMS_CREATE.utils.UIHelper");
+		//	jQuery.sap.require("ZETMS_CREATE.utils.UIHelper");
 		jQuery.sap.require("sap.m.MessageBox");
-	//	jQuery.sap.require("ZETMS_CREATE.utils.DataManager");
-	//	jQuery.sap.require("ZETMS_CREATE.utils.ConcurrentEmployment");
-	//	jQuery.sap.require("ZETMS_CREATE.utils.CalendarTools");
-	//	jQuery.sap.require("sap.ca.ui.dialog.factory");
-	//	jQuery.sap.require("sap.ca.ui.dialog.Dialog");
+		//	jQuery.sap.require("ZETMS_CREATE.utils.DataManager");
+		//	jQuery.sap.require("ZETMS_CREATE.utils.ConcurrentEmployment");
+		//	jQuery.sap.require("ZETMS_CREATE.utils.CalendarTools");
+		//	jQuery.sap.require("sap.ca.ui.dialog.factory");
+		//	jQuery.sap.require("sap.ca.ui.dialog.Dialog");
 		jQuery.sap.require("sap.m.MessageToast");
 		// jQuery.support.useFlexBoxPolyfill = false;
-	//	jQuery.sap.require("sap.ca.ui.model.format.FileSizeFormat");
-	//	jQuery.sap.require("sap.ca.ui.message.message");
+		//	jQuery.sap.require("sap.ca.ui.model.format.FileSizeFormat");
+		//	jQuery.sap.require("sap.ca.ui.message.message");
 		// jQuery.sap.require("sap.ui.thirdparty.sinon");
 
 		return BaseController.extend("ZETMS_CREATE.controller.View1", {
-			
+
 			formatter: formatter,
 
 			oFormatYyyymmdd: null,
@@ -57,17 +58,17 @@ sap.ui.define([
 					pattern: "yyyyMMdd",
 					calendarType: sap.ui.core.CalendarType.Gregorian
 				});
-				
+
 				this.oFormatDaysShort = sap.ui.core.format.DateFormat.getInstance({
 					pattern: "E",
 					calendarType: sap.ui.core.CalendarType.Gregorian
 				});
-				
+
 				this.oFormatMonth = sap.ui.core.format.DateFormat.getInstance({
 					pattern: "M",
 					calendarType: sap.ui.core.CalendarType.Gregorian
 				});
-				
+
 				this.oFormatYear = sap.ui.core.format.DateFormat.getInstance({
 					pattern: "Y",
 					calendarType: sap.ui.core.CalendarType.Gregorian
@@ -78,6 +79,74 @@ sap.ui.define([
 
 				var oRouter = this.getRouter();
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
+
+			},
+
+			onBeforeRendering: function() {
+				var oModel = this.getView().getModel();
+				var sRead = "/CommessaSet";
+
+				oModel.read(sRead, {
+
+					success: fnReadS,
+
+					error: fnReadE
+				});
+
+				function fnReadS(oData, response) {
+					console.log(oData);
+					console.log(response);
+
+					sJson = oData.results["0"].Json;
+
+				}
+
+				function fnReadE(oError) {
+					console.log(oError);
+				}
+
+				//MP: modello locale
+
+			},
+
+			//Method to show the Popover Fragment
+			showPopover: function(oEvent) {
+				var that = this;
+
+				if (!that._oPopover) {
+
+					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.Worklist");
+					//to get access to the global model
+					this.getView().addDependent(that._oPopover);
+				}
+				var oButton = oEvent.getSource();
+				jQuery.sap.delayedCall(0, this, function() {
+				
+		
+				 // MP: logica per il binding dell'albero riportante le commesse;
+				 // la lettura del modello (oModel.read) è stata effettutata nel
+				 // metodo onBeforeRendering
+				
+					var oTree = sap.ui.getCore().byId("Tree");
+					var oModelJson = new sap.ui.model.json.JSONModel();
+					var oJson = JSON.parse(sJson);
+					oModelJson.setData(oJson, false);
+
+					sap.ui.getCore().setModel(oModelJson, "CommessaCollection");
+					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
+					var oTemplate = new sap.m.StandardTreeItem({
+						title: "{name}",
+						icon: "{icon}"
+					});
+					oTree.bindItems({
+						path: "/CommessaCollection",
+						template: oTemplate,
+						   parameters: {
+        numberOfExpandedLevels: 1
+     }
+					});
+					this._oPopover.openBy(oButton);
+				});
 
 			},
 
@@ -110,21 +179,18 @@ sap.ui.define([
 			onUpdateFinished: function(oEvent) {
 
 			},
-			
-				handleCalendarChange: function(oEvent) {
-				
+
+			handleCalendarChange: function(oEvent) {
+
 				this._onBindingChange();
-			
-				},
 
+			},
 
-				_onBindingChange: function() {
+			_onBindingChange: function() {
 
 				var oView = this.getView();
 				var oModel = this.getView().getModel();
 				sap.ui.getCore().setModel(oModel);
-				
-				
 
 				//ripulisco i campi		
 				oView.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
@@ -132,134 +198,124 @@ sap.ui.define([
 				oView.byId("LRS4_DAT_CALENDAR").removeAllDisabledDates();
 
 				var oCal1 = oView.byId("LRS4_DAT_CALENDAR");
-				
-					var startDate = oCal1.getStartDate();
-					var startMonth = this.oFormatMonth.format(startDate);
-					var startYear = this.oFormatYear.format(startDate);
-					
-				
-					 
+
+				var startDate = oCal1.getStartDate();
+				var startMonth = this.oFormatMonth.format(startDate);
+				var startYear = this.oFormatYear.format(startDate);
+
 				var oLeg1 = oView.byId("legend1");
 				oLeg1.destroyItems();
-				
-				//imposto la data minima selezionabile dietro di un anno
-				   var nowP = new Date();
-				
-				   var  nowF = new Date();
-				    nowP.setDate(nowP.getDate()-365);
-					oCal1.setMinDate(nowP);
-					
-					//imposto la data massima selezionabile avanti di un anno
-				  
-				    nowF.setDate(nowF.getDate()+365);
-					oCal1.setMaxDate(nowF);
-					
-				
-				    var nowForYear = new Date();
-	                     var oYear = this.oFormatYear.format(nowForYear);
- 
-                         var oYearN = Number(oYear);
-                         
-                         var oYear2 = oYearN+1;
-                     
-                         // disabilito giorni festivi 
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0101")
-	                     }));
-	                     
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0101")
-	                     }));
 
-                         ///// befana
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0106")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0106")
-	                   
-	                     }));
-	                     
-	                     ///// 25 aprile
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0425")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0425")
-	                     }));
-	                     
-	                     
-	                     ///// primo maggio
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0501")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0501")
-	                     }));
-	                     
-	                     
-	                     ///// 2 giugno
-	                       oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0602")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0602")
-	                     }));
-	                     
-	                     
-	                     ///// ferragosto
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"0815")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"0815")
-	                     }));
-	                     
-	                     
-	                     ///// tutti i santi
-	                     oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"1101")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"1101")
-	                     }));
-	                     
-	                     
-	                     ///// immacolata
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"1208")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"1208")
-	                     }));
-	                     
-	                     
-	                     ////// natale
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"1225")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"1225")
-	                     }));
-	                     
-	                     
-	                     ////// santo stefano
-	                       oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYearN+"1226")
-	                     }));
-	                     
-	                      oCal1.addDisabledDate(new DateTypeRange({   
-	                     startDate: this.oFormatYear.parse(oYear2+"1226")
-	                     }));
-	                  ///////////////FINE FESTIVI////////////   
+				//imposto la data minima selezionabile dietro di un anno
+				var nowP = new Date();
+
+				var nowF = new Date();
+				nowP.setDate(nowP.getDate() - 365);
+				oCal1.setMinDate(nowP);
+
+				//imposto la data massima selezionabile avanti di un anno
+
+				nowF.setDate(nowF.getDate() + 365);
+				oCal1.setMaxDate(nowF);
+
+				var nowForYear = new Date();
+				var oYear = this.oFormatYear.format(nowForYear);
+
+				var oYearN = Number(oYear);
+
+				var oYear2 = oYearN + 1;
+
+				// disabilito giorni festivi 
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0101")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0101")
+				}));
+
+				///// befana
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0106")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0106")
+
+				}));
+
+				///// 25 aprile
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0425")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0425")
+				}));
+
+				///// primo maggio
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0501")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0501")
+				}));
+
+				///// 2 giugno
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0602")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0602")
+				}));
+
+				///// ferragosto
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0815")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0815")
+				}));
+
+				///// tutti i santi
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1101")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1101")
+				}));
+
+				///// immacolata
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1208")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1208")
+				}));
+
+				////// natale
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1225")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1225")
+				}));
+
+				////// santo stefano
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1226")
+				}));
+
+				oCal1.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1226")
+				}));
+				///////////////FINE FESTIVI////////////   
 
 				oView.byId("LRS4_DAT_STARTTIME").setValue("");
 				oView.byId("LRS4_DAT_STARTTIME").rerender();
@@ -272,47 +328,45 @@ sap.ui.define([
 				oView.byId("LRS4_TXA_NOTE").setValue("");
 				oView.byId("LRS4_TXA_NOTE").rerender();
 				oView.byId("LRS4_TXA_NOTE").setEnabled(true);
-				
-				
-			//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
-			//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
-			//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
-				
+
+				//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
+				//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
+				//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
+
 				oView.byId("LRS4_DAT_ORETOT").setValue("0");
 				oView.byId("LRS4_DAT_ORETOT").setEnabled(false);
 				oView.byId("LRS4_DAT_ORETOT").rerender();
 
 				var sRead = "/CalendarSet";
-    
-					
+
 				oModel.read(sRead, {
-                //filters: oFilter,
-                
-                filters: [new sap.ui.model.Filter({
+					//filters: oFilter,
 
-		        		filters : [new sap.ui.model.Filter({
-						path: "Calmonth",
-						operator: sap.ui.model.FilterOperator.EQ,
-						value1: startMonth
-		
-		        		}), new sap.ui.model.Filter({
-			               path: "Calyear",
-			               operator: sap.ui.model.FilterOperator.EQ,
-			               value1: startYear
-			          })],
-		
-		        	and : true
+					filters: [new sap.ui.model.Filter({
 
-    			})],
-                
+						filters: [new sap.ui.model.Filter({
+							path: "Calmonth",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startMonth
+
+						}), new sap.ui.model.Filter({
+							path: "Calyear",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startYear
+						})],
+
+						and: true
+
+					})],
+
 					success: fnReadS,
 
 					error: fnReadE
 				});
 
 				function fnReadS(oData, response) {
-				//	console.log(oData);
-				//	console.log(response);
+					//	console.log(oData);
+					//	console.log(response);
 
 					// controllo che la funzione è andata a buon fine 
 					if (response.statusCode == "200") {
@@ -330,34 +384,34 @@ sap.ui.define([
 						if (oData.results.length > 0) {
 							for (var i = 0; i < oData.results.length; i++) {
 								//escludo richieste rifiutate
-                            	//if (oData.results[i].ZreqStatus === 'A' || oData.results[i].ZreqStatus === 'I') {
+								//if (oData.results[i].ZreqStatus === 'A' || oData.results[i].ZreqStatus === 'I') {
 								//						var res = oData.results[i].Zdate.substring(8);
-									var res = oData.results[i].Data;
-	                               
-	                               // disabilito giorni che contengono già una richiesta   
-	                           //    oCal1.addDisabledDate(new DateTypeRange({   
-	                           //    startDate: oFormatYYyyymmdd.parse(res)
-	                           //    }));
-	                               
-									if (oData.results[i].Ore >= 8.0) {
-	
-										oCal1.addSpecialDate(new DateTypeRange({
-											startDate: oFormatYYyyymmdd.parse(res),
-											type: "Type09",
-											tooltip: "Ore: " + oData.results[i].Ore 
-	                                           
-										}));
-									}
-	
-									if (oData.results[i].Ore < 8.0 & oData.results[i].Ore > 0.0) {
-	
-										oCal1.addSpecialDate(new DateTypeRange({
-											startDate: oFormatYYyyymmdd.parse(res),
-											type: "Type01",
-											tooltip: "Ore: " + oData.results[i].Ore 
-										}));
-									}
-									
+								var res = oData.results[i].Data;
+
+								// disabilito giorni che contengono già una richiesta   
+								//    oCal1.addDisabledDate(new DateTypeRange({   
+								//    startDate: oFormatYYyyymmdd.parse(res)
+								//    }));
+
+								if (oData.results[i].Ore >= 8.0) {
+
+									oCal1.addSpecialDate(new DateTypeRange({
+										startDate: oFormatYYyyymmdd.parse(res),
+										type: "Type09",
+										tooltip: "Ore: " + oData.results[i].Ore
+
+									}));
+								}
+
+								if (oData.results[i].Ore < 8.0 & oData.results[i].Ore > 0.0) {
+
+									oCal1.addSpecialDate(new DateTypeRange({
+										startDate: oFormatYYyyymmdd.parse(res),
+										type: "Type01",
+										tooltip: "Ore: " + oData.results[i].Ore
+									}));
+								}
+
 								/*	if (oData.results[i].Ore === 0.0) {
 	
 										oCal1.addSpecialDate(new DateTypeRange({
@@ -366,10 +420,8 @@ sap.ui.define([
 											tooltip: "Ore: " + oData.results[i].Ore 
 										}));
 									}*/
-	
-								
-								
-                            // }	
+
+								// }	
 
 								// aggiungere date selezionate quando si è in modifica
 								/*oCal1.addSelectedDate(new DateTypeRange({
@@ -392,11 +444,11 @@ sap.ui.define([
 								type: "Type01"
 							}));
 
-						/*	oLeg1.addItem(new CalendarLegendItem({
-								text: "Da inserire",
-								id: "leg3",
-								type: "Type09"
-							}));*/
+							/*	oLeg1.addItem(new CalendarLegendItem({
+									text: "Da inserire",
+									id: "leg3",
+									type: "Type09"
+								}));*/
 
 						}
 
@@ -416,13 +468,12 @@ sap.ui.define([
 				} // END FUNCTION SUCCESS
 
 				function fnReadE(oError) {
-				//	console.log(oError);
+					//	console.log(oError);
 
 					alert("Error in read: " + oError.message);
 				}
 
 			},
-
 
 			/////////////////////////////////////////////////////////////////////  
 
@@ -434,12 +485,10 @@ sap.ui.define([
 
 			},
 
-
 			getRouter: function() {
 				return sap.ui.core.UIComponent.getRouterFor(this);
 
 			}
-
 
 		});
 	});
