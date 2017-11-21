@@ -1,15 +1,99 @@
-<core:FragmentDefinition
-   xmlns="sap.m"
-   xmlns:l="sap.ui.layout"
-   xmlns:core="sap.ui.core"
-   	xmlns:html="http://www.w3.org/1999/xhtml">
-	<Dialog
-	state="Warning"
-	title="Confirm">
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout">
+	<Dialog state="Warning" title="Confirm" stretch="true">
 		<content>
-			<Label design="Bold" text="Vuoi confermare l'azione?"
-			textAlign="Center"/>
-		</content> 
+			<VBox class="sapUiSmallMargin">
+		<f:Form id="FormToolbar"
+			editable="true"
+			ariaLabelledBy="Title1">
+			<f:layout>
+				<f:ResponsiveGridLayout
+					labelSpanXL="4"
+					labelSpanL="3"
+					labelSpanM="4"
+					labelSpanS="12"
+					adjustLabelSpan="false"
+					emptySpanXL="0"
+					emptySpanL="4"
+					emptySpanM="0"
+					emptySpanS="0"
+					columnsXL="2"
+					columnsL="1"
+					columnsM="1"
+					singleContainerFullSize="false" />
+			</f:layout>
+			<f:formContainers>
+				<f:FormContainer ariaLabelledBy="Title2">
+					<f:toolbar>
+						<Toolbar>
+							<Title id="Title1" text="Dettaglio" level="H5" titleStyle="H5"/>
+							<ToolbarSpacer/>
+						</Toolbar>
+					</f:toolbar>
+					<f:formElements>
+						<f:FormElement label="Commessa">
+							   <Button text="Seleziona la Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa" press="showPopover" enabled="true"></Button>
+							<f:fields>
+								<Input value="{SupplierName}" id="name"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Street">
+							<f:fields>
+								<Input value="{Street}" />
+								<Input value="{HouseNumber}">
+									<layoutData>
+										<l:GridData span="XL2 L1 M3 S4" />
+									</layoutData>
+								</Input>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="ZIP Code/City">
+							<f:fields>
+								<Input value="{ZIPCode}">
+									<layoutData>
+										<l:GridData span="XL2 L1 M3 S4" />
+									</layoutData>
+								</Input>
+								<Input value="{City}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Country">
+							<f:fields>
+								<Select width="100%" id="country" selectedKey="{Country}">
+									<items>
+										<core:Item text="Germany" key="Germany"/>
+										<core:Item text="USA" key="USA"/>
+										<core:Item text="England" key="England"/>
+									</items>
+								</Select>
+							</f:fields>
+						</f:FormElement>
+					</f:formElements>
+				</f:FormContainer>
+				<f:FormContainer ariaLabelledBy="Title3">
+					<f:toolbar>
+						<Toolbar>
+							<Title id="Title3" text="Online" level="H5" titleStyle="H5"/>
+							<ToolbarSpacer />
+						</Toolbar>
+					</f:toolbar>
+					<f:formElements>
+						<f:FormElement label="Web">
+							<f:fields>
+								<Input value="{Url}" type="Url" id="url"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Twitter">
+							<f:fields>
+								<Input value="{Twitter}" id="twitter"/>
+							</f:fields>
+						</f:FormElement>
+					</f:formElements>
+				</f:FormContainer>
+			</f:formContainers>
+		</f:Form>
+	</VBox>
+		</content>
 		<beginButton>
 			<Button text="Yes" press="actionTask"/>
 		</beginButton>

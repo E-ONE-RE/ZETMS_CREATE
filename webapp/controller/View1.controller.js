@@ -12,7 +12,7 @@ sap.ui.define([
 	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, Dialog, Label, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
-
+        var aSediResult;
 		//	jQuery.sap.require("ZETMS_CREATE.utils.Formatters");
 		//	jQuery.sap.require("ZETMS_CREATE.utils.UIHelper");
 		jQuery.sap.require("sap.m.MessageBox");
@@ -105,11 +105,32 @@ sap.ui.define([
 					console.log(oError);
 				}
 
-				//MP: modello locale
+
+
 
 			},
+			
+			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
+			openDialog: function(oEvent){
+				var that = this;
+			this.sButtonKey = oEvent.getSource().getId(); //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
+			if (!that.Dialog) {
 
-			//Method to show the Popover Fragment
+				that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.Worklist");
+				//to get access to the global model
+				this.getView().addDependent(that.Dialog);
+				if (sap.ui.Device.system.phone) {
+					that.Dialog.setStretch(true);
+				}
+			}
+			that.Dialog.open();	
+			},
+			
+			closeDialog: function(){
+			this.Dialog.close();	
+			},
+
+			//MP: funzione che richiama il fragment contenente l'albero
 			showPopover: function(oEvent) {
 				var that = this;
 
@@ -136,20 +157,104 @@ sap.ui.define([
 					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
 					var oTemplate = new sap.m.StandardTreeItem({
 						title: "{name}",
-						icon: "{icon}"
+						icon: "{icon}",
+						select: true
 					});
-					oTree.bindItems({
+					oTemplate.setType("Active");
+					oTree.bindAggregation("items",{
 						path: "/CommessaCollection",
 						template: oTemplate,
 						   parameters: {
         numberOfExpandedLevels: 1
      }
 					});
+				
 					this._oPopover.openBy(oButton);
 				});
 
 			},
+			
+			
+			//MP: funzione richiamata alla selezione di una commessa
+			onSelect: function(oEvent){
+				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon"); 
+				var oTree = sap.ui.getCore().byId("Tree");
+				var oList = sap.ui.getCore().byId("List");
+				 var sSede;
+				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
+				if(sIcon !== "sap-icon://folder-full" && sIcon !== "sap-icon://folder-blank"){
+					
+			var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");	
+			this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf(" -"));
+			this.getView().byId("btnSede").setEnabled(true);
+			
+			this._oPopover.close();
+			
+				}else{
+						oTree.removeSelections();
+				}
 
+			},
+			
+				callSediSet: function(sCommessa){
+				var oModel = this.getView().getModel();
+				 
+				var sReadURI = oModel.sServiceUrl+"/SediSet/?$format=json&$filter=Commessa eq'"+sCommessa+"'";
+                
+				oModel._request({
+                    
+                   requestUri: sReadURI,
+              method: "GET",   
+	        headers: {      
+	                 	"X-Requested-With" : 'XMLHttpRequest',  
+	                    "Content-Type" : 'application/atom+xml',  
+	                    "DataServiceVersion" : "2.0"           
+	                 }
+			},
+			function(data,response){
+				var oList = sap.ui.getCore().byId("List");
+				oList.destroyItems();
+				aSediResult = data.results;
+				var oModel = new sap.ui.model.json.JSONModel();
+				oModel.setData(data);
+	               sap.ui.getCore().setModel(oModel, "results");
+					oList.setModel(sap.ui.getCore().getModel("results"));
+					var oTemplate = new sap.m.StandardListItem({
+						title: "{Office}"
+					});
+					
+					oList.bindAggregation("items",{
+					path: "/results",
+					template: oTemplate
+					});
+		
+
+			});
+			
+			
+			},
+			
+			//MP per visualizzare un Popover con le sedi. Al momento le sedi disponibili.
+			openPopoverList: function(oEvent){
+		    ////// test 
+			this.callSediSet(this.sCommessaId); 
+			//////
+		
+			var that = this;
+
+				if (!that._oPopoverList) {
+
+					that._oPopoverList = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverSedi", this, "ZETMS_CREATE.controller.Worklist");
+					//to get access to the global model
+					this.getView().addDependent(that._oPopoverList);
+				}
+				var oButton = oEvent.getSource();
+				jQuery.sap.delayedCall(0, this, function() {
+                 	this._oPopoverList.openBy(oButton);
+				});
+
+			},
+	
 			_onRouteMatched: function(oEvent) {
 
 				var oView = this.getView();
@@ -185,6 +290,8 @@ sap.ui.define([
 				this._onBindingChange();
 
 			},
+					
+			
 
 			_onBindingChange: function() {
 
@@ -315,27 +422,35 @@ sap.ui.define([
 				oCal1.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYear2 + "1226")
 				}));
-				///////////////FINE FESTIVI////////////   
-
-				oView.byId("LRS4_DAT_STARTTIME").setValue("");
-				oView.byId("LRS4_DAT_STARTTIME").rerender();
+				///////////////FINE FESTIVI////////////  
+				var sOwnerId = this.getView()._sOwnerId;
+		
+		        
+			    var sId = sOwnerId + "---view1" + "--";
+                if(this.sButtonKey != undefined){
+				sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").setValue("");
+				sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").rerender();
 				//oView.byId("LRS4_DAT_STARTTIME").setEnabled(true);
 
-				oView.byId("LRS4_DAT_ENDTIME").setValue("");
-				oView.byId("LRS4_DAT_ENDTIME").rerender();
+				sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").setValue("");
+				sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").rerender();
 				//oView.byId("LRS4_DAT_ENDTIME").setEnabled(true);
 
-				oView.byId("LRS4_TXA_NOTE").setValue("");
-				oView.byId("LRS4_TXA_NOTE").rerender();
-				oView.byId("LRS4_TXA_NOTE").setEnabled(true);
+				sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setValue("");
+				sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").rerender();
+				sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setEnabled(true);
 
 				//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
 				//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
 				//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
 
-				oView.byId("LRS4_DAT_ORETOT").setValue("0");
-				oView.byId("LRS4_DAT_ORETOT").setEnabled(false);
-				oView.byId("LRS4_DAT_ORETOT").rerender();
+			sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setValue("0");
+				sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
+				sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
+                }
+				
+		
+				
 
 				var sRead = "/CalendarSet";
 
@@ -474,6 +589,8 @@ sap.ui.define([
 				}
 
 			},
+			
+	
 
 			/////////////////////////////////////////////////////////////////////  
 

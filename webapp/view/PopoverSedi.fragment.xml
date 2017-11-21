@@ -10,11 +10,11 @@
 		verticalScrolling="true"
 		horizontalScrolling="false">
 		<content>
-			<Tree
-			id="Tree" includeItemInSelection="true"
+			<List
+			id="List" includeItemInSelection="true"
 		mode="SingleSelectMaster"
-			selectionChange="onSelect">
-			</Tree>
+			selectionChange="Dummy">
+			</List>
 		</content>
 		</ResponsivePopover>
 	</core:FragmentDefinition>
