@@ -1,101 +1,109 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout">
-	<Dialog state="Warning" title="Confirm" stretch="true">
+	<Dialog title="Inserisci dettagli" stretch="true">
 		<content>
 			<VBox class="sapUiSmallMargin">
-		<f:Form id="FormToolbar"
-			editable="true"
-			ariaLabelledBy="Title1">
-			<f:layout>
-				<f:ResponsiveGridLayout
-					labelSpanXL="4"
-					labelSpanL="3"
-					labelSpanM="4"
-					labelSpanS="12"
-					adjustLabelSpan="false"
-					emptySpanXL="0"
-					emptySpanL="4"
-					emptySpanM="0"
-					emptySpanS="0"
-					columnsXL="2"
-					columnsL="1"
-					columnsM="1"
-					singleContainerFullSize="false" />
-			</f:layout>
-			<f:formContainers>
-				<f:FormContainer ariaLabelledBy="Title2">
-					<f:toolbar>
-						<Toolbar>
-							<Title id="Title1" text="Dettaglio" level="H5" titleStyle="H5"/>
-							<ToolbarSpacer/>
-						</Toolbar>
-					</f:toolbar>
-					<f:formElements>
-						<f:FormElement label="Commessa">
-							   <Button text="Seleziona la Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa" press="showPopover" enabled="true"></Button>
-							<f:fields>
-								<Input value="{SupplierName}" id="name"/>
-							</f:fields>
-						</f:FormElement>
-						<f:FormElement label="Street">
-							<f:fields>
-								<Input value="{Street}" />
-								<Input value="{HouseNumber}">
-									<layoutData>
-										<l:GridData span="XL2 L1 M3 S4" />
-									</layoutData>
-								</Input>
-							</f:fields>
-						</f:FormElement>
-						<f:FormElement label="ZIP Code/City">
-							<f:fields>
-								<Input value="{ZIPCode}">
-									<layoutData>
-										<l:GridData span="XL2 L1 M3 S4" />
-									</layoutData>
-								</Input>
-								<Input value="{City}" />
-							</f:fields>
-						</f:FormElement>
-						<f:FormElement label="Country">
-							<f:fields>
-								<Select width="100%" id="country" selectedKey="{Country}">
-									<items>
-										<core:Item text="Germany" key="Germany"/>
-										<core:Item text="USA" key="USA"/>
-										<core:Item text="England" key="England"/>
-									</items>
-								</Select>
-							</f:fields>
-						</f:FormElement>
-					</f:formElements>
-				</f:FormContainer>
-				<f:FormContainer ariaLabelledBy="Title3">
-					<f:toolbar>
-						<Toolbar>
-							<Title id="Title3" text="Online" level="H5" titleStyle="H5"/>
-							<ToolbarSpacer />
-						</Toolbar>
-					</f:toolbar>
-					<f:formElements>
-						<f:FormElement label="Web">
-							<f:fields>
-								<Input value="{Url}" type="Url" id="url"/>
-							</f:fields>
-						</f:FormElement>
-						<f:FormElement label="Twitter">
-							<f:fields>
-								<Input value="{Twitter}" id="twitter"/>
-							</f:fields>
-						</f:FormElement>
-					</f:formElements>
-				</f:FormContainer>
-			</f:formContainers>
-		</f:Form>
-	</VBox>
+				<f:Form id="FormToolbar" editable="true" ariaLabelledBy="Title1">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
+							emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
+					</f:layout>
+					<f:formContainers>
+						<f:FormContainer ariaLabelledBy="Title2">
+							<f:toolbar>
+								<Toolbar>
+									<Title id="dettaglio" text="Dettaglio" level="H5" titleStyle="H5"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</f:toolbar>
+							<f:formElements>
+								<f:FormElement label="Commessa">
+									<Button text="Seleziona la Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+										press="showPopoverCommessa" enabled="true"></Button>
+									<f:fields>
+										<Text id="commessa"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Sede">
+									<f:fields>
+										<Select enabled="false" width="100%" id="sedi"></Select>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Ore">
+									<f:fields>
+										<Input id="ore" maxLength="3" type="Text" width="2.6rem"></Input>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Descrizione">
+									<f:fields>
+										<TextArea id="descrizione" width="100%" height="6rem" wrapping="None" maxLength="200" tooltip="Inserisci la descrizione dell'attività."/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+						<f:FormContainer ariaLabelledBy="spesekm">
+							<f:toolbar>
+								<Toolbar>
+									<Title id="spesekm" text="Spese e chilometri" level="H5" titleStyle="H5"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</f:toolbar>
+							<f:formElements>
+								<f:FormElement>
+									<f:fields>
+										<Panel expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
+											<content>
+												<List id="spese" mode="MultiSelect"
+		                                         includeItemInSelection="true"
+		                                         selectionChange="onExpenseSelect">
+													<items>
+														<InputListItem id="exp1" label="01 - Autostrada (EUR)">
+															<Input tooltip="Autostrada" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp2" label="02 - Cena (EUR)">
+															<Input tooltip="Cena" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp3" label="03 - Treno (EUR)">
+															<Input tooltip="Treno" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp4" label="04 - Albergo (EUR)">
+															<Input tooltip="Albergo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp5" label="05 - Taxi/BUS (EUR)">
+															<Input tooltip="Taxi/BUS" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp6" label="06 - Aereo (EUR)">
+															<Input tooltip="Aereo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp7" label="07 - Parcheggio (EUR)">
+															<Input tooltip="Parcheggio" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp8" label="08 - Pranzo (EUR)">
+															<Input tooltip="Pranzo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+														<InputListItem id="exp9" label="09 - Altro (EUR)">
+															<Input tooltip="Altro" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+														</InputListItem>
+													</items>
+												</List>
+											</content>
+										</Panel>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Twitter">
+									<f:fields>
+										<Input value="{Twitter}" id="twitter"/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+			</VBox>
 		</content>
 		<beginButton>
 			<Button text="Yes" press="actionTask"/>
+			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>
 			<Button text="Cancel" press="closeDialog"/>
