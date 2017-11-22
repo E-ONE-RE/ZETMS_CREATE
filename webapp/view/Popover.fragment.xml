@@ -6,7 +6,7 @@
 		<ResponsivePopover
 		title="Commesse"
 		class="sapUiContentPadding"
-		placement="Right"
+		placement="Bottom"
 		verticalScrolling="true"
 		horizontalScrolling="false">
 		<content>
