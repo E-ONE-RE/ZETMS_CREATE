@@ -120,6 +120,11 @@ sap.ui.define([
 			}
 		},
 		
+		formatCalDate: function(sDate){
+		var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({pattern: "dd/MM/YYYY"});
+        return oDateFormat.format(new Date(sDate));	
+		},
+		
 		
  formatAbsence: function(sAbtType){
  	

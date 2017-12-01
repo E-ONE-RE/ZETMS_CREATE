@@ -13,7 +13,7 @@
 			<Tree
 			id="Tree" includeItemInSelection="true"
 		mode="SingleSelectMaster"
-			selectionChange="onSelect">
+			selectionChange="onCommessaSelect">
 			</Tree>
 		</content>
 		</ResponsivePopover>
