@@ -3,13 +3,14 @@ sap.ui.define([
 		'sap/ui/unified/CalendarLegendItem',
 		'sap/ui/unified/DateTypeRange',
 		'sap/m/Button',
+		'sap/m/GroupHeaderListItem',
 		'sap/m/Dialog',
 		'sap/m/Label',
 		//	'sap/m/MessageToast',
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
-	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, Dialog, Label, formatter) {
+	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 		var aSediResult;
@@ -82,6 +83,24 @@ sap.ui.define([
 
 			},
 
+
+		getGroupHeader: function (oGroup){
+			return new GroupHeaderListItem( {
+				title: oGroup.key,
+				upperCase: false
+			} );
+		},
+		
+		 onCollapseAll: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.collapseAll();
+        },
+
+        onExpandFirstLevel: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.expandToLevel(1);
+        },
+		
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
 				var sRead = "/CommessaSet";
@@ -365,7 +384,7 @@ sap.ui.define([
 			},
 
 			onAfterRendering: function(oEvent) {
-
+             
 			},
 
 			onUpdateFinished: function(oEvent) {
@@ -507,6 +526,7 @@ sap.ui.define([
 				oCal1.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYear2 + "1226")
 				}));
+
 				///////////////FINE FESTIVI////////////  
 				var sOwnerId = this.getView()._sOwnerId;
 
@@ -532,6 +552,7 @@ sap.ui.define([
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
 				}
+
 
 				var sRead = "/CalendarSet";
 

@@ -1,0 +1,51 @@
+
+
+
+<mvc:View
+    controllerName="ZETMS_CREATE.controller.testTreeTable"
+    xmlns="sap.ui.table"
+    xmlns:m="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+
+    <TreeTable
+      id="treeTable"
+        selectionMode="Single"
+        enableColumnReordering="false"
+        expandFirstLevel="false"
+							
+							rows="{path: '/ListaCommesseGroupSet',
+					filters : [
+					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
+					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
+					],
+					
+					parameters : {
+ expand : 'ChildExpNodes',
+ navigation : {
+ 'ListaCommesseGroupSet' : 'ChildExpNodes'
+ }
+ }
+			
+		}">
+
+        <columns>
+
+            <Column label="Orderjob">
+                <template>
+                    <m:Text text="{Orderjob}" wrapping="false" />
+                </template>
+            </Column>
+
+            <Column label="Qta">
+                <template>
+                    <m:Text text="{Qta}" wrapping="false" />
+                </template>
+            </Column>
+
+            
+
+        </columns>
+
+    </TreeTable>
+
+</mvc:View>
