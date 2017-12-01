@@ -237,14 +237,12 @@ displayBlock="true">
 					<OverflowToolbar id="footerToolbar">
 						
 					  
-						  	<Button id="btn_History" text="Storico" press="onHistoryPress" type="Emphasized" activeIcon="sap-icon://approvals" icon="sap-icon://work-history" tooltip="Accedi alla lista delle tue richieste per visualizzarle e/o modificarle.">
-						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
-						  </Button>
+						  
 		<ToolbarSpacer/>
 							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovoinserimento nel timesheet">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
 						  </Button>
-			
+			 
 					</OverflowToolbar>
 				</footer>
 				

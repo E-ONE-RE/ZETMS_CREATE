@@ -106,6 +106,11 @@ sap.ui.define([
 				}
 
 			},
+			
+			//MP: selezione di una data del calendario da rivedere!!!!!
+			handleCalendarSelect: function(oEvent){
+				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate(); 
+			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
 			openDialog: function(oEvent) {
@@ -121,10 +126,24 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
+				 that.Dialog.setTitle("Inserire dettaglio per il giorno "+formatter.formatCalDate(this.selectedDate.toString()));
 			},
 
 			closeDialog: function() {
 				this.Dialog.close();
+				sap.ui.getCore().byId("commessa").setValue("");
+				sap.ui.getCore().byId("commessa").setValueState("None");
+				sap.ui.getCore().byId("sedi").setEnabled(false);
+				sap.ui.getCore().byId("sedi").removeAllItems();
+				sap.ui.getCore().byId("ore").setValue("");
+				sap.ui.getCore().byId("ore").setValueState("None");
+				sap.ui.getCore().byId("descrizione").setValue("");
+				sap.ui.getCore().byId("descrizione").setValueState("None");
+				sap.ui.getCore().byId("chilometri").setValue("");
+				sap.ui.getCore().byId("chilometri").setValueState("None");
+				sap.ui.getCore().byId("spese").removeSelections();
+				sap.ui.getCore().byId("panelSpese").setExpanded(false);
+				this.onExpenseSelect(undefined);
 			},
 
 			//MP: funzione che richiama il fragment contenente l'albero
@@ -164,14 +183,15 @@ sap.ui.define([
 							numberOfExpandedLevels: 1
 						}
 					});
-
+                    
+                    var oInput = sap.ui.getCore().byId("commessa");
 					this._oPopover.openBy(oButton);
 				});
 
 			},
 
 			//MP: funzione richiamata alla selezione di una commessa
-			onSelect: function(oEvent) {
+			onCommessaSelect: function(oEvent) {
 				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
 				var oTree = sap.ui.getCore().byId("Tree");
 				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
@@ -181,7 +201,8 @@ sap.ui.define([
 					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-"));
 					sap.ui.getCore().byId("sedi").setEnabled(true);
 					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 1, sCommessa.length);
-					sap.ui.getCore().byId("commessa").setText(this.sCommessaName);
+					sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
+					sap.ui.getCore().byId("commessa").setValueState("None");
 					this._oPopover.close();
 					////// le sedi sono diverse dipendentemente dal cliente
 					this.callSediSet(this.sCommessaId);
@@ -192,9 +213,7 @@ sap.ui.define([
 				}
 
 			},
-			
-			
-			
+
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 
@@ -230,14 +249,99 @@ sap.ui.define([
 
 					});
 			},
-			
-			onExpenseSelect: function(oEvent){
-					var oSelectedItem = oEvent.getSource().getSelectedItem();
-				     var oInput = oSelectedItem.getContent()[0];    
-				     oInput.setEnabled(true);
+
+			onExpenseSelect: function(oEvent) {
+				var oList = sap.ui.getCore().byId("spese");
+				var aItems = oList.getAggregation("items");
+				var oItem;
+				var oInput;
+				for (var i = 0; i < aItems.length; i++) {
+					oItem = aItems[i];
+					oInput = oItem.getContent()[0];
+					if (oItem.getSelected() == true) {
+						oInput.setEnabled(true); //MP: per settare il campo in input modificabile
+					} else {
+						oInput.setEnabled(false);
+						oInput.setValue("");
+						oInput.setValueState("None");
+					}
+
+				}
 			},
 
-	
+			//MP function per salvare riga timesheet
+			onConfirmation: function() {
+				//check per completezza dati inseriti
+				var aControls = [];
+				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("chilometri"), sap.ui.getCore().byId("descrizione"));
+				var oInput;
+				var aParam;
+				for (var i = 0; i < aControls.length; i++) {
+					oInput = aControls[i];
+					if (oInput.getValue() == ""){
+						oInput.setValueState("Error");
+						oInput.setValueStateText("il campo è obbligatorio");
+					}else{
+						aParam.push(oInput.getValue());
+					}
+				}
+				
+			
+
+			},
+
+			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
+			onLiveChange: function(oEvent) {
+				var oInput;
+				switch (oEvent.getSource().getId()) {
+					case "ore":
+						oInput = sap.ui.getCore().byId("ore");
+						if (oInput.getValue() < 1 || oInput.getValue() > 8) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e 8");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case "chilometri":
+						oInput = sap.ui.getCore().byId("chilometri");
+						if (oInput.getValue().length > 4) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("Controllare inserimento");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case "descrizione":
+						oInput = sap.ui.getCore().byId("descrizione");
+						if (oInput.getValue() == "") {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("la descrizione è obbligatoria");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					default:
+						var oList = sap.ui.getCore().byId("spese");
+						var aItems = oList.getAggregation("items");
+						var oItem;
+						var oInput;
+						for (var i = 0; i < aItems.length; i++) {
+							oItem = aItems[i];
+							oInput = oItem.getContent()[0];
+							if (oInput.getValue().length > 4) {
+								oInput.setValueState(sap.ui.core.ValueState.Error);
+								oInput.setValueStateText("Controllare inserimento");
+							} else {
+								oInput.setValueState(sap.ui.core.ValueState.None);
+							}
+
+						}
+
+				}
+
+			},
+
 			_onRouteMatched: function(oEvent) {
 
 				var oView = this.getView();

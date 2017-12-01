@@ -1,6 +1,16 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout">
-	<Dialog title="Inserisci dettagli" stretch="true">
+	<Dialog id="dialog" title="Inserisci dettagli" stretch="true">
+		
+		<html:style>
+
+                .sapMILILabel {
+                 font-size: 14px; !important
+
+                                 }
+
+          </html:style>
+          
 		<content>
 			<VBox class="sapUiSmallMargin">
 				<f:Form id="FormToolbar" editable="true" ariaLabelledBy="Title1">
@@ -18,10 +28,10 @@
 							</f:toolbar>
 							<f:formElements>
 								<f:FormElement label="Commessa">
+									<f:fields>
 									<Button text="Seleziona la Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 										press="showPopoverCommessa" enabled="true"></Button>
-									<f:fields>
-										<Text id="commessa"/>
+										<Input id="commessa" required="true" enabled="false"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Sede">
@@ -31,68 +41,62 @@
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Input id="ore" maxLength="3" type="Text" width="2.6rem"></Input>
+										<Input id="ore" type="Number" width="4rem" required="true" liveChange="onLiveChange"></Input>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
-										<TextArea id="descrizione" width="100%" height="6rem" wrapping="None" maxLength="200" tooltip="Inserisci la descrizione dell'attività."/>
+										<TextArea liveChange="onLiveChange" required="true" id="descrizione" width="100%" height="6rem" wrapping="None" maxLength="200" tooltip="Inserisci la descrizione dell'attività."/>
+									</f:fields>
+								</f:FormElement>
+									<f:FormElement label="Chilometri effettuati">
+									<f:fields>
+										<Input id="chilometri" type="Number" width="4rem" required="true" liveChange="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
-						</f:FormContainer>
-						<f:FormContainer ariaLabelledBy="spesekm">
-							<f:toolbar>
-								<Toolbar>
-									<Title id="spesekm" text="Spese e chilometri" level="H5" titleStyle="H5"/>
-									<ToolbarSpacer/>
-								</Toolbar>
-							</f:toolbar>
+					
+					
 							<f:formElements>
 								<f:FormElement>
 									<f:fields>
-										<Panel expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
+										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
 											<content>
 												<List id="spese" mode="MultiSelect"
 		                                         includeItemInSelection="true"
 		                                         selectionChange="onExpenseSelect">
 													<items>
 														<InputListItem id="exp1" label="01 - Autostrada (EUR)">
-															<Input tooltip="Autostrada" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input  tooltip="Autostrada"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp2" label="02 - Cena (EUR)">
-															<Input tooltip="Cena" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Cena"   type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp3" label="03 - Treno (EUR)">
-															<Input tooltip="Treno" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Treno"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp4" label="04 - Albergo (EUR)">
-															<Input tooltip="Albergo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Albergo"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp5" label="05 - Taxi/BUS (EUR)">
-															<Input tooltip="Taxi/BUS" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Taxi/BUS"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp6" label="06 - Aereo (EUR)">
-															<Input tooltip="Aereo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Aereo"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp7" label="07 - Parcheggio (EUR)">
-															<Input tooltip="Parcheggio" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Parcheggio"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp8" label="08 - Pranzo (EUR)">
-															<Input tooltip="Pranzo" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Pranzo"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 														<InputListItem id="exp9" label="09 - Altro (EUR)">
-															<Input tooltip="Altro" maxLength="3" type="Text" width="2.6rem" enabled="false"/>
+															<Input tooltip="Altro"  type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 														</InputListItem>
 													</items>
 												</List>
 											</content>
 										</Panel>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Twitter">
-									<f:fields>
-										<Input value="{Twitter}" id="twitter"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
@@ -102,11 +106,12 @@
 			</VBox>
 		</content>
 		<beginButton>
-			<Button text="Yes" press="actionTask"/>
+			<Button text="Conferma" press="onConfirmation" type="Accept"/>
 			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>
-			<Button text="Cancel" press="closeDialog"/>
+			<Button text="Indietro" press="closeDialog" type="Reject"/>
 		</endButton>
+		
 	</Dialog>
 </core:FragmentDefinition>
