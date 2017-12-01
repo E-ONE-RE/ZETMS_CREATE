@@ -13,7 +13,7 @@ sap.ui.define([
 	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
-
+		var aSediResult;
 		//	jQuery.sap.require("ZETMS_CREATE.utils.Formatters");
 		//	jQuery.sap.require("ZETMS_CREATE.utils.UIHelper");
 		jQuery.sap.require("sap.m.MessageBox");
@@ -124,12 +124,49 @@ sap.ui.define([
 					console.log(oError);
 				}
 
-				//MP: modello locale
-
+			},
+			
+			//MP: selezione di una data del calendario da rivedere!!!!!
+			handleCalendarSelect: function(oEvent){
+				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate(); 
 			},
 
-			//Method to show the Popover Fragment
-			showPopover: function(oEvent) {
+			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
+			openDialog: function(oEvent) {
+				var that = this;
+				this.sButtonKey = oEvent.getSource().getId(); //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
+				if (!that.Dialog) {
+
+					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.Worklist");
+					//to get access to the global model
+					this.getView().addDependent(that.Dialog);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
+				}
+				that.Dialog.open();
+				 that.Dialog.setTitle("Inserire dettaglio per il giorno "+formatter.formatCalDate(this.selectedDate.toString()));
+			},
+
+			closeDialog: function() {
+				this.Dialog.close();
+				sap.ui.getCore().byId("commessa").setValue("");
+				sap.ui.getCore().byId("commessa").setValueState("None");
+				sap.ui.getCore().byId("sedi").setEnabled(false);
+				sap.ui.getCore().byId("sedi").removeAllItems();
+				sap.ui.getCore().byId("ore").setValue("");
+				sap.ui.getCore().byId("ore").setValueState("None");
+				sap.ui.getCore().byId("descrizione").setValue("");
+				sap.ui.getCore().byId("descrizione").setValueState("None");
+				sap.ui.getCore().byId("chilometri").setValue("");
+				sap.ui.getCore().byId("chilometri").setValueState("None");
+				sap.ui.getCore().byId("spese").removeSelections();
+				sap.ui.getCore().byId("panelSpese").setExpanded(false);
+				this.onExpenseSelect(undefined);
+			},
+
+			//MP: funzione che richiama il fragment contenente l'albero
+			showPopoverCommessa: function(oEvent) {
 				var that = this;
 
 				if (!that._oPopover) {
@@ -140,12 +177,11 @@ sap.ui.define([
 				}
 				var oButton = oEvent.getSource();
 				jQuery.sap.delayedCall(0, this, function() {
-				
-		
-				 // MP: logica per il binding dell'albero riportante le commesse;
-				 // la lettura del modello (oModel.read) è stata effettutata nel
-				 // metodo onBeforeRendering
-				
+
+					// MP: logica per il binding dell'albero riportante le commesse;
+					// la lettura del modello (oModel.read) è stata effettutata nel
+					// metodo onBeforeRendering
+
 					var oTree = sap.ui.getCore().byId("Tree");
 					var oModelJson = new sap.ui.model.json.JSONModel();
 					var oJson = JSON.parse(sJson);
@@ -155,17 +191,173 @@ sap.ui.define([
 					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
 					var oTemplate = new sap.m.StandardTreeItem({
 						title: "{name}",
-						icon: "{icon}"
+						icon: "{icon}",
+						select: true
 					});
-					oTree.bindItems({
+					oTemplate.setType("Active");
+					oTree.bindAggregation("items", {
 						path: "/CommessaCollection",
 						template: oTemplate,
-						   parameters: {
-        numberOfExpandedLevels: 1
-     }
+						parameters: {
+							numberOfExpandedLevels: 1
+						}
 					});
+                    
+                    var oInput = sap.ui.getCore().byId("commessa");
 					this._oPopover.openBy(oButton);
 				});
+
+			},
+
+			//MP: funzione richiamata alla selezione di una commessa
+			onCommessaSelect: function(oEvent) {
+				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
+				var oTree = sap.ui.getCore().byId("Tree");
+				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
+				if (sIcon !== "sap-icon://folder-full" && sIcon !== "sap-icon://folder-blank") {
+
+					var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");
+					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-"));
+					sap.ui.getCore().byId("sedi").setEnabled(true);
+					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 1, sCommessa.length);
+					sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
+					sap.ui.getCore().byId("commessa").setValueState("None");
+					this._oPopover.close();
+					////// le sedi sono diverse dipendentemente dal cliente
+					this.callSediSet(this.sCommessaId);
+					//////
+
+				} else {
+					oTree.removeSelections();
+				}
+
+			},
+
+			callSediSet: function(sCommessa) {
+				var oModel = this.getView().getModel();
+
+				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
+
+				oModel._request({
+
+						requestUri: sReadURI,
+						method: "GET",
+						headers: {
+							"X-Requested-With": 'XMLHttpRequest',
+							"Content-Type": 'application/atom+xml',
+							"DataServiceVersion": "2.0"
+						}
+					},
+					function(data, response) {
+						var oSelect = sap.ui.getCore().byId("sedi");
+						oSelect.destroyItems();
+						aSediResult = data.results;
+						var oModel = new sap.ui.model.json.JSONModel();
+						oModel.setData(data);
+						sap.ui.getCore().setModel(oModel, "results");
+						oSelect.setModel(sap.ui.getCore().getModel("results"));
+						var oTemplate = new sap.ui.core.Item({
+							key: "{Office}",
+							text: "{Office}"
+						});
+
+						oSelect.bindAggregation("items", {
+							path: "/results",
+							template: oTemplate
+						});
+
+					});
+			},
+
+			onExpenseSelect: function(oEvent) {
+				var oList = sap.ui.getCore().byId("spese");
+				var aItems = oList.getAggregation("items");
+				var oItem;
+				var oInput;
+				for (var i = 0; i < aItems.length; i++) {
+					oItem = aItems[i];
+					oInput = oItem.getContent()[0];
+					if (oItem.getSelected() == true) {
+						oInput.setEnabled(true); //MP: per settare il campo in input modificabile
+					} else {
+						oInput.setEnabled(false);
+						oInput.setValue("");
+						oInput.setValueState("None");
+					}
+
+				}
+			},
+
+			//MP function per salvare riga timesheet
+			onConfirmation: function() {
+				//check per completezza dati inseriti
+				var aControls = [];
+				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("chilometri"), sap.ui.getCore().byId("descrizione"));
+				var oInput;
+				var aParam;
+				for (var i = 0; i < aControls.length; i++) {
+					oInput = aControls[i];
+					if (oInput.getValue() == ""){
+						oInput.setValueState("Error");
+						oInput.setValueStateText("il campo è obbligatorio");
+					}else{
+						aParam.push(oInput.getValue());
+					}
+				}
+				
+			
+
+			},
+
+			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
+			onLiveChange: function(oEvent) {
+				var oInput;
+				switch (oEvent.getSource().getId()) {
+					case "ore":
+						oInput = sap.ui.getCore().byId("ore");
+						if (oInput.getValue() < 1 || oInput.getValue() > 8) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e 8");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case "chilometri":
+						oInput = sap.ui.getCore().byId("chilometri");
+						if (oInput.getValue().length > 4) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("Controllare inserimento");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case "descrizione":
+						oInput = sap.ui.getCore().byId("descrizione");
+						if (oInput.getValue() == "") {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("la descrizione è obbligatoria");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					default:
+						var oList = sap.ui.getCore().byId("spese");
+						var aItems = oList.getAggregation("items");
+						var oItem;
+						var oInput;
+						for (var i = 0; i < aItems.length; i++) {
+							oItem = aItems[i];
+							oInput = oItem.getContent()[0];
+							if (oInput.getValue().length > 4) {
+								oInput.setValueState(sap.ui.core.ValueState.Error);
+								oInput.setValueStateText("Controllare inserimento");
+							} else {
+								oInput.setValueState(sap.ui.core.ValueState.None);
+							}
+
+						}
+
+				}
 
 			},
 
@@ -334,66 +526,32 @@ sap.ui.define([
 				oCal1.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYear2 + "1226")
 				}));
-				///////////////FINE FESTIVI////////////   
 
-				oView.byId("LRS4_DAT_STARTTIME").setValue("");
-				oView.byId("LRS4_DAT_STARTTIME").rerender();
-				//oView.byId("LRS4_DAT_STARTTIME").setEnabled(true);
+				///////////////FINE FESTIVI////////////  
+				var sOwnerId = this.getView()._sOwnerId;
 
-				oView.byId("LRS4_DAT_ENDTIME").setValue("");
-				oView.byId("LRS4_DAT_ENDTIME").rerender();
-				//oView.byId("LRS4_DAT_ENDTIME").setEnabled(true);
+				var sId = sOwnerId + "---view1" + "--";
+				if (this.sButtonKey != undefined) {
+					sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").setValue("");
+					sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").rerender();
+					//oView.byId("LRS4_DAT_STARTTIME").setEnabled(true);
 
-				oView.byId("LRS4_TXA_NOTE").setValue("");
-				oView.byId("LRS4_TXA_NOTE").rerender();
-				oView.byId("LRS4_TXA_NOTE").setEnabled(true);
+					sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").setValue("");
+					sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").rerender();
+					//oView.byId("LRS4_DAT_ENDTIME").setEnabled(true);
 
-				//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
-				//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
-				//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
+					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setValue("");
+					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").rerender();
+					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setEnabled(true);
 
-				oView.byId("LRS4_DAT_ORETOT").setValue("0");
-				oView.byId("LRS4_DAT_ORETOT").setEnabled(false);
-				oView.byId("LRS4_DAT_ORETOT").rerender();
-				
-				var oTable = oView.byId("ENTRY_LIST_CONTENTS");
-				
-				oTable.setModel(oModel);
+					//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
+					//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
+					//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
 
- //navigation service binding
- oTable.bindRows({
- path : "/ListaCommesseGroupSet",
-/* filters : [
-					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
-					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
-					],*/
-	parameters : {
-					 expand : 'ToChildExpNodes',
-
-					 navigation : {
-					 'ListaCommesseGroupSet' : 'ToChildExpNodes'
-					 }
-					 }
- });
-					
-			
-/*			//	this.entryListContents = oView.byId("ENTRY_LIST_CONTENTS");
-			
-				var h = new sap.ui.table.Column({
- label : "Giorno",
- template : "Giorno"
- });
-			//annotation service binding
- oTable.bindRows({
- path : "/Nodes",
- parameters : {
- countMode: "Inline",
- numberOfExpandedLevels : 2
- }
- });
-							
-		this.entryListContents.addColumn(h);
-		*/
+					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setValue("0");
+					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
+					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
+				}
 
 
 				var sRead = "/CalendarSet";

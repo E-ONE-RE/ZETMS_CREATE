@@ -12,10 +12,12 @@
       "hashParameter": "",
       "backendSystem": [],
       "_metadata": {
+
         "id": 2443433,
         "runnerId": "fiorirunner",
         "displayName": "Run Component.js",
         "lastRunTimeStamp": 1512125244402
+
       }
     },
     {
@@ -31,10 +33,12 @@
       "backendSystem": [],
       "urlParametersNotNeeded": false,
       "_metadata": {
-        "id": 2883763,
-        "runnerId": "webapprunner",
-        "displayName": "Run index.html",
-        "lastRunTimeStamp": 1511257439391
+
+        "runnerId": "fiorirunner",
+        "id": 2443433,
+        "displayName": "Run Component.js",
+        "lastRunTimeStamp": 1511426317409
+
       }
     }
   ]
