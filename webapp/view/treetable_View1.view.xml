@@ -1,0 +1,111 @@
+<!--<mvc:View
+    controllerName="ZETMS_CREATE.controller.testTreeTable"
+    xmlns="sap.ui.table"
+    xmlns:m="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">-->
+	
+	<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
+xmlns:smartTable="sap.ui.comp.smarttable"
+xmlns:mvc="sap.ui.core.mvc"
+
+xmlns:m="sap.m"
+xmlns="sap.ui.table"
+xmlns:treeTable="sap.ui.table.TreeTable"
+xmlns:sap.ui.layout.form="sap.ui.layout.form" 
+xmlns:sap.ui.layout="sap.ui.layout" 
+xmlns:sap.me="sap.me" 
+xmlns:sap.ui.core="sap.ui.core" 
+xmlns:ui="sap.ca.ui" 
+xmlns:sap.ui.unified="sap.ui.unified" 
+controllerName="ZETMS_CREATE.controller.testTreeTable" displayBlock="true">
+		
+
+    <TreeTable
+      id="treeTable"
+        selectionMode="Single"
+        enableColumnReordering="false"
+        expandFirstLevel="false"
+							
+			rows="{path: '/ListaCommesseGroupSet',
+				
+					filters : [
+					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
+					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
+					],
+					
+					parameters : {
+					 expand : 'ToChildExpNodes',
+					 navigation : {
+					 'ListaCommesseGroupSet' : 'ToChildExpNodes'
+					 }
+					 }
+					 
+								
+							}">
+
+        <columns>
+        	
+        	 <Column label="Giorno">
+                <template>
+                    <m:Text text="{Giorno}" wrapping="false" />
+                </template>
+            </Column>
+        	
+        	 <!--<Column label="Tmskey">
+                <template>
+                    <m:Text text="{Tmskey}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Expkey">
+                <template>
+                    <m:Text text="{Expkey}" wrapping="false" />
+                </template>
+            </Column>
+
+            <Column label="Orderjob">
+                <template>
+                    <m:Text text="{Orderjob}" wrapping="false" />
+                </template>
+            </Column>-->
+            
+             <Column label="Commessa">
+                <template>
+                    <m:Text text="{Descrorder}" wrapping="false" />
+                </template>
+            </Column>
+            
+            
+            
+            <Column label="Tipo">
+                <template>
+                    <m:Text text="{Expdescr}" wrapping="false" />
+                </template>
+            </Column>
+
+            <Column label="Ore">
+                <template>
+                    <m:Text text="{Ore}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Importo">
+                <template>
+                    <m:Text text="{Importo}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Km">
+                <template>
+                    <m:Text text="{Km}" wrapping="false" />
+                </template>
+            </Column>
+
+
+            
+
+        </columns>
+
+    </TreeTable>
+
+</mvc:View>

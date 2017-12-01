@@ -1,10 +1,10 @@
 <mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
 xmlns:smartTable="sap.ui.comp.smarttable"
 xmlns:mvc="sap.ui.core.mvc"
-xmlns="sap.m" 
 
-xmlns:t="sap.ui.table"
-
+xmlns:m="sap.m"
+xmlns="sap.ui.table"
+xmlns:treeTable="sap.ui.table.TreeTable"
 xmlns:sap.ui.layout.form="sap.ui.layout.form" 
 xmlns:sap.ui.layout="sap.ui.layout" 
 xmlns:sap.me="sap.me" 
@@ -17,10 +17,10 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 	
 	<!--<App>-->
 		<!--<pages>-->
-			<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
+			<m:Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
 				
 
-					<content>
+					<m:content>
 						<!--<Button id="displayNotFoundBtn" text="{i18n>DisplayNotFound}" press="onDisplayNotFound" class="sapUiTinyMarginEnd"/>
 		-->
 			
@@ -81,8 +81,8 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 														<sap.ui.layout:Grid id="LR_CALENDAR" defaultSpan="L12 M12 S12" width="100%" hSpacing="0">
 														<sap.ui.layout:content>
 															
-															<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
-																<items>	
+															<m:VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
+																<m:items>	
 															<sap.ui.layout:VerticalLayout width="100%">
 															<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
 													 
@@ -92,27 +92,27 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 																		</sap.me:layoutData>
 																	</sap.me:CalendarLegend>-->
 																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
-													 	<VBox width="100%" direction="Column" id="__vbox0_LEGEND" alignItems="Center" alignContent="Start" justifyContent="Center">
-																<items>	
+																</m:items>
+															</m:VBox>
+													 	<m:VBox width="100%" direction="Column" id="__vbox0_LEGEND" alignItems="Center" alignContent="Start" justifyContent="Center">
+																<m:items>	
 													 	<sap.ui.layout:VerticalLayout width="100%">
-													 	<Panel id="panelLegend" width="auto"  backgroundDesign="Transparent" expandable="true">
-														<headerToolbar>
-															<Toolbar height="auto">
+													 	<m:Panel id="panelLegend" width="auto"  backgroundDesign="Transparent" expandable="true">
+														<m:headerToolbar>
+															<m:Toolbar height="auto">
 																<Title text="Legenda"/>
-															</Toolbar>
-														</headerToolbar>
+															</m:Toolbar>
+														</m:headerToolbar>
 														<sap.ui.unified:CalendarLegend id="legend1" columnWidth="128px"/>
-														</Panel>
+														</m:Panel>
 													 
 															
 																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
+																</m:items>
+															</m:VBox>
 															
-															<VBox width="100%" direction="Column" id="__vbox0_CALBUTTON" alignItems="Center">
-																<items>	
+															<m:VBox width="100%" direction="Column" id="__vbox0_CALBUTTON" alignItems="Center">
+																<m:items>	
 															<sap.ui.layout:VerticalLayout width="100%">
 															
 															<Button press="handleRemoveSelection" text="Rimuovi date selezionate" icon="sap-icon://delete" tooltip="{i18n>LR_REMOVE_DAYS}" id="btn_removeDate"/>
@@ -123,8 +123,8 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 																		</sap.me:layoutData>
 																	</sap.me:CalendarLegend>-->
 																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
+																</m:items>
+															</m:VBox>
 							
 														</sap.ui.layout:content>
 													</sap.ui.layout:Grid>	
@@ -287,7 +287,55 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 											</sap.ui.layout.form:FormElement>
 											
 											
-								
+								<!--			<sap.ui.layout.form:FormElement id="LRS4_FELEM_NOTE_RECUP">
+												<sap.ui.layout.form:layoutData>
+													<sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
+												</sap.ui.layout.form:layoutData>
+												<sap.ui.layout.form:fields>
+													<sap.ui.layout:Grid id="LRS4_NOTE_RECUP" width="100%" defaultSpan="L12 M12 S12">
+														<sap.ui.layout:content>
+															<sap.ui.layout:VerticalLayout width="100%">
+																<Label id="LRS4_LBL_NOTE_RECUP" text="{i18n>LR_NOTE_RECUP}">
+																</Label>
+																<TextArea id="LRS4_TXA_NOTE_RECUP" width="100%" height="6rem" wrapping="None" maxLength="255" tooltip="{i18n>LR_USER_NOTE_RECUP}">
+																	<layoutData>
+																		<sap.ui.layout:ResponsiveFlowLayoutData weight="8" linebreak="true"/>
+																	</layoutData>
+																</TextArea>
+															<sap.ui.layout:content>
+															</sap.ui.layout:content>
+															</sap.ui.layout:VerticalLayout>
+															
+															
+														</sap.ui.layout:content>
+													</sap.ui.layout:Grid>
+												</sap.ui.layout.form:fields>
+											</sap.ui.layout.form:FormElement>-->
+											
+										<!--	<sap.ui.layout.form:FormElement visible="false" id="LRS4_FELEM_FILEATTACHMENTS">
+												<sap.ui.layout.form:layoutData>
+													<sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
+												</sap.ui.layout.form:layoutData>
+												<sap.ui.layout.form:fields>
+													<sap.ui.layout:Grid id="LRS4_FILEATTACHMENTS" width="100%" defaultSpan="L12 M12 S12">
+														<sap.ui.layout:content>
+															<sap.ui.unified:FileUploader id="fileUploader" width="100%" uploadUrl="" placeholder="{i18n>LR_ATTACHMENT}" uploadOnChange="false" uploadComplete="handleUploadComplete" change="handleValueChange" typeMissmatch="handleTypeMissmatch" fileSizeExceed="handleFileSizeExceed" style="Emphasized" useMultipart="false"/>
+															<UploadCollection id="fileupload" uploadEnabled="false" showSeparators="All" multiple="true" change="onChange" beforeUploadStarts="onbeforeUploadStarts" uploadComplete="onUploadComplete" fileDeleted="onFileDeleted" items="{files>/AttachmentsCollection}">
+																<UploadCollectionItem contributor="{files>Contributor}" documentId="{files>DocumentId}" enableDelete="true" enableEdit="false" visibleEdit="false" url="{files>FileUrl}" mimeType="{files>MimeType}" fileName="{files>FileName}" fileSize="{files>FileSize}" uploadedDate="{files>UploadedDate}"/>
+															</UploadCollection>
+														</sap.ui.layout:content>
+													</sap.ui.layout:Grid>
+												</sap.ui.layout.form:fields>
+											</sap.ui.layout.form:FormElement>-->
+											
+										<!--	<sap.ui.layout.form:FormElement id="LRS4_FR_ADDN_FIELDS">
+												<sap.ui.layout.form:layoutData>
+													<sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
+												</sap.ui.layout.form:layoutData>
+												<sap.ui.layout.form:fields>
+													<sap.ui.layout:Grid width="100%" id="LRS4_FR_ADDN_FIELDS_GRID" defaultSpan="L12 M12 S12"/>
+												</sap.ui.layout.form:fields>
+											</sap.ui.layout.form:FormElement>-->
 											
 										
 										</sap.ui.layout.form:formElements>
@@ -305,172 +353,54 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 					</sap.ui.layout:Grid>
 					
 					
-					
-			<IconTabBar id="iconTabBar1" class="sapUiResponsiveContentPadding" backgroundDesign="Translucent" applyContentPadding="true">	
-					<items>
-					<IconTabFilter key="tree" id="tree" icon="sap-icon://tree" tooltip="Albero Commesse" text="Albero Commesse">
-					
-					
-					<t:TreeTable
-      id="treeTable"
-        selectionMode="MultiToggle"
-        enableColumnReordering="false"
-        expandFirstLevel="false"
-        
-        
-      
-							
-			rows="{path: '/ListaCommesseGroupSet',
-				
+						
+						
+							<!--	<Table items="{path: '/ListaCommesseSet',
 					filters : [
 					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
 					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
-					],
+					]
+					}"
 					
-
-					
-					parameters : {
-					 expand : 'ToChildExpNodes',
-
-					 navigation : {
-					 'ListaCommesseGroupSet' : 'ToChildExpNodes'
-					 }
-					 }
+					 noDataText="Drop column list items here and columns in the area above" id="__table0" updateFinished="onUpdateFinished" tooltip="Clicca sulla riga per visualizzare e/o modificare il dettaglio. Puoi modificare solo le richieste in stato &quot;Inviate&quot;.">
+							<items>
+								<ColumnListItem id="__item2" type="Navigation" press="onPress">
+									<cells>
+										<ObjectIdentifier title="{Tmsuser}" id="__text0" tooltip="Clicca su questa riga"/>
+											<Text text=" {Orderjob}" id="__textOrderjob"/>
+											<Text text=" {Data}" id="__textData"/>
+												<Text text=" {Ore}" id="__textOra"/>
+									
+									
+									</cells>
+								</ColumnListItem>
+							</items>
+							<columns>
+								<Column id="__column0" width="auto" visible="true">
+									<Label text="{/#ListaCommesse/Tmsuser/@sap:label}" id="__label0"/>
+								</Column>
 								
-							}">
+								<Column id="__column5" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesse/Orderjob/@sap:label}" id="__label5"/>
+								</Column>
+								
+								<Column id="__columnData" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesse/Data/@sap:label}" id="__labelData"/>
+								</Column>
+								
+								<Column id="__columnOre" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesse/Ore/@sap:label}" id="__labelOre"/>
+								</Column>
+								
+
+							</columns>
+						</Table>-->
 						
-				<t:toolbar>
-                    <Toolbar>
-                        <Title id="title" text="Lista commesse"/>
-                        <ToolbarSpacer/>
-                        <Button text="Collapse all" press="onCollapseAll"/>
-                        <Button text="Expand first level" press="onExpandFirstLevel"/>
-                    </Toolbar>
-                </t:toolbar>
-
-        <t:columns>
-        	
-        	 
-        	 <t:Column label="Giorno">
-                <t:template>
-                    <Text text="{Giorno}" wrapping="false" />
-                </t:template>
-            </t:Column>
-        
-            
-             <t:Column label="Commessa">
-                <t:template>
-                    <Text text="{Descrorder}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Descr">
-                <t:template>
-                    <Text text="{Descr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-           
-            
-
-        <!--    <t:Column label="Ore">
-                <t:template>
-                    <Text text="{Ore}" wrapping="false" />
-                </t:template>
-            </t:Column>-->
-            
-             <t:Column  label="Quantità">
-                <t:template>
-                    <Text text="{Expdescr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-            <!-- <t:Column label="Importo">
-                <t:template>
-                    <Text text="{Importo}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Km">
-                <t:template>
-                    <Text text="{Km}" wrapping="false" />
-                </t:template>
-            </t:Column>-->
-
-          </t:columns>
-
-        </t:TreeTable>
-        </IconTabFilter>
-        			<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
-		
-        	<t:TreeTable
-     
-        selectionMode="MultiToggle"
-        enableColumnReordering="false"
-        expandFirstLevel="false"
-         id="ENTRY_LIST_CONTENTS" >
-        		
-        		
-        		<!--<t:toolbar>
-                    <Toolbar>
-                        <Title id="title2" text="Lista commesse"/>
-                        <ToolbarSpacer/>
-                        <Button text="Collapse all" press="onCollapseAll"/>
-                        <Button text="Expand first level" press="onExpandFirstLevel"/>
-                    </Toolbar>
-                </t:toolbar>
-
-        <t:columns>
-        	
-        	 
-        	 <t:Column label="Giorno">
-                <t:template>
-                    <Text text="{Giorno}" wrapping="false" />
-                </t:template>
-            </t:Column>
-        
-            
-             <t:Column label="Commessa">
-                <t:template>
-                    <Text text="{Descrorder}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Descr">
-                <t:template>
-                    <Text text="{Descr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-           
-            
-
-       
-            
-             <t:Column  label="Quantità">
-                <t:template>
-                    <Text text="{Expdescr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-          
-
-          </t:columns>-->
-
-      
-        		
-        		
-			
-		</t:TreeTable>
-			
-				</IconTabFilter>
-				
-				<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
+						
+						
+						<!--	<Table
 							
-        <!--
-        		<Table
-							
-							items="{path: '/ListaCommesseGroupSet',
+							items="{path: '/ListaCommesseSet',
 					filters : [
 					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
 					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
@@ -480,7 +410,12 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 				path: 'Giorno',
 				descending: false,
 				group: true
-	
+			},
+			
+			{
+				path: 'Orderjob',
+				descending: false,
+				group: true
 			}],
 			
 			groupHeaderFactory: '.getGroupHeader'
@@ -517,85 +452,149 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 
 							</columns>
 						</Table>-->
-    
-    
+						
+					
+					<TreeTable
+      id="treeTable"
+        selectionMode="Single"
+        enableColumnReordering="false"
+        expandFirstLevel="false"
+							
+			rows="{path: '/ListaCommesseGroupSet',
 				
-							</IconTabFilter>
-							
-							
-						<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
-							
-        
-        	<!--	<Table
-							
-							items="{path: '/ListaSpeseGroupSet',
 					filters : [
 					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
 					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
 					],
 					
-					sorter: [ {
-				path: 'Giorno',
-				descending: false,
-				group: true
-	
-			}],
+					parameters : {
+					 expand : 'ToChildExpNodes',
+					 navigation : {
+					 'ListaCommesseGroupSet' : 'ToChildExpNodes'
+					 }
+					 }
+					 
+								
+							}">
+
+        <columns>
+        	
+        	 <Column label="Giorno">
+                <template>
+                    <m:Text text="{Giorno}" wrapping="false" />
+                </template>
+            </Column>
+        	
+        	 <!--<Column label="Tmskey">
+                <template>
+                    <m:Text text="{Tmskey}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Expkey">
+                <template>
+                    <m:Text text="{Expkey}" wrapping="false" />
+                </template>
+            </Column>
+
+            <Column label="Orderjob">
+                <template>
+                    <m:Text text="{Orderjob}" wrapping="false" />
+                </template>
+            </Column>-->
+            
+             <Column label="Commessa">
+                <template>
+                    <m:Text text="{Descrorder}" wrapping="false" />
+                </template>
+            </Column>
+            
+            
+            
+            <Column label="Tipo">
+                <template>
+                    <m:Text text="{Expdescr}" wrapping="false" />
+                </template>
+            </Column>
+
+            <Column label="Ore">
+                <template>
+                    <m:Text text="{Ore}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Importo">
+                <template>
+                    <m:Text text="{Importo}" wrapping="false" />
+                </template>
+            </Column>
+            
+             <Column label="Km">
+                <template>
+                    <m:Text text="{Km}" wrapping="false" />
+                </template>
+            </Column>
+
+
+            
+
+        </columns>
+
+    </TreeTable>
+    
+    
+		<!--				
+					
+					<treeTable:TreeTable
+						
+						id="treeTable"
+        selectionMode="Single"
+        enableColumnReordering="false"
+        expandFirstLevel="false"
+							
+							rows="{path: '/ListaCommesseGroupSet',
+					filters : [
+					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
+					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
+					],
+					
+					parameters : {
+ expand : 'ChildExpNodes',
+ navigation : {
+ 'ListaCommesseGroupSet' : 'ChildExpNodes'
+ }
+ }
 			
-			groupHeaderFactory: '.getGroupHeader'
 		}"
 					
-		noDataText="Drop column list items here and columns in the area above" id="__tableSpese" updateFinished="onUpdateFinished" tooltip="Clicca sulla riga per visualizzare e/o modificare il dettaglio. Puoi modificare solo le richieste in stato &quot;Inviate&quot;.">
-							<items>
-								<ColumnListItem id="__itemSpese" type="Navigation" press="onPress">
-									<cells>
-										
-											<ObjectIdentifier title=" {Orderjob}" id="__textSpeseOrderJob" tooltip="Clicca su questa riga"/>
-											<ObjectIdentifier title=" {Descrorder}" id="__textSpeseDescrorder" tooltip="Clicca su questa riga"/>
-											
-											<Text text=" {Descr}" id="__textSpeseDescr"/>
-											
-											
-											<Text text=" {Office}" id="__textSpeseOffice"/>
-											<Text text=" {Expdescr}" id="__textSpeseExpdescr"/>
-											<Text text=" {Tipo}" id="__textSpeseTipo"/>
-											
-											
-												<Text text=" {Qta}" id="__textSpeseQta"/>
-									
-									
-									</cells>
-								</ColumnListItem>
-							</items>
-							<columns>
+             >
 							
-								
-								<Column id="__columnSpeseOrderJob" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Orderjob/@sap:label}" id="__labelSpeseOrderJob"/>
-								</Column>
-								
-								<Column id="__columnnSpeseData" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Data/@sap:label}" id="__labelSpeseData"/>
-								</Column>
-								
-								<Column id="__columnnSpeseOre" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Ore/@sap:label}" id="__labelSpeseOre"/>
-								</Column>
-								
+							<columns>
+		
+								<Column  width="13rem">
+					            
+					              <m:label text ="Orderjob"/>
+					                    <template>
+					                   <m:Text text="{Orderjob}" wrapping="false" />
+					                    </template>
+					            </Column>
+					
+					           <Column  width="13rem">
+					            
+					                <m:label text ="Qta"/>
+					            		<template>
+					                   <m:Text text="{Qta}" wrapping="false" />
+					                	</template>
+					            </Column>
+					            
+					          
 
 							</columns>
-						</Table>-->
-    
-    
-				
-							</IconTabFilter>
-							
-							
-					</items>
-				</IconTabBar>
+						</treeTable:TreeTable>-->
 			
 			
 					
-			</content>
+			</m:content>
 					
 					
 					
@@ -616,7 +615,7 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 				</footer>
 				
 				
-			</Page>
+			</m:Page>
 		<!--</pages>-->
 	<!--</App>-->
 </mvc:View>

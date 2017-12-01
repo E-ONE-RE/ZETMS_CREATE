@@ -3,13 +3,14 @@ sap.ui.define([
 		'sap/ui/unified/CalendarLegendItem',
 		'sap/ui/unified/DateTypeRange',
 		'sap/m/Button',
+		'sap/m/GroupHeaderListItem',
 		'sap/m/Dialog',
 		'sap/m/Label',
 		//	'sap/m/MessageToast',
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
-	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, Dialog, Label, formatter) {
+	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 
@@ -82,6 +83,24 @@ sap.ui.define([
 
 			},
 
+
+		getGroupHeader: function (oGroup){
+			return new GroupHeaderListItem( {
+				title: oGroup.key,
+				upperCase: false
+			} );
+		},
+		
+		 onCollapseAll: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.collapseAll();
+        },
+
+        onExpandFirstLevel: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.expandToLevel(1);
+        },
+		
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
 				var sRead = "/CommessaSet";
@@ -173,7 +192,7 @@ sap.ui.define([
 			},
 
 			onAfterRendering: function(oEvent) {
-
+             
 			},
 
 			onUpdateFinished: function(oEvent) {
@@ -336,6 +355,46 @@ sap.ui.define([
 				oView.byId("LRS4_DAT_ORETOT").setValue("0");
 				oView.byId("LRS4_DAT_ORETOT").setEnabled(false);
 				oView.byId("LRS4_DAT_ORETOT").rerender();
+				
+				var oTable = oView.byId("ENTRY_LIST_CONTENTS");
+				
+				oTable.setModel(oModel);
+
+ //navigation service binding
+ oTable.bindRows({
+ path : "/ListaCommesseGroupSet",
+/* filters : [
+					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
+					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
+					],*/
+	parameters : {
+					 expand : 'ToChildExpNodes',
+
+					 navigation : {
+					 'ListaCommesseGroupSet' : 'ToChildExpNodes'
+					 }
+					 }
+ });
+					
+			
+/*			//	this.entryListContents = oView.byId("ENTRY_LIST_CONTENTS");
+			
+				var h = new sap.ui.table.Column({
+ label : "Giorno",
+ template : "Giorno"
+ });
+			//annotation service binding
+ oTable.bindRows({
+ path : "/Nodes",
+ parameters : {
+ countMode: "Inline",
+ numberOfExpandedLevels : 2
+ }
+ });
+							
+		this.entryListContents.addColumn(h);
+		*/
+
 
 				var sRead = "/CalendarSet";
 
