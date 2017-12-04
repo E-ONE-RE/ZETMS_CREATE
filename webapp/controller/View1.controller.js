@@ -291,7 +291,9 @@ sap.ui.define([
 			//MP function per salvare riga timesheet
 			onConfirmation: function() {
 				//check per completezza dati inseriti
-				var aControls = [];
+			
+			//commento provvisoriamente	
+			/*	var aControls = [];
 				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("chilometri"), sap.ui.getCore().byId("descrizione"));
 				var oInput;
 				var aParam;
@@ -303,9 +305,93 @@ sap.ui.define([
 					}else{
 						aParam.push(oInput.getValue());
 					}
-				}
+				}*/
+				var oView = this.getView();
+               
+				var oModel = this.getView().getModel();
+			//	sap.ui.getCore().setModel(oModel);
 				
-			
+			var oUrlParams = {
+					Orderjob: "EON16A",
+					Descr: "test",
+					Office: "eOne Reggio Emilia",
+					Calmonth: "12",
+					Calyear: "2017",
+					Giorno: "5",
+					Ore: "8"
+					
+
+				};
+				
+				oUrlParams.ToChildExpNodes = [];
+			//	if (aSelectedDates.length > 0) {
+			//		for (var i = 0; i < aSelectedDates.length; i++) {
+			//			oDate = aSelectedDates[i].getStartDate();
+						oUrlParams.ToChildExpNodes.push({
+								Orderjob: "EON16A",
+					Descr: "test",
+				
+					Calmonth: "12",
+					Calyear: "2017",
+					Giorno: "5"
+						});
+
+			//		}
+					//	this.oModel.setData(oData);
+			//	} else {
+					//	this._clearModel();
+			//	}
+				
+					//jQuery.sap.require("sap.ui.commons.MessageBox");
+				oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+					method: "POST",
+					success: fnS,
+
+					error: fnE
+				});
+
+				//}
+				//}	
+				function fnS(oData, response) {
+				//	console.log(oData);
+				//	console.log(response);
+
+					// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
+					//	if (oData.Type == "S") {
+					if (response.statusCode == "201") {
+
+						//	var msg = "Success: "+oData.Message+", "+sTypeAction;
+						//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+						var msg = "Success ";
+						sap.m.MessageToast.show(msg, {
+							duration: 5000,
+							autoClose: true,
+							closeOnBrowserNavigation: false
+
+						});
+
+						
+						
+					} else {
+
+						//jQuery.sap.require("sap.m.MessageBox");
+						sap.m.MessageBox.show(
+							"Error: " + oData.Message, {
+								icon: sap.m.MessageBox.Icon.WARNING,
+								title: "Error",
+								actions: [sap.m.MessageBox.Action.CLOSE]
+
+							});
+
+					}
+
+				} // END FUNCTION SUCCESS
+
+				function fnE(oError) {
+				//	console.log(oError);
+
+					alert("Error in read: " + oError.message + "\n" + oError.responseText);
+				}
 
 			},
 
