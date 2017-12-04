@@ -1,4 +1,3 @@
-
 <mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
 xmlns:smartTable="sap.ui.comp.smarttable"
 xmlns:mvc="sap.ui.core.mvc"
@@ -497,7 +496,7 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 					  
 						  
 		<ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovoinserimento nel timesheet">
+							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" enabled="false" tooltip="Crea nuovoinserimento nel timesheet">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
 						  </Button>
 			 
