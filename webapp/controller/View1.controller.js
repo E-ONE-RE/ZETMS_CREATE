@@ -111,6 +111,23 @@ sap.ui.define([
 
 			},
 
+			getGroupHeader: function(oGroup) {
+				return new GroupHeaderListItem({
+					title: oGroup.key,
+					upperCase: false
+				});
+			},
+
+			onCollapseAll: function() {
+				var oTreeTable = this.getView().byId("treeTable");
+				oTreeTable.collapseAll();
+			},
+
+			onExpandFirstLevel: function() {
+				var oTreeTable = this.getView().byId("treeTable");
+				oTreeTable.expandToLevel(1);
+			},
+
 
 		getGroupHeader: function (oGroup){
 			return new GroupHeaderListItem( {
@@ -202,6 +219,7 @@ sap.ui.define([
             oTreeTable.expandToLevel(1);
         },
 		
+
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
 				var sRead = "/CommessaSet";
@@ -226,10 +244,16 @@ sap.ui.define([
 				}
 
 			},
-			
+
 			//MP: selezione di una data del calendario da rivedere!!!!!
-			handleCalendarSelect: function(oEvent){
-				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate(); 
+			handleCalendarSelect: function(oEvent) {
+				var oButton = this.getView().byId("btn1");
+				if (oButton.getEnabled() == true) {
+					oButton.setEnabled(false);
+				} else {
+					oButton.setEnabled(true);
+				}
+				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
@@ -246,7 +270,8 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
-				 that.Dialog.setTitle("Inserire dettaglio per il giorno "+formatter.formatCalDate(this.selectedDate.toString()));
+				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
+				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 			},
 
 			closeDialog: function() {
@@ -303,8 +328,8 @@ sap.ui.define([
 							numberOfExpandedLevels: 1
 						}
 					});
-                    
-                    var oInput = sap.ui.getCore().byId("commessa");
+
+					var oInput = sap.ui.getCore().byId("commessa");
 					this._oPopover.openBy(oButton);
 				});
 
@@ -318,9 +343,9 @@ sap.ui.define([
 				if (sIcon !== "sap-icon://folder-full" && sIcon !== "sap-icon://folder-blank") {
 
 					var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");
-					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-"));
+					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-") - 1);
 					sap.ui.getCore().byId("sedi").setEnabled(true);
-					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 1, sCommessa.length);
+					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 2, sCommessa.length);
 					sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
 					sap.ui.getCore().byId("commessa").setValueState("None");
 					this._oPopover.close();
@@ -371,19 +396,26 @@ sap.ui.define([
 			},
 
 			onExpenseSelect: function(oEvent) {
-				var oList = sap.ui.getCore().byId("spese");
-				var aItems = oList.getAggregation("items");
+				var oTable = sap.ui.getCore().byId("tabellaSpese");
+				var aItems = oTable.getAggregation("items");
 				var oItem;
-				var oInput;
+				var oInputDescr;
+				var oInputImp;
 				for (var i = 0; i < aItems.length; i++) {
 					oItem = aItems[i];
-					oInput = oItem.getContent()[0];
+					oInputDescr = oItem.getAggregation("cells")[1];
+					oInputImp = oItem.getAggregation("cells")[2];
 					if (oItem.getSelected() == true) {
-						oInput.setEnabled(true); //MP: per settare il campo in input modificabile
+						//MP: per settare i campi in input per la desrizione e l'importo modificabili
+						oInputDescr.setEnabled(true);
+						oInputImp.setEnabled(true);
 					} else {
-						oInput.setEnabled(false);
-						oInput.setValue("");
-						oInput.setValueState("None");
+						oInputDescr.setEnabled(false);
+						oInputDescr.setValue("");
+						oInputDescr.setValueState("None");
+						oInputImp.setEnabled(false);
+						oInputImp.setValue("");
+						oInputImp.setValueState("None");
 					}
 
 				}
@@ -392,110 +424,142 @@ sap.ui.define([
 			//MP function per salvare riga timesheet
 			onConfirmation: function() {
 				//check per completezza dati inseriti
-			
-			//commento provvisoriamente	
-			/*	var aControls = [];
-				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("chilometri"), sap.ui.getCore().byId("descrizione"));
+
+				var aControls = [];
+				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
 				var oInput;
-				var aParam;
+				var aParam = [];
 				for (var i = 0; i < aControls.length; i++) {
 					oInput = aControls[i];
-					if (oInput.getValue() == ""){
+					if (oInput.getValue() == "") {
 						oInput.setValueState("Error");
 						oInput.setValueStateText("il campo è obbligatorio");
-					}else{
+					} else {
 						aParam.push(oInput.getValue());
 					}
-				}*/
-				
-				
-				var oView = this.getView();
-               
-				var oModel = this.getView().getModel();
-			//	sap.ui.getCore().setModel(oModel);
-				
-			var oUrlParams = {
-					Orderjob: "EON16A",
-					Descr: "test",
-					Office: "eOne Reggio Emilia",
-					Calmonth: "12",
-					Calyear: "2017",
-					Giorno: "5",
-					Ore: "8"
-					
+          
 
-				};
-				
-				oUrlParams.ToChildExpNodes = [];
-			//	if (aSelectedDates.length > 0) {
-			//		for (var i = 0; i < aSelectedDates.length; i++) {
-			//			oDate = aSelectedDates[i].getStartDate();
-						oUrlParams.ToChildExpNodes.push({
-								Orderjob: "EON16A",
-					Descr: "test",
-				
-					Calmonth: "12",
-					Calyear: "2017",
-					Giorno: "5"
-						});
+				}
 
-			//		}
+				var sOffice, sCommessaId, sOre,
+					sChilometri, sDescrizione,
+					sDay, sMonth, sYear, sKmDesc;
+
+				var aDate = [];
+
+				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
+				//altrimenti viene richiesto di inserire dei valori
+				if (aParam.length == 3) {
+
+					sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+					sCommessaId = this.sCommessaId;
+					sOre = sap.ui.getCore().byId("ore").getValue();
+					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
+					sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
+					sKmDesc = sap.ui.getCore().byId("descrizioneChilometri").getValue();
+
+					aDate = this.formattedDate.split("/");
+					sDay = aDate[0];
+					sMonth = aDate[1];
+					sYear = aDate[2];
+
+					var oView = this.getView();
+					var oModel = this.getView().getModel();
+
+					var oUrlParams = {
+						Orderjob: sCommessaId,
+						Descr: sDescrizione,
+						Office: sOffice,
+						Calmonth: sMonth,
+						Calyear: sYear,
+						Giorno: sDay,
+						Ore: sOre,
+						Expdescr: sKmDesc, //MP: Chilometri in questo caso
+						Km: sChilometri
+					};
+
+					oUrlParams.ToChildExpNodes = [];
+
+					var oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+					var aItem = oExpenseTable.getAggregation("items");
+					var sExpType, sExpDesc, sExpImp;
+					for (var j = 0; j < aItem.length; j++) {
+                         var oItem = aItem[j];
+						if (oItem.getSelected()) {
+							sExpType = oItem.getAggregation("cells")[0].getTitle().substring(0, 2);
+							sExpDesc = oItem.getAggregation("cells")[1].getValue();
+							sExpImp = oItem.getAggregation("cells")[2].getValue();
+
+							oUrlParams.ToChildExpNodes.push({
+								Exptype: sExpType,
+								Expdescr: sExpDesc,
+								Importo: sExpImp,
+								Calmonth: sMonth,
+								Calyear: sYear,
+								Giorno: sDay
+							});
+
+						}
+
+					}
+
+
+					//		}
 					//	this.oModel.setData(oData);
-			//	} else {
+					//	} else {
 					//	this._clearModel();
-			//	}
-				
+					//	}
+
 					//jQuery.sap.require("sap.ui.commons.MessageBox");
-				oModel.create('/ListaCommesseGroupSet', oUrlParams, {
-					method: "POST",
-					success: fnS,
+					oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+						method: "POST",
+						success: fnS,
 
-					error: fnE
-				});
+						error: fnE
+					});
 
-				//}
-				//}	
-				function fnS(oData, response) {
-				//	console.log(oData);
-				//	console.log(response);
+					//}
+					//}	
+					function fnS(oData, response) {
+						//	console.log(oData);
+						//	console.log(response);
 
-					// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
-					//	if (oData.Type == "S") {
-					if (response.statusCode == "201") {
+						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
+						//	if (oData.Type == "S") {
+						if (response.statusCode == "201") {
 
-						//	var msg = "Success: "+oData.Message+", "+sTypeAction;
-						//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
-						var msg = "Success ";
-						sap.m.MessageToast.show(msg, {
-							duration: 5000,
-							autoClose: true,
-							closeOnBrowserNavigation: false
-
-						});
-
-						
-						
-					} else {
-
-						//jQuery.sap.require("sap.m.MessageBox");
-						sap.m.MessageBox.show(
-							"Error: " + oData.Message, {
-								icon: sap.m.MessageBox.Icon.WARNING,
-								title: "Error",
-								actions: [sap.m.MessageBox.Action.CLOSE]
+							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
+							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+							var msg = "Success ";
+							sap.m.MessageToast.show(msg, {
+								duration: 5000,
+								autoClose: true,
+								closeOnBrowserNavigation: false
 
 							});
 
+						} else {
+
+							//jQuery.sap.require("sap.m.MessageBox");
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+
+						}
+
+					} // END FUNCTION SUCCESS
+
+					function fnE(oError) {
+						//	console.log(oError);
+
+						alert("Error in read: " + oError.message + "\n" + oError.responseText);
 					}
 
-				} // END FUNCTION SUCCESS
-
-				function fnE(oError) {
-				//	console.log(oError);
-
-					alert("Error in read: " + oError.message + "\n" + oError.responseText);
 				}
-
 			},
 
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
@@ -530,18 +594,18 @@ sap.ui.define([
 						}
 						break;
 					default:
-						var oList = sap.ui.getCore().byId("spese");
-						var aItems = oList.getAggregation("items");
+						var oTable = sap.ui.getCore().byId("tabellaSpese");
+						var aItems = oTable.getAggregation("items");
 						var oItem;
-						var oInput;
+						var oInputImp;
 						for (var i = 0; i < aItems.length; i++) {
 							oItem = aItems[i];
-							oInput = oItem.getContent()[0];
-							if (oInput.getValue().length > 4) {
-								oInput.setValueState(sap.ui.core.ValueState.Error);
-								oInput.setValueStateText("Controllare inserimento");
+							oInputImp = oItem.getAggregation("cells")[2];
+							if (oInputImp.getValue().length > 4) {
+								oInputImp.setValueState(sap.ui.core.ValueState.Error);
+								oInputImp.setValueStateText("Controllare inserimento");
 							} else {
-								oInput.setValueState(sap.ui.core.ValueState.None);
+								oInputImp.setValueState(sap.ui.core.ValueState.None);
 							}
 
 						}
@@ -573,7 +637,7 @@ sap.ui.define([
 			},
 
 			onAfterRendering: function(oEvent) {
-             
+
 			},
 
 			onUpdateFinished: function(oEvent) {
@@ -741,6 +805,7 @@ sap.ui.define([
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
 				}
+
 
 
 				/* filter */
@@ -927,6 +992,7 @@ sap.ui.define([
 	     
 	     //////////////////////////////
 				 
+
 
 				var sRead = "/CalendarSet";
 

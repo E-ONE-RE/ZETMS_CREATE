@@ -1,7 +1,23 @@
-<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
-	xmlns:t="sap.ui.table" xmlns:sap.ui.layout.form="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" xmlns:sap.me="sap.me"
-	xmlns:sap.ui.core="sap.ui.core" xmlns:ui="sap.ca.ui" xmlns:sap.ui.unified="sap.ui.unified" controllerName="ZETMS_CREATE.controller.View1"
+
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
+xmlns:smartTable="sap.ui.comp.smarttable" 
+xmlns:mvc="sap.ui.core.mvc" 
+xmlns="sap.m"
+	xmlns:t="sap.ui.table" 
+xmlns:sap.ui.layout.form="sap.ui.layout.form" 
+xmlns:sap.ui.layout="sap.ui.layout" 
+xmlns:sap.me="sap.me"
+	xmlns:sap.ui.core="sap.ui.core" 
+xmlns:ui="sap.ca.ui" 
+xmlns:sap.ui.unified="sap.ui.unified" 
+controllerName="ZETMS_CREATE.controller.View1"
 	displayBlock="true">
+
+	
+
+	
+
+
 	<!--<App>-->
 	<!--<pages>-->
 	<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
@@ -368,21 +384,28 @@
 
 							</columns>
 							
+
 						</Table>
 					</IconTabFilter>
 				</items>
 			</IconTabBar>
 		</content>
-		<footer>
-			<OverflowToolbar id="footerToolbar">
-				<ToolbarSpacer/>
-				<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time"
-					tooltip="Crea nuovoinserimento nel timesheet">
-					<layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
-				</Button>
-			</OverflowToolbar>
-		</footer>
-	</Page>
-	<!--</pages>-->
+		
+		
+				<footer>
+					<OverflowToolbar id="footerToolbar">
+			  
+		<ToolbarSpacer/>
+							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" 
+                      enabled="false" tooltip="Crea nuovo inserimento nel timesheet">
+						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+						  </Button>
+			 
+					</OverflowToolbar>
+				</footer>
+
+			</Page>
+		<!--</pages>-->
+
 	<!--</App>-->
 </mvc:View>
