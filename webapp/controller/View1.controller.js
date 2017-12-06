@@ -6,11 +6,14 @@ sap.ui.define([
 		'sap/m/GroupHeaderListItem',
 		'sap/m/Dialog',
 		'sap/m/Label',
+		'sap/ui/model/Filter',
+		'sap/ui/model/Sorter',
+		 
 		//	'sap/m/MessageToast',
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
-	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter) {
+	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter, Filter, Sorter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 		var aSediResult;
@@ -35,7 +38,8 @@ sap.ui.define([
 			oFormatYyyymmdd: null,
 			oFormatDaysShort: null,
 			oFormatYear: null,
-
+            	_oDialog: null,
+            	
 			onInit: function() {
 				//SE			ZETMS_CREATE.utils.DataManager.init(this.oDataModel, this.resourceBundle);
 				//	ZETMS_CREATE.utils.Formatters.init(this.resourceBundle);
@@ -77,7 +81,31 @@ sap.ui.define([
 
 				//		this.oModel = new JSONModel({selectedDates:[]});
 				//		this.getView().setModel(this.oModel);
-
+               
+             //  	var oModel = this.getView().getModel();
+			//	this.getView().setModel(oModel);
+				
+               
+               	this.mGroupFunctions = {
+				Giorno : function(oContext) {
+					var name = oContext.getProperty("Giorno");
+					return {
+						key: name,
+						text: name
+					};
+								
+				},
+				
+				Descrorder : function(oContext) {
+					var name = oContext.getProperty("Descrorder");
+					return {
+						key: name,
+						text: name
+					};
+				}
+			
+			};
+			
 				var oRouter = this.getRouter();
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
 
@@ -99,6 +127,98 @@ sap.ui.define([
 				var oTreeTable = this.getView().byId("treeTable");
 				oTreeTable.expandToLevel(1);
 			},
+
+
+		getGroupHeader: function (oGroup){
+			return new GroupHeaderListItem( {
+				title: oGroup.key,
+				upperCase: false
+			} );
+		},
+		
+			onExit : function () {
+			if (this._oDialog) {
+				this._oDialog.destroy();
+			}
+		},
+
+		handleViewSettingsDialogButtonPressed: function (oEvent) {
+			var that = this;
+			this.sButtonKey = oEvent.getSource().getId();
+			if (!that._oDialog) {
+				that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
+				//to get access to the global model
+				this.getView().addDependent(that.Dialog);
+				if (sap.ui.Device.system.phone) {
+					that.Dialog.setStretch(true);
+				}
+			}
+			// toggle compact style
+			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
+			that._oDialog.open();
+		},
+	
+	    
+	    
+
+		handleConfirm: function(oEvent) {
+
+			var oView = this.getView();
+			var oTable;
+			 if (this.sButtonKey === oView.byId("btn_comm").getId()) {
+
+			oTable = oView.byId("COMMESSE_CONTENTS");
+             } else if (this.sButtonKey === oView.byId("btn_exp").getId()) {
+             
+			oTable = oView.byId("SPESE_CONTENTS");
+             } 
+			var mParams = oEvent.getParameters();
+			var oBinding = oTable.getBinding("items");
+
+			// apply sorter to binding
+			// (grouping comes before sorting)
+		var aSorters = [];
+		var aSortersSort = [];
+	     if (mParams.groupItem) {
+	         var sPath = mParams.groupItem.getKey();
+	      //   var sPath ="Giorno";
+	         var bDescending = mParams.groupDescending;
+	      // var bDescending = "false";
+	         var vGroup = this.mGroupFunctions[sPath];
+	         /*var vGroup = function(oContext) {
+	             var name = oContext.getProperty("Giorno");
+	             return {
+	                 key: name,
+	                 text: name
+	             };
+	         };*/
+	         aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+	         
+	         oBinding.sort(aSorters);
+	     }
+	     else {
+	     // apply sorter
+	    var sPathSort = mParams.sortItem.getKey();
+	      //var sPath ="Descrorder";
+	    var  bDescendingSort = mParams.sortDescending;
+	 //    var bDescending = true;
+	        aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
+	        oBinding.sort(aSortersSort);
+	     }
+	     
+	     
+		},
+		
+		 onCollapseAll: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.collapseAll();
+        },
+
+        onExpandFirstLevel: function () {
+            var oTreeTable = this.getView().byId("treeTable");
+            oTreeTable.expandToLevel(1);
+        },
+		
 
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
@@ -317,6 +437,8 @@ sap.ui.define([
 					} else {
 						aParam.push(oInput.getValue());
 					}
+          
+
 				}
 
 				var sOffice, sCommessaId, sOre,
@@ -380,6 +502,7 @@ sap.ui.define([
 						}
 
 					}
+
 
 					//		}
 					//	this.oModel.setData(oData);
@@ -682,6 +805,194 @@ sap.ui.define([
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
 				}
+
+
+
+				/* filter */
+				var f1 = new  sap.ui.model.odata.Filter('Calmonth', [{operator:"EQ",value1:startMonth}]);
+				var f2 = new  sap.ui.model.odata.Filter('Calyear', [{operator:"EQ",value1:startYear}]);
+				
+                //definisco treetable
+				var oTableTree = oView.byId("TREETABLE_CONTENTS");
+				
+				oTableTree.setModel(oModel);
+  
+				 //navigation service binding
+				 oTableTree.bindRows({
+				 path : "/ListaCommesseGroupSet",
+			
+					parameters : {
+									 expand : 'ToChildExpNodes',
+				
+									 navigation : {
+									 'ListaCommesseGroupSet' : 'ToChildExpNodes'
+									 }
+									 },
+					 filters: [f1, f2]				 
+				 });
+				 
+				 
+			//////////////////////////////////////
+			//definisco tabella commessa
+			
+			
+	//Per creare tabella in javascript, al momento definisco tabella e colonne in xml
+/////////////////	
+/*			 var oTableComm = new sap.m.Table({
+    mode: sap.m.ListMode.MultiSelect,
+    columns: [
+      new sap.m.Column({ header: new sap.m.Label({text: "Name"})}),
+      new sap.m.Column({ header: new sap.m.Label({text: "Value"})}),
+      new sap.m.Column({ header: new sap.m.Label({text: "Ore"})})
+    ]
+  });*/
+//////////////////	
+	// definisco template listItem in riferimento alla tabella creata in vista xml
+	
+	
+
+	
+	var oTableComm = oView.byId("COMMESSE_CONTENTS");
+
+	oTableComm.setModel(oModel);
+				
+	 var oTemplate = new sap.m.ColumnListItem({
+    cells : [
+    	
+    		
+    		
+        new sap.m.ObjectIdentifier({
+            title : "{Giorno}",
+            id : "Comm_cellGiorno",
+            
+            wrapping : false
+        }),
+        new sap.m.ObjectIdentifier({
+           title : "{Descrorder}",
+            id : "Comm_cellDescrorder",
+            wrapping : false
+        }),
+        new sap.m.Text({
+            text : "{Descr}",
+            id : "Comm_cellDescr"
+        }),
+        
+        new sap.m.Text({
+            text : "{Office}",
+             id : "Comm_cellOffice"
+        }),
+        
+         new sap.m.Text({
+            text : "{Expdescr}",
+            id : "Comm_cellExpdescr"
+        })
+    ]
+});		
+	  
+				
+/////////////////////////
+      //	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
+	/*			oTableComm.bindAggregation("items", {
+        path : "/ListaCommesseGroupSet",
+
+		     	filters: [f1, f2],
+        template: oTemplate
+    });	*/
+    
+    // esegue binding delle righe
+    ////////////////////////////////
+    oTableComm.bindItems({
+    	        
+				 path : "/ListaCommesseGroupSet",
+			
+				 template : oTemplate,
+		         filters : [f1, f2]
+
+
+
+//	sorter: [new sap.ui.model.Sorter("Descrorder", true)
+		     //		groupHeaderFactory: ".getGroupHeader"
+//		]	 			 
+				 });
+
+	var oBinding = oTableComm.getBinding("items");
+     var aSorters = [];
+	    
+	      var sPath = "Giorno";
+	      var bDescending = false;
+          var vGroup = function(oContext) {
+	             var name = oContext.getProperty("Giorno");
+	             return {
+	                 key: name,
+	                 text: name
+	             };
+	         };
+	         aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+	    
+	     oBinding.sort(aSorters);
+	     
+	     				 
+/////////////////////////////////////				 
+        //per inserire tabella creata in javascript in vista xml
+		//		oTableComm.placeAt(oView.byId("commesse"));
+		
+		//		
+			/*	var aColumns = [
+        new sap.m.Column({
+            header : new sap.m.Label({
+                text : "Expense Item No"
+            })
+        }),
+        new sap.m.Column({
+            header : new sap.m.Label({
+                text : "Description"
+            })
+        }),
+        new sap.m.Column({
+            header : new sap.m.Label({
+                text : "Category"
+            })
+        })
+    ];
+    */
+    ///////////////////////////////////
+				 
+				 	  //definisco tabella spese
+				var oTableExp = oView.byId("SPESE_CONTENTS");
+				
+				oTableExp.setModel(oModel);
+                
+                // esegue binding delle righe
+                 oTableExp.bindItems({
+				 path : "/ListaSpeseGroupSet",
+			
+		     	filters : [f1, f2],
+		     	
+		     	template : oTemplate
+					
+				 });
+				 
+
+	var oBindingExp = oTableExp.getBinding("items");
+     var aSortersExp = [];
+	    
+	      var sPathExp = "Giorno";
+	      var bDescendingExp = false;
+          var vGroupExp = function(oContext) {
+	             var name = oContext.getProperty("Giorno");
+	             return {
+	                 key: name,
+	                 text: name
+	             };
+	         };
+	         aSortersExp.push(new sap.ui.model.Sorter(sPathExp, bDescendingExp, vGroupExp));
+	    
+	     oBindingExp.sort(aSortersExp);
+	     
+	     
+	     //////////////////////////////
+				 
+
 
 				var sRead = "/CalendarSet";
 
