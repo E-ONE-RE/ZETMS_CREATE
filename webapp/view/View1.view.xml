@@ -1,41 +1,17 @@
-
-<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
-xmlns:smartTable="sap.ui.comp.smarttable"
-xmlns:mvc="sap.ui.core.mvc"
-xmlns="sap.m" 
-
-xmlns:t="sap.ui.table"
-
-xmlns:sap.ui.layout.form="sap.ui.layout.form" 
-
-xmlns:sap.ui.layout="sap.ui.layout" 
-xmlns:sap.me="sap.me" 
-xmlns:sap.ui.core="sap.ui.core" 
-xmlns:ui="sap.ca.ui" 
-
-xmlns:sap.ui.unified="sap.ui.unified" 
-controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
-	
-
-	
-
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+	xmlns:t="sap.ui.table" xmlns:sap.ui.layout.form="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" xmlns:sap.me="sap.me"
+	xmlns:sap.ui.core="sap.ui.core" xmlns:ui="sap.ca.ui" xmlns:sap.ui.unified="sap.ui.unified" controllerName="ZETMS_CREATE.controller.View1"
+	displayBlock="true">
 	<!--<App>-->
-		<!--<pages>-->
-			<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
-				
-
-					<content>
-						<!--<Button id="displayNotFoundBtn" text="{i18n>DisplayNotFound}" press="onDisplayNotFound" class="sapUiTinyMarginEnd"/>
+	<!--<pages>-->
+	<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
+		<content>
+			<!--<Button id="displayNotFoundBtn" text="{i18n>DisplayNotFound}" press="onDisplayNotFound" class="sapUiTinyMarginEnd"/>
 		-->
-			
-					
-					<sap.ui.layout:Grid width="auto" defaultIndent="L4 M3" defaultSpan="L4 M6 S12" id="LRS4_FLX_TOP">
-					<!--<sap.ui.layout:Grid width="auto" defaultSpan="L12 M12 S12" id="LRS4_FLX_TOP">-->
-						<sap.ui.layout:content>
-							
-							
-							
-						<!--	<VBox width="100%" direction="Column" id="__vbox0_ABSENCETYPE" alignItems="Center">
+			<sap.ui.layout:Grid width="auto" defaultIndent="L4 M3" defaultSpan="L4 M6 S12" id="LRS4_FLX_TOP">
+				<!--<sap.ui.layout:Grid width="auto" defaultSpan="L12 M12 S12" id="LRS4_FLX_TOP">-->
+				<sap.ui.layout:content>
+					<!--	<VBox width="100%" direction="Column" id="__vbox0_ABSENCETYPE" alignItems="Center">
 							<items>
 			
 					<Select
@@ -52,97 +28,70 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 							    
 							</items>
 							</VBox>-->
-						
-				
-							
-						</sap.ui.layout:content>
-					</sap.ui.layout:Grid>
-					
-						<sap.ui.layout:Grid id="LRS4_FLX_CONTENT" defaultSpan="L12 M12 S12" width="auto" hSpacing="0">
-						<sap.ui.layout:content>
-							
-				
-				
-							<sap.ui.layout.form:Form id="LRS4_FRM_MAIN">
-								
+				</sap.ui.layout:content>
+			</sap.ui.layout:Grid>
+			<sap.ui.layout:Grid id="LRS4_FLX_CONTENT" defaultSpan="L12 M12 S12" width="auto" hSpacing="0">
+				<sap.ui.layout:content>
+					<sap.ui.layout.form:Form id="LRS4_FRM_MAIN">
 						<sap.ui.layout.form:layout>
 							<sap.ui.layout.form:ResponsiveGridLayout labelSpanL="3" labelSpanM="3" emptySpanL="4" emptySpanM="4" columnsL="2" columnsM="1"/>
 						</sap.ui.layout.form:layout>
-								
-								
-								<sap.ui.layout.form:formContainers>
-					
-									<sap.ui.layout.form:FormContainer id="LRS4_FRM_CNT_CALENDAR">
-					
-						
-
-										<sap.ui.layout.form:formElements>
-											
-											<sap.ui.layout.form:FormElement id="LRS4_FELEM_CALENDAR">
-												
-												<sap.ui.layout.form:layoutData>
-											    <sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
-													
-
-
-												</sap.ui.layout.form:layoutData>
-												<sap.ui.layout.form:fields>
-														<sap.ui.layout:Grid id="LR_CALENDAR" defaultSpan="L12 M12 S12" width="100%" hSpacing="0">
-														<sap.ui.layout:content>
-															
-															<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
-																<items>	
+						<sap.ui.layout.form:formContainers>
+							<sap.ui.layout.form:FormContainer id="LRS4_FRM_CNT_CALENDAR">
+								<sap.ui.layout.form:formElements>
+									<sap.ui.layout.form:FormElement id="LRS4_FELEM_CALENDAR">
+										<sap.ui.layout.form:layoutData>
+											<sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
+										</sap.ui.layout.form:layoutData>
+										<sap.ui.layout.form:fields>
+											<sap.ui.layout:Grid id="LR_CALENDAR" defaultSpan="L12 M12 S12" width="100%" hSpacing="0">
+												<sap.ui.layout:content>
+													<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
+														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
-															<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
-													 
-													 	<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
+																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect"
+																	startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}"
+																	width="100%"/>
+																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
 																		</sap.me:layoutData>
 																	</sap.me:CalendarLegend>-->
-																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
-													 	<VBox width="100%" direction="Column" id="__vbox0_LEGEND" alignItems="Center" alignContent="Start" justifyContent="Center">
-																<items>	
-													 	<sap.ui.layout:VerticalLayout width="100%">
-													 		
-													 	<Panel id="panelLegend" width="auto"  backgroundDesign="Transparent" expandable="true">
-														<headerToolbar>
-															<Toolbar height="auto">
-																<Title text="Legenda"/>
-															</Toolbar>
-														</headerToolbar>
-														<sap.ui.unified:CalendarLegend id="legend1" columnWidth="128px"/>
-														</Panel>
-		
-																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
-															
-															<VBox width="100%" direction="Column" id="__vbox0_CALBUTTON" alignItems="Center">
-																<items>	
+															</sap.ui.layout:VerticalLayout>
+														</items>
+													</VBox>
+													<VBox width="100%" direction="Column" id="__vbox0_LEGEND" alignItems="Center" alignContent="Start" justifyContent="Center">
+														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
-															
-															<Button press="handleRemoveSelection" text="Rimuovi date selezionate" icon="sap-icon://delete" tooltip="{i18n>LR_REMOVE_DAYS}" id="btn_removeDate"/>
-                                                             	
- 											<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
+																<Panel id="panelLegend" width="auto" backgroundDesign="Transparent" expandable="true">
+																	<headerToolbar>
+																		<Toolbar height="auto">
+																			<Title text="Legenda"/>
+																		</Toolbar>
+																	</headerToolbar>
+																	<sap.ui.unified:CalendarLegend id="legend1" columnWidth="128px"/>
+																</Panel>
+															</sap.ui.layout:VerticalLayout>
+														</items>
+													</VBox>
+													<VBox width="100%" direction="Column" id="__vbox0_CALBUTTON" alignItems="Center">
+														<items>
+															<sap.ui.layout:VerticalLayout width="100%">
+																<Button press="handleRemoveSelection" text="Rimuovi date selezionate" icon="sap-icon://delete" tooltip="{i18n>LR_REMOVE_DAYS}"
+																	id="btn_removeDate"/>
+																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
 																		</sap.me:layoutData>
 																	</sap.me:CalendarLegend>-->
-																		</sap.ui.layout:VerticalLayout>
-																</items>
-															</VBox>
-														
-					
-							
-														</sap.ui.layout:content>
-													</sap.ui.layout:Grid>	
-												</sap.ui.layout.form:fields>
-											</sap.ui.layout.form:FormElement>
-											
-										<!--	<sap.ui.layout.form:FormElement id="LRS4_FELEM_DATESELECTED">
+															</sap.ui.layout:VerticalLayout>
+														</items>
+													</VBox>
+												</sap.ui.layout:content>
+											</sap.ui.layout:Grid>
+										</sap.ui.layout.form:fields>
+									</sap.ui.layout.form:FormElement>
+									<!--	<sap.ui.layout.form:FormElement id="LRS4_FELEM_DATESELECTED">
 												
 												<sap.ui.layout.form:layoutData>
 													<sap.ui.layout:ResponsiveFlowLayoutData linebreak="true"/>
@@ -166,51 +115,30 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 												
 											</sap.ui.layout.form:FormElement>
 											-->
-											
-											
-										</sap.ui.layout.form:formElements>
-										
-									</sap.ui.layout.form:FormContainer>
-									
-									
-									
-								</sap.ui.layout.form:formContainers>
-								
-								
-							
-
-									
-									
-							
-								<sap.ui.layout.form:layout>
-									<sap.ui.layout.form:ResponsiveGridLayout id="__layout_FORM_CONTENT"/>
-								</sap.ui.layout.form:layout>
-							
-							</sap.ui.layout.form:Form>
-							
-
-							
-								</sap.ui.layout:content>
-					</sap.ui.layout:Grid>
-
+								</sap.ui.layout.form:formElements>
+							</sap.ui.layout.form:FormContainer>
+						</sap.ui.layout.form:formContainers>
+						<sap.ui.layout.form:layout>
+							<sap.ui.layout.form:ResponsiveGridLayout id="__layout_FORM_CONTENT"/>
+						</sap.ui.layout.form:layout>
+					</sap.ui.layout.form:Form>
+				</sap.ui.layout:content>
+			</sap.ui.layout:Grid>
+			<IconTabBar id="iconTabBar1" class="sapUiResponsiveContentPadding" backgroundDesign="Translucent" applyContentPadding="true">
+				<items>
+					<!--<IconTabFilter key="tree" id="tree" icon="sap-icon://tree" tooltip="Albero Commesse" text="Albero Commesse">
 					
 					
-					
-			<IconTabBar id="iconTabBar1" class="sapUiResponsiveContentPadding" backgroundDesign="Translucent" applyContentPadding="true">	
-					<items>
-					<IconTabFilter key="tree" id="tree" icon="sap-icon://tree" tooltip="Albero Commesse" text="Albero Commesse">
-					
-					
-					<t:TreeTable
-      id="treeTable"
-        selectionMode="MultiToggle"
-        enableColumnReordering="false"
-        expandFirstLevel="false"
+									<t:TreeTable
+				      id="treeTable"
+				        selectionMode="MultiToggle"
+				        enableColumnReordering="false"
+				        expandFirstLevel="false"
         
         
       
 							
-			rows="{path: '/ListaCommesseGroupSet',
+					rows="{path: '/ListaCommesseGroupSet',
 				
 					filters : [
 					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
@@ -240,133 +168,104 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 
         <t:columns>
         	
-        	 
-        	 <t:Column label="Giorno">
-                <t:template>
-                    <Text text="{Giorno}" wrapping="false" />
-                </t:template>
-            </t:Column>
-        
-            
-             <t:Column label="Commessa">
-                <t:template>
-                    <Text text="{Descrorder}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Descr">
-                <t:template>
-                    <Text text="{Descr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-           
-            
-
-        <!--    <t:Column label="Ore">
-                <t:template>
-                    <Text text="{Ore}" wrapping="false" />
-                </t:template>
-            </t:Column>-->
-            
-             <t:Column  label="Quantità">
-                <t:template>
-                    <Text text="{Expdescr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-            <!-- <t:Column label="Importo">
-                <t:template>
-                    <Text text="{Importo}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Km">
-                <t:template>
-                    <Text text="{Km}" wrapping="false" />
-                </t:template>
-            </t:Column>-->
 
           </t:columns>
 
         </t:TreeTable>
-        </IconTabFilter>
-        			<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
-		
-        	<t:TreeTable
-     
-        selectionMode="MultiToggle"
-        enableColumnReordering="false"
-        expandFirstLevel="false"
-         id="ENTRY_LIST_CONTENTS" >
-        		
-        		
-        		<!--<t:toolbar>
-                    <Toolbar>
-                        <Title id="title2" text="Lista commesse"/>
-                        <ToolbarSpacer/>
-                        <Button text="Collapse all" press="onCollapseAll"/>
-                        <Button text="Expand first level" press="onExpandFirstLevel"/>
-                    </Toolbar>
-                </t:toolbar>
-
-        <t:columns>
+        </IconTabFilter>-->
+					<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
+						<t:TreeTable selectionMode="MultiToggle" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS">
+							<t:toolbar>
+			                    <Toolbar>
+			                        <Title id="title2" text="Lista commesse"/>
+			                        <ToolbarSpacer/>
+			                        <Button text="Collapse all" press="onCollapseAll"/>
+			                        <Button text="Expand first level" press="onExpandFirstLevel"/>
+			                    </Toolbar>
+			                </t:toolbar>
+							<t:columns>
+								<t:Column label="Giorno">
+									<t:template>
+										<Text text="{Giorno}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Commessa">
+									<t:template>
+										<Text text="{Descrorder}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Descr">
+									<t:template>
+										<Text text="{Descr}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Quantità">
+									<t:template>
+										<Text text="{Expdescr}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+							</t:columns>
+						</t:TreeTable>
+					</IconTabFilter>
+					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
+						
         	
-        	 
-        	 <t:Column label="Giorno">
-                <t:template>
-                    <Text text="{Giorno}" wrapping="false" />
-                </t:template>
-            </t:Column>
-        
-            
-             <t:Column label="Commessa">
-                <t:template>
-                    <Text text="{Descrorder}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-             <t:Column label="Descr">
-                <t:template>
-                    <Text text="{Descr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-           
-            
+					<Table
+					noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" 
+					
+	
+		tooltip="">
+					<headerToolbar>
+					<Toolbar>
+						<Title text="Lista commesse" level="H2"/>
+						<ToolbarSpacer/>
+						<Button tooltip="Settings" icon="sap-icon://drop-down-list" press="handleViewSettingsDialogButtonPressed" id="btn_comm"/>
+					</Toolbar>
+				</headerToolbar>
+							<columns>
+							
+								<Column id="comm_column_Giorno" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true"
+							>
+									<Label text="{/#ListaCommesseGroupSet/Giorno/@sap:label}" id="comm_label_Giorno"/>
+								</Column>
+								
+								<Column id="comm_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
+								</Column>
+								
+								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
+								</Column>
+								
+								<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="Sede" id="comm_label_Office"/>
+								</Column>
+								
+								<Column id="comm_column_Ore" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesseGroupSet/Ore/@sap:label}" id="comm_label_Ore"/>
+								</Column>
+								
 
-       
-            
-             <t:Column  label="Quantità">
-                <t:template>
-                    <Text text="{Expdescr}" wrapping="false" />
-                </t:template>
-            </t:Column>
-            
-          
-
-          </t:columns>-->
-
-      
-        		
-        		
-			
-		</t:TreeTable>
-			
-				</IconTabFilter>
+							</columns>
+							
+						
+						</Table>
+						
+					<!--	<Table
+					noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" 
+					
+	
+		tooltip=""			
 				
-				<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
-							
-        <!--
-        		<Table
-							
 							items="{path: '/ListaCommesseGroupSet',
 					filters : [
 					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
 					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
-					],
+					]
 					
-					sorter: [ {
+					,
+					
+			 sorter: [ {
 				path: 'Giorno',
 				descending: false,
 				group: true
@@ -374,138 +273,116 @@ controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 			}],
 			
 			groupHeaderFactory: '.getGroupHeader'
+
+
+		
 		}"
-					
-		noDataText="Drop column list items here and columns in the area above" id="__table0" updateFinished="onUpdateFinished" tooltip="Clicca sulla riga per visualizzare e/o modificare il dettaglio. Puoi modificare solo le richieste in stato &quot;Inviate&quot;.">
-							<items>
-								<ColumnListItem id="__item2" type="Navigation" press="onPress">
+					>
+					<headerToolbar>
+					<Toolbar>
+						<Title text="Products" level="H2"/>
+						<ToolbarSpacer/>
+						<Button tooltip="View Settings" icon="sap-icon://drop-down-list" press="handleViewSettingsDialogButtonPressed" />
+					</Toolbar>
+						</headerToolbar>
+							<columns>
+							
+							
+								
+								<Column id="comm_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true"
+								>
+									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
+								</Column>
+								
+								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
+								</Column>
+								
+								<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="Sede" id="comm_label_Office"/>
+								</Column>
+								
+								<Column id="comm_column_Ore" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaCommesseGroupSet/Ore/@sap:label}" id="comm_label_Ore"/>
+								</Column>
+								
+
+							</columns>
+							
+										<items>
+								
+							<ColumnListItem id="comm_list" type="Navigation" press="onPress">
 									<cells>
 										
-											<ObjectIdentifier title=" {Orderjob}" id="__text0" tooltip="Clicca su questa riga"/>
-											<Text text=" {Data}" id="__textData"/>
-												<Text text=" {Ore}" id="__textOra"/>
+										     
+											<ObjectIdentifier title=" {Descrorder}" id="comm_objectId_Descrorder" tooltip=""/>
+										
+												<Text text=" {Descr}" id="comm_textDescr"/>
+											<Text text=" {Office}" id="comm_textOffice"/>
+												<Text text=" {Ore}" id="comm_textOre"/>
 									
 									
 									</cells>
 								</ColumnListItem>
 							</items>
-							<columns>
-							
-								
-								<Column id="__column5" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Orderjob/@sap:label}" id="__label5"/>
-								</Column>
-								
-								<Column id="__columnData" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Data/@sap:label}" id="__labelData"/>
-								</Column>
-								
-								<Column id="__columnOre" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Ore/@sap:label}" id="__labelOre"/>
-								</Column>
-								
-
-							</columns>
 						</Table>-->
-    
-    
-				
-							</IconTabFilter>
-							
-							
-						<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
-							
-        
-        	<!--	<Table
-							
-							items="{path: '/ListaSpeseGroupSet',
-					filters : [
-					{ path: 'Calmonth', operator: 'EQ', value1: '11'},
-					{ path: 'Calyear', operator: 'EQ', value1: '2017'}
-					],
-					
-					sorter: [ {
-				path: 'Giorno',
-				descending: false,
-				group: true
-	
-			}],
-			
-			groupHeaderFactory: '.getGroupHeader'
-		}"
-					
-		noDataText="Drop column list items here and columns in the area above" id="__tableSpese" updateFinished="onUpdateFinished" tooltip="Clicca sulla riga per visualizzare e/o modificare il dettaglio. Puoi modificare solo le richieste in stato &quot;Inviate&quot;.">
-							<items>
-								<ColumnListItem id="__itemSpese" type="Navigation" press="onPress">
-									<cells>
-										
-											<ObjectIdentifier title=" {Orderjob}" id="__textSpeseOrderJob" tooltip="Clicca su questa riga"/>
-											<ObjectIdentifier title=" {Descrorder}" id="__textSpeseDescrorder" tooltip="Clicca su questa riga"/>
-											
-											<Text text=" {Descr}" id="__textSpeseDescr"/>
-											
-											
-											<Text text=" {Office}" id="__textSpeseOffice"/>
-											<Text text=" {Expdescr}" id="__textSpeseExpdescr"/>
-											<Text text=" {Tipo}" id="__textSpeseTipo"/>
-											
-											
-												<Text text=" {Qta}" id="__textSpeseQta"/>
-									
-									
-									</cells>
-								</ColumnListItem>
-							</items>
-							<columns>
-							
-								
-								<Column id="__columnSpeseOrderJob" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Orderjob/@sap:label}" id="__labelSpeseOrderJob"/>
-								</Column>
-								
-								<Column id="__columnnSpeseData" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Data/@sap:label}" id="__labelSpeseData"/>
-								</Column>
-								
-								<Column id="__columnnSpeseOre" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
-									<Label text="{/#ListaCommesse/Ore/@sap:label}" id="__labelSpeseOre"/>
-								</Column>
-								
-
-							</columns>
-						</Table>-->
-    
-    
-				
-							</IconTabFilter>
-							
-							
-					</items>
-				</IconTabBar>
-			
-			
-					
-
-			</content>
-					
-					
-					
-				
-				<footer>
-					<OverflowToolbar id="footerToolbar">
 						
-					  
-						  
-		<ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovoinserimento nel timesheet">
-						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
-						  </Button>
-			 
-					</OverflowToolbar>
-				</footer>
-				
-				
-			</Page>
-		<!--</pages>-->
+					</IconTabFilter>
+					
+					<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
+							<Table
+							
+						noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" 
+						tooltip="">
+								
+							<headerToolbar>
+								<Toolbar>
+									<Title text="Lista spese" level="H2"/>
+									<ToolbarSpacer/>
+									<Button tooltip="Settings" icon="sap-icon://drop-down-list" press="handleViewSettingsDialogButtonPressed" id="btn_exp"/>
+								</Toolbar>
+							</headerToolbar>
+							<columns>
+							
+								<Column id="exp_column_Giorno" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaSpeseGroupSet/Giorno/@sap:label}" id="exp_label_Giorno"/>
+								</Column>
+								
+								<Column id="exp_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaSpeseGroupSet/Descrorder/@sap:label}" id="exp_label_Descrorder"/>
+								</Column>
+								
+								<Column id="exp_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="{/#ListaSpeseGroupSet/Descr/@sap:label}" id="exp_label_Descr"/>
+								</Column>
+								
+
+								<Column id="exp_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="Sede" id="exp_label_Office"/>
+								</Column>
+								
+								<Column id="exp_column_Qta" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="Quantità" id="exp_label_Qta"/>
+								</Column>
+								
+
+							</columns>
+							
+						</Table>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</content>
+		<footer>
+			<OverflowToolbar id="footerToolbar">
+				<ToolbarSpacer/>
+				<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time"
+					tooltip="Crea nuovoinserimento nel timesheet">
+					<layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+				</Button>
+			</OverflowToolbar>
+		</footer>
+	</Page>
+	<!--</pages>-->
 	<!--</App>-->
 </mvc:View>

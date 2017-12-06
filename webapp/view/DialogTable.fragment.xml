@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog
+		confirm="handleConfirm">
+	<!--	<sortItems>
+		
+			<ViewSettingsItem text="Giorno" key="Giorno" />
+			<ViewSettingsItem text="Commessa" key="Descrorder" />
+	
+		</sortItems>-->
+		<groupItems>
+			<ViewSettingsItem text="Giorno" key="Giorno" />
+			<ViewSettingsItem text="Commessa" key="Descrorder" />
+		</groupItems>
+		
+	</ViewSettingsDialog>
+</core:FragmentDefinition>
