@@ -13,7 +13,7 @@ sap.ui.define([
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
-	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, formatter, Filter, Sorter) {
+	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, Filter, Sorter, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 		var aSediResult;
@@ -128,13 +128,6 @@ sap.ui.define([
 				oTreeTable.expandToLevel(1);
 			},
 
-
-		getGroupHeader: function (oGroup){
-			return new GroupHeaderListItem( {
-				title: oGroup.key,
-				upperCase: false
-			} );
-		},
 		
 			onExit : function () {
 			if (this._oDialog) {
@@ -209,16 +202,7 @@ sap.ui.define([
 	     
 		},
 		
-		 onCollapseAll: function () {
-            var oTreeTable = this.getView().byId("treeTable");
-            oTreeTable.collapseAll();
-        },
 
-        onExpandFirstLevel: function () {
-            var oTreeTable = this.getView().byId("treeTable");
-            oTreeTable.expandToLevel(1);
-        },
-		
 
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
@@ -449,7 +433,7 @@ sap.ui.define([
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
-				if (aParam.length == 3) {
+				if (aParam.length === 3) {
 
 					sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
 					sCommessaId = this.sCommessaId;
@@ -463,23 +447,39 @@ sap.ui.define([
 					sMonth = aDate[1];
 					sYear = aDate[2];
 
-					var oView = this.getView();
+			//		var oView = this.getView();
 					var oModel = this.getView().getModel();
 
 					var oUrlParams = {
 						Orderjob: sCommessaId,
 						Descr: sDescrizione,
 						Office: sOffice,
+						Tipo: "commessa",
 						Calmonth: sMonth,
 						Calyear: sYear,
 						Giorno: sDay,
-						Ore: sOre,
-						Expdescr: sKmDesc, //MP: Chilometri in questo caso
-						Km: sChilometri
+						Ore: sOre
+				//		Expdescr: sKmDesc, //MP: Chilometri in questo caso
+				//		Km: sChilometri
 					};
-
-					oUrlParams.ToChildExpNodes = [];
-
+			
+			        
+					oUrlParams.FromCommToExp = [];
+					
+					// passo eventuale riga km
+					if	(sChilometri > 0) {
+						oUrlParams.FromCommToExp.push({
+								Exptype: "00",
+								Expdescr: sKmDesc,
+								Km: sChilometri,
+								Tipo: "km",
+								Calmonth: sMonth,
+								Calyear: sYear,
+								Giorno: sDay
+							});
+					}
+					
+					 // passo eventuale righe spese
 					var oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
 					var aItem = oExpenseTable.getAggregation("items");
 					var sExpType, sExpDesc, sExpImp;
@@ -490,17 +490,16 @@ sap.ui.define([
 							sExpDesc = oItem.getAggregation("cells")[1].getValue();
 							sExpImp = oItem.getAggregation("cells")[2].getValue();
 
-							oUrlParams.ToChildExpNodes.push({
+							oUrlParams.FromCommToExp.push({
 								Exptype: sExpType,
 								Expdescr: sExpDesc,
 								Importo: sExpImp,
+								Tipo: "spesa",
 								Calmonth: sMonth,
 								Calyear: sYear,
 								Giorno: sDay
 							});
-
 						}
-
 					}
 
 
