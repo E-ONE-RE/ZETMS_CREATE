@@ -250,7 +250,7 @@ sap.ui.define([
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
 
-					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.Worklist");
+					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that.Dialog);
 					if (sap.ui.Device.system.phone) {
@@ -287,7 +287,7 @@ sap.ui.define([
 
 				if (!that._oPopover) {
 
-					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.Worklist");
+					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that._oPopover);
 				}
@@ -349,6 +349,49 @@ sap.ui.define([
 
 			},
 
+
+		handleTableSelectDialogPress: function(oEvent) {
+			
+			//	var that = this;
+
+				if (!this._oDialog) {
+					
+		
+				this._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
+			}
+
+			// Multi-select if required
+			//var bMultiSelect = !!oEvent.getSource().data("multi");
+		//	this._oDialog.setMultiSelect(bMultiSelect);
+
+			// Remember selections if required
+		//	var bRemember = !!oEvent.getSource().data("remember");
+		//	this._oDialog.setRememberSelections(bRemember);
+
+			this.getView().addDependent(this._oDialog);
+
+			// toggle compact style
+			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
+			this._oDialog.open();
+		},
+
+           // funzione search non implementata al momento
+        	handleSearch: function(oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
+			var oBinding = oEvent.getSource().getBinding("items");
+			oBinding.filter([oFilter]);
+		},
+
+        handleClose: function(oEvent) {
+			var aContexts = oEvent.getParameter("selectedContexts");
+			if (aContexts && aContexts.length) {
+				sap.m.MessageToast.show("You have chosen " + aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }).join(", "));
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
+		
+		
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 
