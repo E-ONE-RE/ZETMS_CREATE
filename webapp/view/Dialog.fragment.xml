@@ -27,7 +27,7 @@
 										<Input id="commessa" required="true" enabled="false"/>
 									</f:fields>
 								</f:FormElement>
-								<f:FormElement label="Sede">
+								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
 										<Select enabled="false" width="100%" id="sedi"></Select>
 									</f:fields>

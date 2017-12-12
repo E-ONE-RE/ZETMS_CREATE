@@ -231,19 +231,23 @@ sap.ui.define([
 
 			//MP: selezione di una data del calendario da rivedere!!!!!
 			handleCalendarSelect: function(oEvent) {
-				var oButton = this.getView().byId("btn1");
+				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si selziona una data
+				
+		/*		var oButton = this.getView().byId("btn1");
 				if (oButton.getEnabled() == true) {
 					oButton.setEnabled(false);
 				} else {
 					oButton.setEnabled(true);
-				}
+				}*/
+				if(oEvent.getSource().getSelectedDates()[0] != undefined){
 				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
+				}
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
 			openDialog: function(oEvent) {
 				var that = this;
-				this.sButtonKey = oEvent.getSource().getId(); //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
+				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
 
 					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.Worklist");
@@ -263,15 +267,17 @@ sap.ui.define([
 				sap.ui.getCore().byId("commessa").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
 				sap.ui.getCore().byId("sedi").setEnabled(false);
-				sap.ui.getCore().byId("sedi").removeAllItems();
+	            sap.ui.getCore().byId("sedi").unbindItems();
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("ore").setValueState("None");
 				sap.ui.getCore().byId("descrizione").setValue("");
 				sap.ui.getCore().byId("descrizione").setValueState("None");
 				sap.ui.getCore().byId("chilometri").setValue("");
 				sap.ui.getCore().byId("chilometri").setValueState("None");
-				sap.ui.getCore().byId("spese").removeSelections();
+				sap.ui.getCore().byId("descrizioneChilometri").setValue("");
+				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
+				this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.onExpenseSelect(undefined);
 			},
 
@@ -361,6 +367,7 @@ sap.ui.define([
 					function(data, response) {
 						var oSelect = sap.ui.getCore().byId("sedi");
 						oSelect.destroyItems();
+						oSelect.removeAllItems();
 						aSediResult = data.results;
 						var oModel = new sap.ui.model.json.JSONModel();
 						oModel.setData(data);
@@ -529,6 +536,7 @@ sap.ui.define([
 
 							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+							
 							var msg = "Success ";
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
@@ -559,6 +567,7 @@ sap.ui.define([
 					}
 
 				}
+				
 			},
 
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
