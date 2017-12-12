@@ -20,9 +20,18 @@
 								</Toolbar>
 							</f:toolbar>
 							<f:formElements>
-								<f:FormElement label="Commessa">
+								<f:FormElement label="Commesse esistenti">
 									<f:fields>
-										<Button text="Seleziona la Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+										<Button text="Seleziona Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
+											
+										<Input id="commessaEx" required="false" enabled="false"/>
+									</f:fields>
+								</f:FormElement>
+								
+								<f:FormElement label="Nuova Commessa">
+									<f:fields>
+										<Button text="Seleziona nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 											press="showPopoverCommessa" enabled="true"></Button>
 										<Input id="commessa" required="true" enabled="false"/>
 									</f:fields>
