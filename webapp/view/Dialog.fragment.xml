@@ -24,7 +24,6 @@
 									<f:fields>
 										<Button text="Seleziona Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
-											
 										<Input id="commessaEx" required="false" enabled="false"/>
 									</f:fields>
 								</f:FormElement>

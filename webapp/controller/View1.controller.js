@@ -265,6 +265,7 @@ sap.ui.define([
 			closeDialog: function() {
 				this.Dialog.close();
 				sap.ui.getCore().byId("commessa").setValue("");
+				sap.ui.getCore().byId("commessaEx").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
 				sap.ui.getCore().byId("sedi").setEnabled(false);
 	            sap.ui.getCore().byId("sedi").unbindItems();
@@ -369,6 +370,45 @@ sap.ui.define([
 		//	this._oDialog.setRememberSelections(bRemember);
 
 			this.getView().addDependent(this._oDialog);
+			var oModel= this.getView().getModel();
+			
+			var oTableCommEx = sap.ui.getCore().byId("tableCommEx"); //tabella per commesse già inserite
+			
+				oTableCommEx.setModel(oModel);
+				
+	 var oTemplate = new sap.m.ColumnListItem({
+        cells : [
+    
+        new sap.m.ObjectIdentifier({
+            title : "{Descrorder}",
+            wrapping : false
+        }),
+        
+        new sap.m.Text({
+            text : "{Descr}"
+        }),
+        
+        new sap.m.Text({
+            text : "{Office}"
+        })
+    ]
+});	
+
+                var sDate = this.formattedDate;
+                var sMonth = sDate.substring(sDate.indexOf("/")+1, sDate.indexOf("/")+3);
+                var sYear =  sDate.substring(sDate.indexOf("/", 3)+1, sDate.length);
+		        var fMonth = new  sap.ui.model.odata.Filter('Calmonth', [{operator:"EQ",value1:sMonth}]);
+				var fYear = new  sap.ui.model.odata.Filter('Calyear', [{operator:"EQ",value1:sYear}]);
+			    var fFlag = new  sap.ui.model.odata.Filter('Parentid', [{operator:"EQ",value1:"X"}]);
+			    
+			    
+			        oTableCommEx.bindItems({
+    	        
+				 path : "/ListaCommesseGroupSet",
+			
+				 template : oTemplate,
+		         filters : [fMonth, fYear, fFlag]
+				 });
 
 			// toggle compact style
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
@@ -385,7 +425,14 @@ sap.ui.define([
 
         handleClose: function(oEvent) {
 			var aContexts = oEvent.getParameter("selectedContexts");
+			var oInput = sap.ui.getCore().byId("commessaEx"); 
+			var oSede = sap.ui.getCore().byId("sedi");
+			var oDescr = sap.ui.getCore().byId("descrizione");
 			if (aContexts && aContexts.length) {
+
+				oInput.setValue(aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }));
+				oSede.setValue(aContexts.map(function(oContext) { return oContext.getObject().Office; }));
+				oDescr.setValue(aContexts.map(function(oContext) { return oContext.getObject().Descr; }));
 				sap.m.MessageToast.show("You have chosen " + aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }).join(", "));
 			}
 			oEvent.getSource().getBinding("items").filter([]);
