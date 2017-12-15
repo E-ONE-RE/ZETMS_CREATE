@@ -1,12 +1,12 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout">
-	<Dialog id="dialog" title="Inserisci dettagli" stretch="true">
+	<Dialog id="dialogDelComm" title="Inserisci dettagli" stretch="true">
 		<html:style>
 			.sapMILILabel { font-size: 14px; !important }
 		</html:style>
 		<content>
 			<VBox class="sapUiSmallMargin">
-				<f:Form id="FormToolbar" editable="true" ariaLabelledBy="Title1">
+				<f:Form id="FormToolbarDelComm" editable="true" ariaLabelledBy="Title1">
 					<f:layout>
 						<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
 							emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
@@ -15,63 +15,51 @@
 						<f:FormContainer ariaLabelledBy="Title2">
 							<f:toolbar>
 								<Toolbar>
-									<Title id="dettaglio" text="Dettaglio" level="H5" titleStyle="H5"/>
+									<Title id="dettaglioComm" text="Dettaglio commessa selezionata" level="H5" titleStyle="H5"/>
 									<ToolbarSpacer/>
 								</Toolbar>
 							</f:toolbar>
 							<f:formElements>
-								<f:FormElement label="Commesse esistenti">
-									<f:fields>
-										<Hbox>
-										<Button text="Seleziona una Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
-												press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
-												<Button text="Seleziona una nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
-											press="showPopoverCommessa" enabled="true"></Button>
-										</Hbox>
-										<!--<Input id="commessaEx" required="false" enabled="false"/>-->
-									</f:fields>
-								</f:FormElement>
 								
 								<f:FormElement label="Commessa">
 									<f:fields>
-										
-										<Input id="commessa" required="true" enabled="false"/>
+										<Text id="commessaSelDel" text="{Orderjob}"/>
 									</f:fields>
 								</f:FormElement>
-								<f:FormElement id="sediList" label="Sede">
+								<f:FormElement label="Sede">
 									<f:fields>
-										<Select enabled="false" width="100%" id="sedi"></Select>
+										<Text id="sedeSel" text="{Office}"></Text>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Input id="ore" type="Number" width="4rem" required="true" liveChange="onLiveChange"></Input>
+										<Text id="oreSel" text="{Ore}"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
-										<TextArea liveChange="onLiveChange" required="true" id="descrizione" width="100%" height="3rem" wrapping="None" maxLength="200"
-											tooltip="Inserisci la descrizione dell'attività."/>
+										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200"
+											tooltip="Descrizione attività." value="{Descr}" enabled="false"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Chilometri effettuati">
 									<f:fields>
-										<Input id="chilometri" type="Number" width="4rem" liveChange="onLiveChange"/>
+										<Text id="chilometriSel" text="{Km}"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione chilometri">
 									<f:fields>
-										<TextArea liveChange="onLiveChange" id="descrizioneChilometri" width="100%" height="3rem" wrapping="None" maxLength="200"
-											tooltip="Inserisci la descrizione dei chilometri."/>
+										<TextArea id="descrizioneChilometriSel" width="100%" height="3rem" wrapping="None" maxLength="200"
+											tooltip="Descrizione chilometri." value = "{Expdescr}" enabled="false"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
 							<f:formElements>
 								<f:FormElement>
 									<f:fields>
-										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
+										<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
 											<content>
-												<Table id="tabellaSpese" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
+												<Table id="tabellaSpeseSel" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
 													<columns>
 														<Column>
 															<Text text="Spesa"/>
@@ -161,11 +149,11 @@
 			</VBox>
 		</content>
 		<beginButton>
-			<Button id="conferma" text="Conferma" press="onConfirmation" type="Accept"/>
+			<Button id="confermaSel" text="Conferma" press="onConfirmation" type="Accept"/>
 			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>
-			<Button text="Indietro" press="closeDialog" type="Reject"/>
+			<Button text="Indietro" press="closeDialogSel" type="Reject"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>

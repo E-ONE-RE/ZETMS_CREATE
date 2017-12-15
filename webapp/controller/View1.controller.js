@@ -244,13 +244,14 @@ sap.ui.define([
 				}
 			},
 
-			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
+			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
 			openDialog: function(oEvent) {
 				var that = this;
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
-
+            
 					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.View1");
+   
 					//to get access to the global model
 					this.getView().addDependent(that.Dialog);
 					if (sap.ui.Device.system.phone) {
@@ -258,14 +259,15 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
-				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
+			
+			
+				 		this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
 				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 			},
 
 			closeDialog: function() {
 				this.Dialog.close();
 				sap.ui.getCore().byId("commessa").setValue("");
-				sap.ui.getCore().byId("commessaEx").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
 				sap.ui.getCore().byId("sedi").setEnabled(false);
 	            sap.ui.getCore().byId("sedi").unbindItems();
@@ -280,6 +282,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
 				this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.onExpenseSelect(undefined);
+				this.getView().removeDependent(this.Dialog);
 			},
 
 			//MP: funzione che richiama il fragment contenente l'albero
@@ -425,15 +428,38 @@ sap.ui.define([
 
         handleClose: function(oEvent) {
 			var aContexts = oEvent.getParameter("selectedContexts");
-			var oInput = sap.ui.getCore().byId("commessaEx"); 
+			var oInput = sap.ui.getCore().byId("commessa"); 
 			var oSede = sap.ui.getCore().byId("sedi");
 			var oDescr = sap.ui.getCore().byId("descrizione");
 			if (aContexts && aContexts.length) {
-
+                
 				oInput.setValue(aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }));
+				
+				var mSede = {
+					sede: [
+		{
+			Office : aContexts.map(function(oContext) { return oContext.getObject().Office; })
+		}]
+				};
+				
+					var oModel = new sap.ui.model.json.JSONModel();
+						oModel.setData(mSede);
+						sap.ui.getCore().setModel(oModel, "sede");
+						oSede.setModel(sap.ui.getCore().getModel("sede"));
+				
+				var oTemplate = new sap.ui.core.Item({
+							key: "{Office}",
+							text: "{Office}"
+						});
+				oSede.bindAggregation("items",{
+					path: "/sede",
+					template: oTemplate
+				}
+				);
+				oSede.setSelectedItem(aContexts.map(function(oContext) { return oContext.getObject().Office;}));
 				oSede.setValue(aContexts.map(function(oContext) { return oContext.getObject().Office; }));
 				oDescr.setValue(aContexts.map(function(oContext) { return oContext.getObject().Descr; }));
-				sap.m.MessageToast.show("You have chosen " + aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }).join(", "));
+				this.sTimesheetKey = aContexts.map(function(oContext) { return oContext.getObject().Tmskey; })[0];
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 		},
@@ -533,7 +559,9 @@ sap.ui.define([
 				if (aParam.length === 3) {
 
 					sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+					
 					sCommessaId = this.sCommessaId;
+				
 					sOre = sap.ui.getCore().byId("ore").getValue();
 					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
 					sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
@@ -548,6 +576,7 @@ sap.ui.define([
 					var oModel = this.getView().getModel();
 
 					var oUrlParams = {
+						Tmskey: this.sTimesheetKey,
 						Orderjob: sCommessaId,
 						Descr: sDescrizione,
 						Office: sOffice,
@@ -556,8 +585,6 @@ sap.ui.define([
 						Calyear: sYear,
 						Giorno: sDay,
 						Ore: sOre
-				//		Expdescr: sKmDesc, //MP: Chilometri in questo caso
-				//		Km: sChilometri
 					};
 			
 			        
@@ -710,6 +737,35 @@ sap.ui.define([
 
 				}
 
+			},
+			
+			handleCommessaSelection: function(oEvent){
+			    this.openDialogSel(oEvent);
+			    var oForm = sap.ui.getCore().byId("FormToolbarDelComm");
+			    
+			},
+			
+			
+			openDialogSel: function(oEvent){
+					var that = this;
+		
+				if (!that.DialogSel) {
+            
+					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DeleteDialog", this, "ZETMS_CREATE.controller.View1");
+   
+					//to get access to the global model
+					this.getView().addDependent(that.Dialog);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
+				}
+				that.DialogSel.open();
+			
+			},
+			
+			
+			closeDialogSel: function(){
+					this.DialogSel.close();
 			},
 
 			_onRouteMatched: function(oEvent) {
