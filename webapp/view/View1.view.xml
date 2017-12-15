@@ -216,7 +216,8 @@ controllerName="ZETMS_CREATE.controller.View1"
         </t:TreeTable>
         </IconTabFilter>-->
 					<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
-						<t:TreeTable selectionMode="MultiToggle" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS">
+						<t:TreeTable selectionMode="Single" selectionBehavior="RowOnly" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS"
+						rowSelectionChange="handleCommessaSelection">
 							<t:toolbar>
 			                    <Toolbar>
 			                        <Title id="title2" text="Lista commesse"/>
