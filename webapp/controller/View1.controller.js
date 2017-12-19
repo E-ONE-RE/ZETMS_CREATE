@@ -89,18 +89,24 @@ sap.ui.define([
                	this.mGroupFunctions = {
 				Giorno : function(oContext) {
 					var name = oContext.getProperty("Giorno");
+					var oretot = oContext.getProperty("Oretot");
+					var imptot = oContext.getProperty("Imptot");
+					var kmtot = oContext.getProperty("Kmtot");
 					return {
 						key: name,
-						text: name
+						text: name + " - Ore: " + oretot + " - Spese: " + imptot +  " - Km: " + kmtot  
 					};
 								
 				},
 				
 				Descrorder : function(oContext) {
 					var name = oContext.getProperty("Descrorder");
+				    var oretotcomm = oContext.getProperty("Oretotcomm");
+					var imptotcomm = oContext.getProperty("Imptotcomm");
+					var kmtotcomm = oContext.getProperty("Kmtotcomm");
 					return {
 						key: name,
-						text: name
+						text: name + " - Ore: " + oretotcomm + " - Spese: " + imptotcomm +  " - Km: " + kmtotcomm   
 					};
 				}
 			
@@ -152,8 +158,6 @@ sap.ui.define([
 		},
 	
 	    
-	    
-
 		handleConfirm: function(oEvent) {
 
 			var oView = this.getView();
@@ -172,6 +176,8 @@ sap.ui.define([
 			// (grouping comes before sorting)
 		var aSorters = [];
 		var aSortersSort = [];
+		
+		//raggruppa e ordina
 	     if (mParams.groupItem) {
 	         var sPath = mParams.groupItem.getKey();
 	      //   var sPath ="Giorno";
@@ -711,6 +717,12 @@ sap.ui.define([
 				oView.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				oView.byId("LRS4_DAT_CALENDAR").removeAllSpecialDates();
 				oView.byId("LRS4_DAT_CALENDAR").removeAllDisabledDates();
+				
+				oView.byId("LRS4_TOT_ORE").setValue("");	
+				oView.byId("LRS4_TOT_SPESE").setValue("");	
+				oView.byId("LRS4_TOT_KM").setValue("");	
+				
+			   
 
 				var oCal1 = oView.byId("LRS4_DAT_CALENDAR");
 
@@ -832,7 +844,7 @@ sap.ui.define([
 				}));
 
 				///////////////FINE FESTIVI////////////  
-				var sOwnerId = this.getView()._sOwnerId;
+			/*	var sOwnerId = this.getView()._sOwnerId;
 
 				var sId = sOwnerId + "---view1" + "--";
 				if (this.sButtonKey != undefined) {
@@ -855,10 +867,40 @@ sap.ui.define([
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setValue("0");
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
+				}*/
+
+////TOTALI
+
+	var sReadTot = "/TotaliMeseSet(Calyear='"+startYear+"',Calmonth='"+startMonth+"')";
+
+				oModel.read(sReadTot, {
+					success: fnReadStot,
+					error: fnReadEtot
+				});
+
+				function fnReadStot(oData, response) {
+					//	console.log(oData);
+					//	console.log(response);
+
+					// controllo che la funzione è andata a buon fine 
+					if (response.statusCode == "200") {
+						////////////////////////////////				
+			oView.byId("LRS4_TOT_ORE").setValue(oData.Oretot);	
+						oView.byId("LRS4_TOT_SPESE").setValue(oData.Imptot);	
+						oView.byId("LRS4_TOT_KM").setValue(oData.Kmtot);	
+
+							}
+
+						}
+
+				function fnReadEtot(oError) {
+					//	console.log(oError);
+				//	alert("Error in read: " + oError.message);
 				}
 
+////FINE TOTALI	
 
-
+////INIZIO LISTE
 				/* filter */
 				var f1 = new  sap.ui.model.odata.Filter('Calmonth', [{operator:"EQ",value1:startMonth}]);
 				var f2 = new  sap.ui.model.odata.Filter('Calyear', [{operator:"EQ",value1:startYear}]);
@@ -914,28 +956,32 @@ sap.ui.define([
     		
         new sap.m.ObjectIdentifier({
             title : "{Giorno}",
-            id : "Comm_cellGiorno",
-            
+    //        id : "Comm_cellGiorno",
             wrapping : false
         }),
         new sap.m.ObjectIdentifier({
            title : "{Descrorder}",
-            id : "Comm_cellDescrorder",
+   //         id : "Comm_cellDescrorder",
             wrapping : false
         }),
         new sap.m.Text({
-            text : "{Descr}",
-            id : "Comm_cellDescr"
+            text : "{Descr}"
+    //        id : "Comm_cellDescr"
         }),
         
         new sap.m.Text({
-            text : "{Office}",
-             id : "Comm_cellOffice"
+            text : "{Office}"
+    //         id : "Comm_cellOffice"
         }),
         
+  /*       new sap.m.Text({
+            text : "{Oretot}"
+    //         id : "Comm_cellOffice"
+        }),*/
+        
          new sap.m.Text({
-            text : "{Expdescr}",
-            id : "Comm_cellExpdescr"
+            text : "{Expdescr}"
+   //         id : "Comm_cellExpdescr"
         })
     ]
 });		
@@ -971,13 +1017,17 @@ sap.ui.define([
 	    
 	      var sPath = "Giorno";
 	      var bDescending = false;
-          var vGroup = function(oContext) {
+	      
+	      
+	      var vGroup = this.mGroupFunctions[sPath];
+	      
+        /*  var vGroup = function(oContext) {
 	             var name = oContext.getProperty("Giorno");
 	             return {
 	                 key: name,
 	                 text: name
 	             };
-	         };
+	         };*/
 	         aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
 	    
 	     oBinding.sort(aSorters);
@@ -1011,6 +1061,39 @@ sap.ui.define([
 				 	  //definisco tabella spese
 				var oTableExp = oView.byId("SPESE_CONTENTS");
 				
+					 var oTemplateSpese = new sap.m.ColumnListItem({
+    cells : [
+    	
+    		
+    		
+        new sap.m.ObjectIdentifier({
+            title : "{Giorno}",
+     //       id : "Exp_cellGiorno",
+            
+            wrapping : false
+        }),
+        new sap.m.ObjectIdentifier({
+           title : "{Descrorder}",
+      //      id : "Exp_cellDescrorder",
+            wrapping : false
+        }),
+        new sap.m.Text({
+            text : "{Descr}"
+     //       id : "Exp_cellDescr"
+        }),
+        
+        new sap.m.Text({
+            text : "{Office}"
+     //        id : "Exp_cellOffice"
+        }),
+        
+         new sap.m.Text({
+            text : "{Expdescr}"
+      //      id : "Exp_cellExpdescr"
+        })
+    ]
+});		
+				
 				oTableExp.setModel(oModel);
                 
                 // esegue binding delle righe
@@ -1019,7 +1102,7 @@ sap.ui.define([
 			
 		     	filters : [f1, f2],
 		     	
-		     	template : oTemplate
+		     	template : oTemplateSpese
 					
 				 });
 				 
@@ -1029,18 +1112,21 @@ sap.ui.define([
 	    
 	      var sPathExp = "Giorno";
 	      var bDescendingExp = false;
-          var vGroupExp = function(oContext) {
+	      
+	      var vGroupExp = this.mGroupFunctions[sPathExp];
+	      
+         /* var vGroupExp = function(oContext) {
 	             var name = oContext.getProperty("Giorno");
 	             return {
 	                 key: name,
 	                 text: name
 	             };
-	         };
+	         };*/
 	         aSortersExp.push(new sap.ui.model.Sorter(sPathExp, bDescendingExp, vGroupExp));
 	    
 	     oBindingExp.sort(aSortersExp);
 	     
-	     
+////FINE LISTE	     
 	     //////////////////////////////
 				 
 

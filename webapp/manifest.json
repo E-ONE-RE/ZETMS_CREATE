@@ -19,7 +19,7 @@
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
-					"localUri": "localService/ZTMS_NEW_SRV/metadata.xml"
+					"localUri": "localService/metadata.xml"
 				}
 			}
 		}
