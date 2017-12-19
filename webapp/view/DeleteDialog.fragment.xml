@@ -58,7 +58,7 @@
 				<sap.ui.layout:VerticalLayout>
 					<sap.ui.layout:content>
 						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false" showVariantManagement="false"
-							useExportToExcel="false" useTablePersonalisation="false" header="Spese inserite" showRowCount="true" enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding"
+							useExportToExcel="false" useTablePersonalisation="false" header="Modifica Spese inserite" showRowCount="true" enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding"
 							enableCustomFilter="false">
 							<Table id="speseCommessa" width="auto" class="sapUiResponsiveMargin" growing="true" growingScrollToLoad="true"
 								backgroundDesign="Translucent">
@@ -108,7 +108,7 @@
 							</smartTable:layoutData>
 						</smartTable:SmartTable>
 						<ToolbarSpacer/>
-						<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Aggiunta nuove spese" width="auto" class="sapUiResponsiveMargin">
+						<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Aggiungi nuove spese" width="auto" class="sapUiResponsiveMargin">
 							<content>
 								<Table id="tabellaSpeseSel" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
 									<columns>

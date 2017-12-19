@@ -212,52 +212,6 @@ sap.ui.define([
 			},
 
 
-			handleConfirm: function(oEvent) {
-
-				var oView = this.getView();
-				var oTable;
-				if (this.sButtonKey === oView.byId("btn_comm").getId()) {
-
-					oTable = oView.byId("COMMESSE_CONTENTS");
-				} else if (this.sButtonKey === oView.byId("btn_exp").getId()) {
-
-					oTable = oView.byId("SPESE_CONTENTS");
-				}
-				var mParams = oEvent.getParameters();
-				var oBinding = oTable.getBinding("items");
-
-				// apply sorter to binding
-				// (grouping comes before sorting)
-				var aSorters = [];
-				var aSortersSort = [];
-				if (mParams.groupItem) {
-					var sPath = mParams.groupItem.getKey();
-					//   var sPath ="Giorno";
-					var bDescending = mParams.groupDescending;
-					// var bDescending = "false";
-					var vGroup = this.mGroupFunctions[sPath];
-					/*var vGroup = function(oContext) {
-					    var name = oContext.getProperty("Giorno");
-					    return {
-					        key: name,
-					        text: name
-					    };
-					};*/
-					aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
-
-					oBinding.sort(aSorters);
-				} else {
-					// apply sorter
-					var sPathSort = mParams.sortItem.getKey();
-					//var sPath ="Descrorder";
-					var bDescendingSort = mParams.sortDescending;
-					//    var bDescending = true;
-					aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
-					oBinding.sort(aSortersSort);
-				}
-
-			},
-
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
 				var sRead = "/CommessaSet";
@@ -1145,7 +1099,7 @@ sap.ui.define([
 					success: fnReadStot,
 					error: fnReadEtot
 				});
-
+                  
 				function fnReadStot(oData, response) {
 					//	console.log(oData);
 					//	console.log(response);
@@ -1222,8 +1176,6 @@ sap.ui.define([
 	 var oTemplate = new sap.m.ColumnListItem({
     cells : [
     	
-    		
-    		
         new sap.m.ObjectIdentifier({
             title : "{Giorno}",
     //        id : "Comm_cellGiorno",
@@ -1253,8 +1205,9 @@ sap.ui.define([
             text : "{Expdescr}"
    //         id : "Comm_cellExpdescr"
         })
-    ]
-});		
+    ],
+type : "Active"}
+);		
 	  
 
 
@@ -1367,8 +1320,9 @@ sap.ui.define([
             text : "{Expdescr}"
       //      id : "Exp_cellExpdescr"
         })
-    ]
-});		
+       ],
+type : "Active"}
+);		
 				
 				oTableExp.setModel(oModel);
                 
