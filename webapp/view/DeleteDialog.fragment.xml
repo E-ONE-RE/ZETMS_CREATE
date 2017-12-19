@@ -1,0 +1,225 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" id="FragDel" xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog id="dialogDelComm" title="Dettaglio Commessa" stretch="true">
+		<html:style>
+			.sapMILILabel { font-size: 14px; !important }
+		</html:style>
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<f:Form id="FormToolbarDelComm" editable="true" ariaLabelledBy="Title1">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
+							emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
+					</f:layout>
+					<f:formContainers>
+						<f:FormContainer ariaLabelledBy="Title2">
+							<f:toolbar>
+								<Toolbar>
+									<Title id="dettaglioComm" text="Dettaglio commessa selezionata" level="H5" titleStyle="H5"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</f:toolbar>
+							<f:formElements>
+								<f:FormElement label="Commessa">
+									<f:fields>
+										<Text id="commessaSelDel" text="{Descrorder}"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Sede">
+									<f:fields>
+										<Text id="sedeSel" text="{Office}"></Text>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Ore">
+									<f:fields>
+										<Text id="oreSel" text="{Ore}"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Descrizione">
+									<f:fields>
+										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione attività." value="{Descr}"
+											enabled="false"/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+					<f:formContainers>
+						<f:FormContainer>
+							<f:formElements>
+								<f:FormElement>
+									<f:fields></f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+				<sap.ui.layout:VerticalLayout>
+					<sap.ui.layout:content>
+						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false" showVariantManagement="false"
+							useExportToExcel="false" useTablePersonalisation="false" header="Spese inserite" showRowCount="true" enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding"
+							enableCustomFilter="false">
+							<Table id="speseCommessa" width="auto" class="sapUiResponsiveMargin" growing="true" growingScrollToLoad="true"
+								backgroundDesign="Translucent">
+								<columns>
+									<Column id="col1" width="auto" minScreenWidth="phone" demandPopin="true" visible="true"
+										customData:p13nData='\{"leadingProperty":"Exptype", "columnKey":"Exptype"}'>
+										<Text text="Spesa" id="nameC1"/>
+									</Column>
+									<Column id="col2" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true"
+										customData:p13nData='\{"leadingProperty":"Expdescr", "columnKey":"Expdescr"}'>
+										<Text text="Descrizione spesa" id="nameC2"/>
+									</Column>
+									<Column id="col3" width="auto" minScreenWidth="phone" demandPopin="true" visible="true"
+										customData:p13nData='\{"leadingProperty":"Km", "columnKey":"Km"}'>
+										<Text text="Importo (EUR/KM)" id="nameC3"/>
+									</Column>
+									<Column id="col4" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
+										<Text text="Modifica / Elimina spesa" id="nameC4"/>
+									</Column>
+								
+								</columns>
+								<items>
+									<ColumnListItem>
+										<cells>
+											<Input value="{path: 'Exptype', formatter: '.formatter.formatExpType'}" editable="false"/>
+										</cells>
+										<cells>
+											<Input value="{Descr}" editable="false"/>
+										</cells>
+										<cells>
+											<Input value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
+										</cells>
+										<cells>
+											<sap.ui.layout:HorizontalLayout>
+												<sap.ui.layout:content>
+											<Button id="btnM" type="Emphasized" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
+											<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancel"></Button>
+											</sap.ui.layout:content>
+											</sap.ui.layout:HorizontalLayout>
+										</cells>
+									</ColumnListItem>
+								
+								</items>
+							</Table>
+							<smartTable:layoutData>
+								<FlexItemData growFactor="1" baseSize="0%"/>
+							</smartTable:layoutData>
+						</smartTable:SmartTable>
+						<ToolbarSpacer/>
+						<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Aggiunta nuove spese" width="auto" class="sapUiResponsiveMargin">
+							<content>
+								<Table id="tabellaSpeseSel" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
+									<columns>
+										<Column>
+											<Text text="Spesa"/>
+										</Column>
+										<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+											<Text text="Descrizione"/>
+										</Column>
+										<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+											<Text text="Importo (EUR) / Distanza (KM)"/>
+										</Column>
+											
+									</columns>
+									<items>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="00 - Chilometri (KM)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Chilometri" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="01 - Autostrada (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Autostrada" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="02 - Cena (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Cena" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="03 - Treno (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Treno" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="04 - Albergo (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Albergo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="05 - Taxi/BUS (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Taxi/BUS" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="06 - Aereo (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Aereo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="07 - Parcheggio (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Parcheggio" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="08 - Pranzo (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Pranzo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+										<ColumnListItem>
+											<cells>
+												<ObjectIdentifier title="09 - Altro (EUR)"/>
+												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+													placeholder="descrizione spesa (opzionale)"/>
+												<Input tooltip="Altro" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</content>
+						</Panel>
+					</sap.ui.layout:content>
+				</sap.ui.layout:VerticalLayout>
+				<!--	<f:FormElement label="Spese Inserite"> !-->
+				<!--	</f:FormElement> !-->
+			</VBox>
+		</content>
+		<buttons>
+			<Button id="EliminaSel" text="Elimina Commessa" press="handleDeleteComm" type="Reject"/>
+			<!-- Fare Check su ore !-->
+			<Button id="Modifica" text="Modifica Commessa" press="handleMod" type="Emphasized"/>
+			<Button text="Indietro" press="closeDialogSel" />
+	
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

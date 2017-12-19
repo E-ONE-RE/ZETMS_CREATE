@@ -22,18 +22,20 @@
 							<f:formElements>
 								<f:FormElement label="Commesse esistenti">
 									<f:fields>
-										<Button text="Seleziona Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+										<Hbox>
+										<Button text="Seleziona una Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
-											
-										<Input id="commessaEx" required="false" enabled="false"/>
+												<Button text="Seleziona una nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+											press="showPopoverCommessa" enabled="true"></Button>
+										</Hbox>
+										<!--<Input id="commessaEx" required="false" enabled="false"/>-->
 									</f:fields>
 								</f:FormElement>
 								
-								<f:FormElement label="Nuova Commessa">
+								<f:FormElement label="Commessa">
 									<f:fields>
-										<Button text="Seleziona nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
-											press="showPopoverCommessa" enabled="true"></Button>
-										<Input id="commessa" required="true" enabled="false"/>
+										
+										<Input id="commessa" required="true" editable="false"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement id="sediList" label="Sede">
@@ -60,7 +62,7 @@
 								<f:FormElement label="Descrizione chilometri">
 									<f:fields>
 										<TextArea liveChange="onLiveChange" id="descrizioneChilometri" width="100%" height="3rem" wrapping="None" maxLength="200"
-											tooltip="Inserisci la descrizione dell'attività."/>
+											tooltip="Inserisci la descrizione dei chilometri."/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>

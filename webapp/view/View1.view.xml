@@ -204,13 +204,12 @@
 
         </t:TreeTable>
         </IconTabFilter>-->
-					
-					
-					
+
 					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
 						
         	
 					<Table noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" tooltip="">
+
 					<headerToolbar>
 					<Toolbar>
 						<Title text="Lista commesse" level="H2"/>

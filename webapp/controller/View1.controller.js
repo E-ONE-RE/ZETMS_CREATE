@@ -8,12 +8,13 @@ sap.ui.define([
 		'sap/m/Label',
 		'sap/ui/model/Filter',
 		'sap/ui/model/Sorter',
-		 
+
 		//	'sap/m/MessageToast',
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
-	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, Filter, Sorter, formatter) {
+	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, Filter, Sorter,
+		formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 		var aSediResult;
@@ -38,8 +39,8 @@ sap.ui.define([
 			oFormatYyyymmdd: null,
 			oFormatDaysShort: null,
 			oFormatYear: null,
-            	_oDialog: null,
-            	
+			_oDialog: null,
+
 			onInit: function() {
 				//SE			ZETMS_CREATE.utils.DataManager.init(this.oDataModel, this.resourceBundle);
 				//	ZETMS_CREATE.utils.Formatters.init(this.resourceBundle);
@@ -81,6 +82,7 @@ sap.ui.define([
 
 				//		this.oModel = new JSONModel({selectedDates:[]});
 				//		this.getView().setModel(this.oModel);
+
                
              //  	var oModel = this.getView().getModel();
 			//	this.getView().setModel(oModel);
@@ -112,6 +114,7 @@ sap.ui.define([
 			
 			};
 			
+
 				var oRouter = this.getRouter();
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
 
@@ -134,27 +137,11 @@ sap.ui.define([
 				oTreeTable.expandToLevel(1);
 			},
 
-		
-			onExit : function () {
-			if (this._oDialog) {
-				this._oDialog.destroy();
-			}
-		},
-
-		handleViewSettingsDialogButtonPressed: function (oEvent) {
-			var that = this;
-			this.sButtonKey = oEvent.getSource().getId();
-			if (!that._oDialog) {
-				that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
-				//to get access to the global model
-				this.getView().addDependent(that.Dialog);
-				if (sap.ui.Device.system.phone) {
-					that.Dialog.setStretch(true);
+			onExit: function() {
+				if (this._oDialog) {
+					this._oDialog.destroy();
 				}
-			}
-			// toggle compact style
-			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
-			that._oDialog.open();
+
 		},
 	
 	    
@@ -208,7 +195,68 @@ sap.ui.define([
 	     
 		},
 		
+			handleViewSettingsDialogButtonPressed: function(oEvent) {
+				var that = this;
+				this.sButtonKey = oEvent.getSource().getId();
+				if (!that._oDialog) {
+					that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
+					//to get access to the global model
+					this.getView().addDependent(that.Dialog);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
+				}
+				// toggle compact style
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
+				that._oDialog.open();
+			},
 
+
+			handleConfirm: function(oEvent) {
+
+				var oView = this.getView();
+				var oTable;
+				if (this.sButtonKey === oView.byId("btn_comm").getId()) {
+
+					oTable = oView.byId("COMMESSE_CONTENTS");
+				} else if (this.sButtonKey === oView.byId("btn_exp").getId()) {
+
+					oTable = oView.byId("SPESE_CONTENTS");
+				}
+				var mParams = oEvent.getParameters();
+				var oBinding = oTable.getBinding("items");
+
+				// apply sorter to binding
+				// (grouping comes before sorting)
+				var aSorters = [];
+				var aSortersSort = [];
+				if (mParams.groupItem) {
+					var sPath = mParams.groupItem.getKey();
+					//   var sPath ="Giorno";
+					var bDescending = mParams.groupDescending;
+					// var bDescending = "false";
+					var vGroup = this.mGroupFunctions[sPath];
+					/*var vGroup = function(oContext) {
+					    var name = oContext.getProperty("Giorno");
+					    return {
+					        key: name,
+					        text: name
+					    };
+					};*/
+					aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+
+					oBinding.sort(aSorters);
+				} else {
+					// apply sorter
+					var sPathSort = mParams.sortItem.getKey();
+					//var sPath ="Descrorder";
+					var bDescendingSort = mParams.sortDescending;
+					//    var bDescending = true;
+					aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
+					oBinding.sort(aSortersSort);
+				}
+
+			},
 
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
@@ -238,25 +286,26 @@ sap.ui.define([
 			//MP: selezione di una data del calendario da rivedere!!!!!
 			handleCalendarSelect: function(oEvent) {
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si selziona una data
-				
-		/*		var oButton = this.getView().byId("btn1");
-				if (oButton.getEnabled() == true) {
-					oButton.setEnabled(false);
-				} else {
-					oButton.setEnabled(true);
-				}*/
-				if(oEvent.getSource().getSelectedDates()[0] != undefined){
-				this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
+
+				/*		var oButton = this.getView().byId("btn1");
+						if (oButton.getEnabled() == true) {
+							oButton.setEnabled(false);
+						} else {
+							oButton.setEnabled(true);
+						}*/
+				if (oEvent.getSource().getSelectedDates()[0] != undefined) {
+					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 				}
 			},
 
-			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa
+			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
 			openDialog: function(oEvent) {
 				var that = this;
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
 
 					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.View1");
+
 					//to get access to the global model
 					this.getView().addDependent(that.Dialog);
 					if (sap.ui.Device.system.phone) {
@@ -264,6 +313,7 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
+
 				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
 				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 			},
@@ -273,7 +323,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("commessa").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
 				sap.ui.getCore().byId("sedi").setEnabled(false);
-	            sap.ui.getCore().byId("sedi").unbindItems();
+				sap.ui.getCore().byId("sedi").unbindItems();
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("ore").setValueState("None");
 				sap.ui.getCore().byId("descrizione").setValue("");
@@ -285,6 +335,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
 				this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.onExpenseSelect(undefined);
+				this.getView().removeDependent(this.Dialog);
 			},
 
 			//MP: funzione che richiama il fragment contenente l'albero
@@ -355,49 +406,133 @@ sap.ui.define([
 
 			},
 
+			handleTableSelectDialogPress: function(oEvent) {
 
-		handleTableSelectDialogPress: function(oEvent) {
-			
-			//	var that = this;
+				//	var that = this;
 
 				if (!this._oDialog) {
-					
-		
-				this._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
-			}
 
-			// Multi-select if required
-			//var bMultiSelect = !!oEvent.getSource().data("multi");
-		//	this._oDialog.setMultiSelect(bMultiSelect);
+					this._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
+				}
 
-			// Remember selections if required
-		//	var bRemember = !!oEvent.getSource().data("remember");
-		//	this._oDialog.setRememberSelections(bRemember);
+				// Multi-select if required
+				//var bMultiSelect = !!oEvent.getSource().data("multi");
+				//	this._oDialog.setMultiSelect(bMultiSelect);
 
-			this.getView().addDependent(this._oDialog);
+				// Remember selections if required
+				//	var bRemember = !!oEvent.getSource().data("remember");
+				//	this._oDialog.setRememberSelections(bRemember);
 
-			// toggle compact style
-			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
-			this._oDialog.open();
-		},
+				this.getView().addDependent(this._oDialog);
+				var oModel = this.getView().getModel();
 
-           // funzione search non implementata al momento
-        	handleSearch: function(oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
-			var oBinding = oEvent.getSource().getBinding("items");
-			oBinding.filter([oFilter]);
-		},
+				var oTableCommEx = sap.ui.getCore().byId("tableCommEx"); //tabella per commesse già inserite
 
-        handleClose: function(oEvent) {
-			var aContexts = oEvent.getParameter("selectedContexts");
-			if (aContexts && aContexts.length) {
-				sap.m.MessageToast.show("You have chosen " + aContexts.map(function(oContext) { return oContext.getObject().Descrorder; }).join(", "));
-			}
-			oEvent.getSource().getBinding("items").filter([]);
-		},
-		
-		
+				oTableCommEx.setModel(oModel);
+
+				var oTemplate = new sap.m.ColumnListItem({
+					cells: [
+
+						new sap.m.ObjectIdentifier({
+							title: "{Descrorder}",
+							wrapping: false
+						}),
+
+						new sap.m.Text({
+							text: "{Descr}"
+						}),
+
+						new sap.m.Text({
+							text: "{Office}"
+						})
+					]
+				});
+
+				var sDate = this.formattedDate;
+				var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
+				var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
+				var fMonth = new sap.ui.model.odata.Filter('Calmonth', [{
+					operator: "EQ",
+					value1: sMonth
+				}]);
+				var fYear = new sap.ui.model.odata.Filter('Calyear', [{
+					operator: "EQ",
+					value1: sYear
+				}]);
+				var fFlag = new sap.ui.model.odata.Filter('Parentid', [{
+					operator: "EQ",
+					value1: "X"
+				}]);
+
+				oTableCommEx.bindItems({
+
+					path: "/ListaCommesseGroupSet",
+
+					template: oTemplate,
+					filters: [fMonth, fYear, fFlag]
+				});
+
+				// toggle compact style
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
+				this._oDialog.open();
+			},
+
+			// funzione search non implementata al momento
+			handleSearch: function(oEvent) {
+				var sValue = oEvent.getParameter("value");
+				var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
+				var oBinding = oEvent.getSource().getBinding("items");
+				oBinding.filter([oFilter]);
+			},
+
+			handleClose: function(oEvent) {
+				var aContexts = oEvent.getParameter("selectedContexts");
+				var oInput = sap.ui.getCore().byId("commessa");
+				var oSede = sap.ui.getCore().byId("sedi");
+				var oDescr = sap.ui.getCore().byId("descrizione");
+				if (aContexts && aContexts.length) {
+
+					oInput.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Descrorder;
+					}));
+
+					var mSede = {
+						sede: [{
+							Office: aContexts.map(function(oContext) {
+								return oContext.getObject().Office;
+							})
+						}]
+					};
+
+					var oModel = new sap.ui.model.json.JSONModel();
+					oModel.setData(mSede);
+					sap.ui.getCore().setModel(oModel, "sede");
+					oSede.setModel(sap.ui.getCore().getModel("sede"));
+
+					var oTemplate = new sap.ui.core.Item({
+						key: "{Office}",
+						text: "{Office}"
+					});
+					oSede.bindAggregation("items", {
+						path: "/sede",
+						template: oTemplate
+					});
+					oSede.setSelectedItem(aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					}));
+					oSede.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					}));
+					oDescr.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Descr;
+					}));
+					this.sTimesheetKey = aContexts.map(function(oContext) {
+						return oContext.getObject().Tmskey;
+					})[0];
+				}
+				oEvent.getSource().getBinding("items").filter([]);
+			},
+
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 
@@ -436,7 +571,12 @@ sap.ui.define([
 			},
 
 			onExpenseSelect: function(oEvent) {
-				var oTable = sap.ui.getCore().byId("tabellaSpese");
+				var oTable;
+				if (oEvent == undefined) {
+					oTable = sap.ui.getCore().byId("tabellaSpese");
+				} else {
+					oTable = oEvent.getSource();
+				}
 				var aItems = oTable.getAggregation("items");
 				var oItem;
 				var oInputDescr;
@@ -477,7 +617,6 @@ sap.ui.define([
 					} else {
 						aParam.push(oInput.getValue());
 					}
-          
 
 				}
 
@@ -492,7 +631,9 @@ sap.ui.define([
 				if (aParam.length === 3) {
 
 					sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+
 					sCommessaId = this.sCommessaId;
+
 					sOre = sap.ui.getCore().byId("ore").getValue();
 					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
 					sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
@@ -503,10 +644,11 @@ sap.ui.define([
 					sMonth = aDate[1];
 					sYear = aDate[2];
 
-			//		var oView = this.getView();
+					//		var oView = this.getView();
 					var oModel = this.getView().getModel();
 
 					var oUrlParams = {
+						Tmskey: this.sTimesheetKey,
 						Orderjob: sCommessaId,
 						Descr: sDescrizione,
 						Office: sOffice,
@@ -515,32 +657,29 @@ sap.ui.define([
 						Calyear: sYear,
 						Giorno: sDay,
 						Ore: sOre
-				//		Expdescr: sKmDesc, //MP: Chilometri in questo caso
-				//		Km: sChilometri
 					};
-			
-			        
+
 					oUrlParams.FromCommToExp = [];
-					
+
 					// passo eventuale riga km
-					if	(sChilometri > 0) {
+					if (sChilometri > 0) {
 						oUrlParams.FromCommToExp.push({
-								Exptype: "00",
-								Expdescr: sKmDesc,
-								Km: sChilometri,
-								Tipo: "km",
-								Calmonth: sMonth,
-								Calyear: sYear,
-								Giorno: sDay
-							});
+							Exptype: "00",
+							Expdescr: sKmDesc,
+							Km: sChilometri,
+							Tipo: "km",
+							Calmonth: sMonth,
+							Calyear: sYear,
+							Giorno: sDay
+						});
 					}
-					
-					 // passo eventuale righe spese
+
+					// passo eventuale righe spese
 					var oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
 					var aItem = oExpenseTable.getAggregation("items");
 					var sExpType, sExpDesc, sExpImp;
 					for (var j = 0; j < aItem.length; j++) {
-                         var oItem = aItem[j];
+						var oItem = aItem[j];
 						if (oItem.getSelected()) {
 							sExpType = oItem.getAggregation("cells")[0].getTitle().substring(0, 2);
 							sExpDesc = oItem.getAggregation("cells")[1].getValue();
@@ -557,7 +696,6 @@ sap.ui.define([
 							});
 						}
 					}
-
 
 					//		}
 					//	this.oModel.setData(oData);
@@ -585,7 +723,7 @@ sap.ui.define([
 
 							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
-							
+
 							var msg = "Success ";
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
@@ -616,9 +754,102 @@ sap.ui.define([
 					}
 
 				}
+
+			},
+
+			//MP: metodi per la gestione della modifica e cancellazione di righe del timesheet
+			
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
+			onExpenseModify: function(oEvent) {
+				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
+				var oInput;
+				for (var i = 1; i < 3; i++) {
+					oInput = aCells[i];
+					if (oInput.getEditable() == false) {
+						oInput.setEditable(true);
+					} else {
+						oInput.setEditable(false);
+					}
+				}
+			},
+
+			onExpenseCancel: function(oEvent) {
+				var oModel = this.getView().getModel();
+				var oEntry = {};
+
+				var oContext = oEvent.getSource().getBindingContext();
+				oEntry.Tmskey = oContext.getProperty("Tmskey");
+				oEntry.Giorno = oContext.getProperty("Giorno");
+				oEntry.Expkey = oContext.getProperty("Expkey");
+				oEntry.Exptype = oContext.getProperty("Exptype");
+				oEntry.Deletionflag = 'X';
+
+				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
+					"',Exptype='" + oEntry.Exptype + "')",
+					oEntry, {
+						method: "PUT",
+						success: function(data) {
+							var msg = "Success";
+							sap.m.MessageToast.show(msg, {
+								duration: 5000,
+								autoClose: true,
+								closeOnBrowserNavigation: false
+
+							});
+							oModel.refresh();
+						},
+						error: function(e) {
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+
+						}
+
+					});
+			},
+			
+			handleDeleteComm: function(oEvent){
+			var oModel = this.getView().getModel();
+			var oContext = oEvent.getSource().getBindingContext();
+			var oEntry = {};
+			
+			oEntry.Tmskey = oContext.getProperty("Tmskey");
+			oEntry.Giorno = oContext.getProperty("Giorno");
+			
+			
+				oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
+					oEntry, {
+						method: "PUT",
+						success: function(data) {
+							var msg = "Success";
+							sap.m.MessageToast.show(msg, {
+								duration: 5000,
+								autoClose: true,
+								closeOnBrowserNavigation: false
+
+							});
+							oModel.refresh();
+						},
+						error: function(e) {
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+
+						}
+
+					});
 				
 			},
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
 			onLiveChange: function(oEvent) {
 				var oInput;
@@ -651,7 +882,7 @@ sap.ui.define([
 						}
 						break;
 					default:
-						var oTable = sap.ui.getCore().byId("tabellaSpese");
+						var oTable = oEvent.getSource().getParent().getParent();
 						var aItems = oTable.getAggregation("items");
 						var oItem;
 						var oInputImp;
@@ -669,6 +900,42 @@ sap.ui.define([
 
 				}
 
+			},
+
+			handleCommessaSelection: function(oEvent) {
+				this.openDialogSel(oEvent);
+				var oDialog = sap.ui.getCore().byId("dialogDelComm");
+				var oModel = this.getView().getModel();
+				var sSelItemPath = oEvent.getParameter("rowContext").getPath(); //MP: service path della commessa selezionata
+				oDialog.bindElement({
+					path: sSelItemPath,
+					parameters: {
+						expand: 'ToChildExpNodes'
+					}
+
+				});
+
+			},
+
+			openDialogSel: function(oEvent) {
+				var that = this;
+
+				if (!that.DialogSel) {
+
+					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DeleteDialog", this, "ZETMS_CREATE.controller.View1");
+
+					//to get access to the global model
+					this.getView().addDependent(that.Dialog);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
+				}
+				that.DialogSel.open();
+				this._DialogSel = that.DialogSel;
+			},
+
+			closeDialogSel: function() {
+				this.DialogSel.close();
 			},
 
 			_onRouteMatched: function(oEvent) {
@@ -869,6 +1136,7 @@ sap.ui.define([
 					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
 				}*/
 
+
 ////TOTALI
 
 	var sReadTot = "/TotaliMeseSet(Calyear='"+startYear+"',Calmonth='"+startMonth+"')";
@@ -901,52 +1169,54 @@ sap.ui.define([
 ////FINE TOTALI	
 
 ////INIZIO LISTE
+
 				/* filter */
-				var f1 = new  sap.ui.model.odata.Filter('Calmonth', [{operator:"EQ",value1:startMonth}]);
-				var f2 = new  sap.ui.model.odata.Filter('Calyear', [{operator:"EQ",value1:startYear}]);
-				
-                //definisco treetable
+				var f1 = new sap.ui.model.odata.Filter('Calmonth', [{
+					operator: "EQ",
+					value1: startMonth
+				}]);
+				var f2 = new sap.ui.model.odata.Filter('Calyear', [{
+					operator: "EQ",
+					value1: startYear
+				}]);
+
+				//definisco treetable
 				var oTableTree = oView.byId("TREETABLE_CONTENTS");
-				
+
 				oTableTree.setModel(oModel);
-  
-				 //navigation service binding
-				 oTableTree.bindRows({
-				 path : "/ListaCommesseGroupSet",
-			
-					parameters : {
-									 expand : 'ToChildExpNodes',
-				
-									 navigation : {
-									 'ListaCommesseGroupSet' : 'ToChildExpNodes'
-									 }
-									 },
-					 filters: [f1, f2]				 
-				 });
-				 
-				 
-			//////////////////////////////////////
-			//definisco tabella commessa
-			
-			
-	//Per creare tabella in javascript, al momento definisco tabella e colonne in xml
-/////////////////	
-/*			 var oTableComm = new sap.m.Table({
-    mode: sap.m.ListMode.MultiSelect,
-    columns: [
-      new sap.m.Column({ header: new sap.m.Label({text: "Name"})}),
-      new sap.m.Column({ header: new sap.m.Label({text: "Value"})}),
-      new sap.m.Column({ header: new sap.m.Label({text: "Ore"})})
-    ]
-  });*/
-//////////////////	
-	// definisco template listItem in riferimento alla tabella creata in vista xml
-	
-	
 
-	
-	var oTableComm = oView.byId("COMMESSE_CONTENTS");
+				//navigation service binding
+				oTableTree.bindRows({
+					path: "/ListaCommesseGroupSet",
+          parameters: {
+						expand: 'ToChildExpNodes',
 
+						navigation: {
+							'ListaCommesseGroupSet': 'ToChildExpNodes'
+						}
+					},
+					filters: [f1, f2]
+				});
+        
+        	//////////////////////////////////////
+				//definisco tabella commessa
+
+				//Per creare tabella in javascript, al momento definisco tabella e colonne in xml
+				/////////////////	
+				/*			 var oTableComm = new sap.m.Table({
+				    mode: sap.m.ListMode.MultiSelect,
+				    columns: [
+				      new sap.m.Column({ header: new sap.m.Label({text: "Name"})}),
+				      new sap.m.Column({ header: new sap.m.Label({text: "Value"})}),
+				      new sap.m.Column({ header: new sap.m.Label({text: "Ore"})})
+				    ]
+				  });*/
+				//////////////////	
+				// definisco template listItem in riferimento alla tabella creata in vista xml
+
+
+  var oTableComm = oView.byId("COMMESSE_CONTENTS");
+     
 	oTableComm.setModel(oModel);
 				
 	 var oTemplate = new sap.m.ColumnListItem({
@@ -986,15 +1256,19 @@ sap.ui.define([
     ]
 });		
 	  
-				
-/////////////////////////
-      //	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
-	/*			oTableComm.bindAggregation("items", {
+
+
+
+				/////////////////////////
+				//	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
+				/*			oTableComm.bindAggregation("items", {
+
         path : "/ListaCommesseGroupSet",
 
 		     	filters: [f1, f2],
         template: oTemplate
     });	*/
+
     
     // esegue binding delle righe
     ////////////////////////////////
@@ -1039,6 +1313,7 @@ sap.ui.define([
 		
 		//		
 			/*	var aColumns = [
+
         new sap.m.Column({
             header : new sap.m.Label({
                 text : "Expense Item No"
@@ -1056,10 +1331,11 @@ sap.ui.define([
         })
     ];
     */
-    ///////////////////////////////////
-				 
-				 	  //definisco tabella spese
+				///////////////////////////////////
+
+				//definisco tabella spese
 				var oTableExp = oView.byId("SPESE_CONTENTS");
+
 				
 					 var oTemplateSpese = new sap.m.ColumnListItem({
     cells : [
@@ -1128,8 +1404,8 @@ sap.ui.define([
 	     
 ////FINE LISTE	     
 	     //////////////////////////////
-				 
 
+				//////////////////////////////
 
 				var sRead = "/CalendarSet";
 
