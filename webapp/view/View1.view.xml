@@ -53,6 +53,10 @@
 														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
 																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
+									
+
+
+																
 																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
@@ -208,7 +212,8 @@
 					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
 						
         	
-					<Table noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" tooltip="">
+					<Table noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" tooltip=""
+					itemPress="handleCommessaSelection">
 
 					<headerToolbar>
 					<Toolbar>
@@ -329,7 +334,8 @@
 					</IconTabFilter>
 					
 					<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
-							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" tooltip="">
+							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" tooltip=""
+							itemPress="handleCommessaSelection">
 								
 							<headerToolbar>
 								<Toolbar>
@@ -369,7 +375,11 @@
 					</IconTabFilter>
 					
 					<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
-						<t:TreeTable selectionMode="MultiToggle" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS">
+						
+						<t:TreeTable selectionMode="Single" selectionBehavior="RowOnly" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS"
+						rowSelectionChange="handleCommessaSelection">
+						
+						
 							<t:toolbar>
 			                    <Toolbar>
 			                        <Title id="title2" text="Lista commesse"/>
