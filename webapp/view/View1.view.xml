@@ -255,8 +255,6 @@ controllerName="ZETMS_CREATE.controller.View1"
         	
 					<Table
 					noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" 
-					
-	
 		tooltip="">
 					<headerToolbar>
 					<Toolbar>

@@ -35,7 +35,7 @@
 								<f:FormElement label="Commessa">
 									<f:fields>
 										
-										<Input id="commessa" required="true" enabled="false"/>
+										<Input id="commessa" required="true" editable="false"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement id="sediList" label="Sede">
