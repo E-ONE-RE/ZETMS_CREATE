@@ -1,16 +1,4 @@
-<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
-xmlns:smartTable="sap.ui.comp.smarttable" 
-xmlns:mvc="sap.ui.core.mvc" 
-xmlns="sap.m"
-	xmlns:t="sap.ui.table" 
-xmlns:sap.ui.layout.form="sap.ui.layout.form" 
-xmlns:sap.ui.layout="sap.ui.layout" 
-xmlns:sap.me="sap.me"
-	xmlns:sap.ui.core="sap.ui.core" 
-xmlns:ui="sap.ca.ui" 
-xmlns:sap.ui.unified="sap.ui.unified" 
-controllerName="ZETMS_CREATE.controller.View1"
-	displayBlock="true">
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:t="sap.ui.table" xmlns:sap.ui.layout.form="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" xmlns:sap.me="sap.me" xmlns:sap.ui.core="sap.ui.core" xmlns:ui="sap.ca.ui" xmlns:sap.ui.unified="sap.ui.unified" controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
 
 	
 
@@ -64,9 +52,7 @@ controllerName="ZETMS_CREATE.controller.View1"
 													<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
 														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
-																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect"
-																	startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}"
-																	width="100%"/>
+																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
 																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
@@ -92,8 +78,7 @@ controllerName="ZETMS_CREATE.controller.View1"
 													<VBox width="100%" direction="Column" id="__vbox0_CALBUTTON" alignItems="Center">
 														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
-																<Button press="handleRemoveSelection" text="Rimuovi date selezionate" icon="sap-icon://delete" tooltip="{i18n>LR_REMOVE_DAYS}"
-																	id="btn_removeDate"/>
+																<Button press="handleRemoveSelection" text="Rimuovi date selezionate" icon="sap-icon://delete" tooltip="{i18n>LR_REMOVE_DAYS}" id="btn_removeDate"/>
 																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
@@ -124,12 +109,16 @@ controllerName="ZETMS_CREATE.controller.View1"
 													<sap.ui.layout:Grid width="100%" defaultSpan="L6 M6 S6">
 														<sap.ui.layout:content>
 															<sap.ui.layout:VerticalLayout width="100%">
-																<Label id="LABEL_TOT_ORE" text="{i18n>LR_TOT_ORE}"/>
 															
-															<Input width="50%" id="LRS4_TOT_ORE" enabled="false" tooltip="{i18n>LR_TOT_ORE}"/>
+															<Label id="LABEL_TOT_ORE" text="{i18n>LR_TOT_ORE}"/>
+															
+															<Input width="50%" id="LRS4_TOT_ORE" enabled="false" 
+												
+															 tooltip="{i18n>LR_TOT_ORE}"/>
 														
 												
 															</sap.ui.layout:VerticalLayout>
+															
 															<sap.ui.layout:VerticalLayout width="100%">
 																<Label id="LABEL_TOT_SPESE" text="{i18n>LR_TOT_SPESE}"/>
 																
@@ -215,47 +204,12 @@ controllerName="ZETMS_CREATE.controller.View1"
 
         </t:TreeTable>
         </IconTabFilter>-->
-					<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
-						<t:TreeTable selectionMode="Single" selectionBehavior="RowOnly" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS"
-						rowSelectionChange="handleCommessaSelection">
-							<t:toolbar>
-			                    <Toolbar>
-			                        <Title id="title2" text="Lista commesse"/>
-			                        <ToolbarSpacer/>
-			                        <Button text="Collapse all" press="onCollapseAll"/>
-			                        <Button text="Expand first level" press="onExpandFirstLevel"/>
-			                    </Toolbar>
-			                </t:toolbar>
-							<t:columns>
-								<t:Column label="Giorno">
-									<t:template>
-										<Text text="{Giorno}" wrapping="false"/>
-									</t:template>
-								</t:Column>
-								<t:Column label="Commessa">
-									<t:template>
-										<Text text="{Descrorder}" wrapping="false"/>
-									</t:template>
-								</t:Column>
-								<t:Column label="Descr">
-									<t:template>
-										<Text text="{Descr}" wrapping="false"/>
-									</t:template>
-								</t:Column>
-								<t:Column label="Quantità">
-									<t:template>
-										<Text text="{Expdescr}" wrapping="false"/>
-									</t:template>
-								</t:Column>
-							</t:columns>
-						</t:TreeTable>
-					</IconTabFilter>
+
 					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
 						
         	
-					<Table
-					noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" 
-		tooltip="">
+					<Table noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" tooltip="">
+
 					<headerToolbar>
 					<Toolbar>
 						<Title text="Lista commesse" level="H2"/>
@@ -265,24 +219,28 @@ controllerName="ZETMS_CREATE.controller.View1"
 				</headerToolbar>
 							<columns>
 							
-								<Column id="comm_column_Giorno" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true"
-							>
+								<Column id="comm_column_Giorno" width="auto"  visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Giorno/@sap:label}" id="comm_label_Giorno"/>
 								</Column>
 								
-								<Column id="comm_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="comm_column_Descrorder" width="auto"  visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 								</Column>
 								
-								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
 								</Column>
 								
-								<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="Sede" id="comm_label_Office"/>
 								</Column>
 								
-								<Column id="comm_column_Ore" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+							<!--	<Column id="comm_column_Oretot" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
+									<Label text="TotOre" id="comm_label_Oretot"/>
+								</Column>
+								-->
+								
+								<Column id="comm_column_Ore" width="auto"  visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Ore/@sap:label}" id="comm_label_Ore"/>
 								</Column>
 								
@@ -371,10 +329,7 @@ controllerName="ZETMS_CREATE.controller.View1"
 					</IconTabFilter>
 					
 					<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
-							<Table
-							
-						noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" 
-						tooltip="">
+							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" tooltip="">
 								
 							<headerToolbar>
 								<Toolbar>
@@ -385,24 +340,24 @@ controllerName="ZETMS_CREATE.controller.View1"
 							</headerToolbar>
 							<columns>
 							
-								<Column id="exp_column_Giorno" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="exp_column_Giorno" width="auto"  visible="true">
 									<Label text="{/#ListaSpeseGroupSet/Giorno/@sap:label}" id="exp_label_Giorno"/>
 								</Column>
 								
-								<Column id="exp_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="exp_column_Descrorder" width="auto" visible="true">
 									<Label text="{/#ListaSpeseGroupSet/Descrorder/@sap:label}" id="exp_label_Descrorder"/>
 								</Column>
 								
-								<Column id="exp_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="exp_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="{/#ListaSpeseGroupSet/Descr/@sap:label}" id="exp_label_Descr"/>
 								</Column>
 								
 
-								<Column id="exp_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="exp_column_Office" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="Sede" id="exp_label_Office"/>
 								</Column>
 								
-								<Column id="exp_column_Qta" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+								<Column id="exp_column_Qta" width="auto" visible="true">
 									<Label text="Quantità" id="exp_label_Qta"/>
 								</Column>
 								
@@ -412,6 +367,43 @@ controllerName="ZETMS_CREATE.controller.View1"
 
 						</Table>
 					</IconTabFilter>
+					
+					<IconTabFilter key="commesseTree" id="commesseTree" icon="sap-icon://tree" tooltip="Albero commesse" text="Albero commesse">
+						<t:TreeTable selectionMode="MultiToggle" enableColumnReordering="false" expandFirstLevel="false" id="TREETABLE_CONTENTS">
+							<t:toolbar>
+			                    <Toolbar>
+			                        <Title id="title2" text="Lista commesse"/>
+			                        <ToolbarSpacer/>
+			                        <Button text="Collapse all" press="onCollapseAll"/>
+			                        <Button text="Expand first level" press="onExpandFirstLevel"/>
+			                    </Toolbar>
+			                </t:toolbar>
+							<t:columns>
+								<t:Column label="Giorno">
+									<t:template>
+										<Text text="{Giorno}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Commessa">
+									<t:template>
+										<Text text="{Descrorder}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Descr"  >
+									<t:template>
+										<Text  text="{Descr}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+								<t:Column label="Quantità">
+									<t:template>
+										<Text text="{Expdescr}" wrapping="false"/>
+									</t:template>
+								</t:Column>
+							</t:columns>
+						</t:TreeTable>
+					</IconTabFilter>
+					
+					
 				</items>
 			</IconTabBar>
 		</content>
@@ -421,8 +413,7 @@ controllerName="ZETMS_CREATE.controller.View1"
 					<OverflowToolbar id="footerToolbar">
 			  
 		<ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" 
-                            tooltip="Crea nuovo inserimento nel timesheet">
+							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
 						  </Button>
 			 
