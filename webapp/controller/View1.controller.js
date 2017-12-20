@@ -1177,7 +1177,7 @@ sap.ui.define([
     cells : [
     	
         new sap.m.ObjectIdentifier({
-            title : "{Giorno}",
+            title : "{Giorno} { path: 'ZrequestId', formatter: '.formatter.formatRequestId'}",
     //        id : "Comm_cellGiorno",
             wrapping : false
         }),
