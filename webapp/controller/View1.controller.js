@@ -1178,45 +1178,49 @@ sap.ui.define([
 				//////////////////	
 				// definisco template listItem in riferimento alla tabella creata in vista xml
 
-				var oTableComm = oView.byId("COMMESSE_CONTENTS");
+			
 
-				oTableComm.setModel(oModel);
+  var oTableComm = oView.byId("COMMESSE_CONTENTS");
+     
+	oTableComm.setModel(oModel);
+				
+	 var oTemplate = new sap.m.ColumnListItem({
+    cells : [
+    	
+        new sap.m.ObjectIdentifier({
+            title : "{Giorno} { path: 'ZrequestId', formatter: '.formatter.formatRequestId'}",
+    //        id : "Comm_cellGiorno",
+            wrapping : false
+        }),
+        new sap.m.ObjectIdentifier({
+           title : "{Descrorder}",
+   //         id : "Comm_cellDescrorder",
+            wrapping : false
+        }),
+        new sap.m.Text({
+            text : "{Descr}"
+    //        id : "Comm_cellDescr"
+        }),
+        
+        new sap.m.Text({
+            text : "{Office}"
+    //         id : "Comm_cellOffice"
+        }),
+        
+  /*       new sap.m.Text({
+            text : "{Oretot}"
+    //         id : "Comm_cellOffice"
+        }),*/
+        
+         new sap.m.Text({
+            text : "{Expdescr}"
+   //         id : "Comm_cellExpdescr"
+        })
+    ],
+type : "Active"}
+);		
+	  
 
-				var oTemplate = new sap.m.ColumnListItem({
-					cells: [
-
-						new sap.m.ObjectIdentifier({
-							title: "{Giorno}",
-							//        id : "Comm_cellGiorno",
-							wrapping: false
-						}),
-						new sap.m.ObjectIdentifier({
-							title: "{Descrorder}",
-							//         id : "Comm_cellDescrorder",
-							wrapping: false
-						}),
-						new sap.m.Text({
-							text: "{Descr}"
-								//        id : "Comm_cellDescr"
-						}),
-
-						new sap.m.Text({
-							text: "{Office}"
-								//         id : "Comm_cellOffice"
-						}),
-
-						/*       new sap.m.Text({
-						          text : "{Oretot}"
-						  //         id : "Comm_cellOffice"
-						      }),*/
-
-						new sap.m.Text({
-							text: "{Expdescr}"
-								//         id : "Comm_cellExpdescr"
-						})
-					],
-					type: "Active"
-				});
 
 				/////////////////////////
 				//	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
