@@ -86,16 +86,17 @@
 											<Input value="{path: 'Exptype', formatter: '.formatter.formatExpType'}" editable="false"/>
 										</cells>
 										<cells>
-											<Input value="{Descr}" editable="false"/>
+											<Input id="descrSpesa" value="{Descr}" editable="false"/>
 										</cells>
 										<cells>
-											<Input value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
+											<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
 										</cells>
 										<cells>
 											<sap.ui.layout:HorizontalLayout>
 												<sap.ui.layout:content>
-											<Button id="btnM" type="Emphasized" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
-											<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancel"></Button>
+											<Button id="btnM" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
+											<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
+											<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
 											</sap.ui.layout:content>
 											</sap.ui.layout:HorizontalLayout>
 										</cells>
