@@ -83,37 +83,34 @@ sap.ui.define([
 				//		this.oModel = new JSONModel({selectedDates:[]});
 				//		this.getView().setModel(this.oModel);
 
-               
-             //  	var oModel = this.getView().getModel();
-			//	this.getView().setModel(oModel);
-				
-               
-               	this.mGroupFunctions = {
-				Giorno : function(oContext) {
-					var name = oContext.getProperty("Giorno");
-					var oretot = oContext.getProperty("Oretot");
-					var imptot = oContext.getProperty("Imptot");
-					var kmtot = oContext.getProperty("Kmtot");
-					return {
-						key: name,
-						text: name + " - Ore: " + oretot + " - Spese: " + imptot +  " - Km: " + kmtot  
-					};
-								
-				},
-				
-				Descrorder : function(oContext) {
-					var name = oContext.getProperty("Descrorder");
-				    var oretotcomm = oContext.getProperty("Oretotcomm");
-					var imptotcomm = oContext.getProperty("Imptotcomm");
-					var kmtotcomm = oContext.getProperty("Kmtotcomm");
-					return {
-						key: name,
-						text: name + " - Ore: " + oretotcomm + " - Spese: " + imptotcomm +  " - Km: " + kmtotcomm   
-					};
-				}
-			
-			};
-			
+				//  	var oModel = this.getView().getModel();
+				//	this.getView().setModel(oModel);
+
+				this.mGroupFunctions = {
+					Giorno: function(oContext) {
+						var name = oContext.getProperty("Giorno");
+						var oretot = oContext.getProperty("Oretot");
+						var imptot = oContext.getProperty("Imptot");
+						var kmtot = oContext.getProperty("Kmtot");
+						return {
+							key: name,
+							text: name + " - Ore: " + oretot + " - Spese: " + imptot + " - Km: " + kmtot
+						};
+
+					},
+
+					Descrorder: function(oContext) {
+						var name = oContext.getProperty("Descrorder");
+						var oretotcomm = oContext.getProperty("Oretotcomm");
+						var imptotcomm = oContext.getProperty("Imptotcomm");
+						var kmtotcomm = oContext.getProperty("Kmtotcomm");
+						return {
+							key: name,
+							text: name + " - Ore: " + oretotcomm + " - Spese: " + imptotcomm + " - Km: " + kmtotcomm
+						};
+					}
+
+				};
 
 				var oRouter = this.getRouter();
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
@@ -142,59 +139,56 @@ sap.ui.define([
 					this._oDialog.destroy();
 				}
 
-		},
-	
-	    
-		handleConfirm: function(oEvent) {
+			},
 
-			var oView = this.getView();
-			var oTable;
-			 if (this.sButtonKey === oView.byId("btn_comm").getId()) {
+			handleConfirm: function(oEvent) {
 
-			oTable = oView.byId("COMMESSE_CONTENTS");
-             } else if (this.sButtonKey === oView.byId("btn_exp").getId()) {
-             
-			oTable = oView.byId("SPESE_CONTENTS");
-             } 
-			var mParams = oEvent.getParameters();
-			var oBinding = oTable.getBinding("items");
+				var oView = this.getView();
+				var oTable;
+				if (this.sButtonKey === oView.byId("btn_comm").getId()) {
 
-			// apply sorter to binding
-			// (grouping comes before sorting)
-		var aSorters = [];
-		var aSortersSort = [];
-		
-		//raggruppa e ordina
-	     if (mParams.groupItem) {
-	         var sPath = mParams.groupItem.getKey();
-	      //   var sPath ="Giorno";
-	         var bDescending = mParams.groupDescending;
-	      // var bDescending = "false";
-	         var vGroup = this.mGroupFunctions[sPath];
-	         /*var vGroup = function(oContext) {
-	             var name = oContext.getProperty("Giorno");
-	             return {
-	                 key: name,
-	                 text: name
-	             };
-	         };*/
-	         aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
-	         
-	         oBinding.sort(aSorters);
-	     }
-	     else {
-	     // apply sorter
-	    var sPathSort = mParams.sortItem.getKey();
-	      //var sPath ="Descrorder";
-	    var  bDescendingSort = mParams.sortDescending;
-	 //    var bDescending = true;
-	        aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
-	        oBinding.sort(aSortersSort);
-	     }
-	     
-	     
-		},
-		
+					oTable = oView.byId("COMMESSE_CONTENTS");
+				} else if (this.sButtonKey === oView.byId("btn_exp").getId()) {
+
+					oTable = oView.byId("SPESE_CONTENTS");
+				}
+				var mParams = oEvent.getParameters();
+				var oBinding = oTable.getBinding("items");
+
+				// apply sorter to binding
+				// (grouping comes before sorting)
+				var aSorters = [];
+				var aSortersSort = [];
+
+				//raggruppa e ordina
+				if (mParams.groupItem) {
+					var sPath = mParams.groupItem.getKey();
+					//   var sPath ="Giorno";
+					var bDescending = mParams.groupDescending;
+					// var bDescending = "false";
+					var vGroup = this.mGroupFunctions[sPath];
+					/*var vGroup = function(oContext) {
+					    var name = oContext.getProperty("Giorno");
+					    return {
+					        key: name,
+					        text: name
+					    };
+					};*/
+					aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+
+					oBinding.sort(aSorters);
+				} else {
+					// apply sorter
+					var sPathSort = mParams.sortItem.getKey();
+					//var sPath ="Descrorder";
+					var bDescendingSort = mParams.sortDescending;
+					//    var bDescending = true;
+					aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
+					oBinding.sort(aSortersSort);
+				}
+
+			},
+
 			handleViewSettingsDialogButtonPressed: function(oEvent) {
 				var that = this;
 				this.sButtonKey = oEvent.getSource().getId();
@@ -210,7 +204,6 @@ sap.ui.define([
 				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
 				that._oDialog.open();
 			},
-
 
 			onBeforeRendering: function() {
 				var oModel = this.getView().getModel();
@@ -712,23 +705,30 @@ sap.ui.define([
 			},
 
 			//MP: metodi per la gestione della modifica e cancellazione di righe del timesheet
-			
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
 			onExpenseModify: function(oEvent) {
 				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
-				var oInput;
+				var oInput, oModel;
+				var oSaveButton = aCells[3].getAggregation("content")[2];
+				oSaveButton.setEnabled(true);
+				oModel=this.getView().getModel();
 				for (var i = 1; i < 3; i++) {
 					oInput = aCells[i];
 					if (oInput.getEditable() == false) {
 						oInput.setEditable(true);
+						oInput.unbindElement();
+					
 					} else {
 						oInput.setEditable(false);
+						oSaveButton.setEnabled(false);
 					}
 				}
+					oModel.updateBindings(true);
 			},
 
-			onExpenseCancel: function(oEvent) {
-				var oModel = this.getView().getModel();
+			onExpenseCancelOrSave: function(oEvent) {
+				var oModel = sap.ui.getCore().getModel();
 				var oEntry = {};
 
 				var oContext = oEvent.getSource().getBindingContext();
@@ -736,7 +736,20 @@ sap.ui.define([
 				oEntry.Giorno = oContext.getProperty("Giorno");
 				oEntry.Expkey = oContext.getProperty("Expkey");
 				oEntry.Exptype = oContext.getProperty("Exptype");
-				oEntry.Deletionflag = 'X';
+				
+				if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+				oEntry.Deletionflag = "X";
+				}else{  // sono in modifica
+				oEntry.Deletionflag = "";
+				var oInputDescr = sap.ui.getCore().byId("descrSpesa");
+				oEntry.Descr = oInputDescr.getValue();
+				if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
+				{
+				oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
+				}
+				oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
+				}
+			
 
 				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
 					"',Exptype='" + oEntry.Exptype + "')",
@@ -765,16 +778,15 @@ sap.ui.define([
 
 					});
 			},
-			
-			handleDeleteComm: function(oEvent){
-			var oModel = this.getView().getModel();
-			var oContext = oEvent.getSource().getBindingContext();
-			var oEntry = {};
-			
-			oEntry.Tmskey = oContext.getProperty("Tmskey");
-			oEntry.Giorno = oContext.getProperty("Giorno");
-			
-			
+
+			handleDeleteComm: function(oEvent) {
+				var oModel = this.getView().getModel();
+				var oContext = oEvent.getSource().getBindingContext();
+				var oEntry = {};
+
+				oEntry.Tmskey = oContext.getProperty("Tmskey");
+				oEntry.Giorno = oContext.getProperty("Giorno");
+
 				oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
 					oEntry, {
 						method: "PUT",
@@ -800,10 +812,10 @@ sap.ui.define([
 						}
 
 					});
-				
-			},
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			},
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
 			onLiveChange: function(oEvent) {
 				var oInput;
@@ -860,7 +872,7 @@ sap.ui.define([
 				this.openDialogSel(oEvent);
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
 				var oModel = this.getView().getModel();
-				var sSelItemPath = oEvent.getParameter("rowContext").getPath(); //MP: service path della commessa selezionata
+				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
 				oDialog.bindElement({
 					path: sSelItemPath,
 					parameters: {
@@ -890,6 +902,7 @@ sap.ui.define([
 
 			closeDialogSel: function() {
 				this.DialogSel.close();
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 			},
 
 			_onRouteMatched: function(oEvent) {
@@ -938,12 +951,10 @@ sap.ui.define([
 				oView.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				oView.byId("LRS4_DAT_CALENDAR").removeAllSpecialDates();
 				oView.byId("LRS4_DAT_CALENDAR").removeAllDisabledDates();
-				
-				oView.byId("LRS4_TOT_ORE").setValue("");	
-				oView.byId("LRS4_TOT_SPESE").setValue("");	
-				oView.byId("LRS4_TOT_KM").setValue("");	
-				
-			   
+
+				oView.byId("LRS4_TOT_ORE").setValue("");
+				oView.byId("LRS4_TOT_SPESE").setValue("");
+				oView.byId("LRS4_TOT_KM").setValue("");
 
 				var oCal1 = oView.byId("LRS4_DAT_CALENDAR");
 
@@ -1065,41 +1076,40 @@ sap.ui.define([
 				}));
 
 				///////////////FINE FESTIVI////////////  
-			/*	var sOwnerId = this.getView()._sOwnerId;
+				/*	var sOwnerId = this.getView()._sOwnerId;
 
-				var sId = sOwnerId + "---view1" + "--";
-				if (this.sButtonKey != undefined) {
-					sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").setValue("");
-					sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").rerender();
-					//oView.byId("LRS4_DAT_STARTTIME").setEnabled(true);
+					var sId = sOwnerId + "---view1" + "--";
+					if (this.sButtonKey != undefined) {
+						sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").setValue("");
+						sap.ui.getCore().byId(sId + "LRS4_DAT_STARTTIME").rerender();
+						//oView.byId("LRS4_DAT_STARTTIME").setEnabled(true);
 
-					sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").setValue("");
-					sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").rerender();
-					//oView.byId("LRS4_DAT_ENDTIME").setEnabled(true);
+						sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").setValue("");
+						sap.ui.getCore().byId(sId + "LRS4_DAT_ENDTIME").rerender();
+						//oView.byId("LRS4_DAT_ENDTIME").setEnabled(true);
 
-					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setValue("");
-					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").rerender();
-					sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setEnabled(true);
+						sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setValue("");
+						sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").rerender();
+						sap.ui.getCore().byId(sId + "LRS4_TXA_NOTE").setEnabled(true);
 
-					//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
-					//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
-					//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
+						//	oView.byId("LRS4_TXA_NOTE_RECUP").setValue("");
+						//	oView.byId("LRS4_TXA_NOTE_RECUP").rerender("");
+						//	oView.byId("LRS4_TXA_NOTE_RECUP").setEnabled(true);
 
-					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setValue("0");
-					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
-					sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
-				}*/
+						sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setValue("0");
+						sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").setEnabled(false);
+						sap.ui.getCore().byId(sId + "LRS4_DAT_ORETOT").rerender();
+					}*/
 
+				////TOTALI
 
-////TOTALI
-
-	var sReadTot = "/TotaliMeseSet(Calyear='"+startYear+"',Calmonth='"+startMonth+"')";
+				var sReadTot = "/TotaliMeseSet(Calyear='" + startYear + "',Calmonth='" + startMonth + "')";
 
 				oModel.read(sReadTot, {
 					success: fnReadStot,
 					error: fnReadEtot
 				});
-                  
+
 				function fnReadStot(oData, response) {
 					//	console.log(oData);
 					//	console.log(response);
@@ -1107,22 +1117,22 @@ sap.ui.define([
 					// controllo che la funzione è andata a buon fine 
 					if (response.statusCode == "200") {
 						////////////////////////////////				
-			oView.byId("LRS4_TOT_ORE").setValue(oData.Oretot);	
-						oView.byId("LRS4_TOT_SPESE").setValue(oData.Imptot);	
-						oView.byId("LRS4_TOT_KM").setValue(oData.Kmtot);	
+						oView.byId("LRS4_TOT_ORE").setValue(oData.Oretot);
+						oView.byId("LRS4_TOT_SPESE").setValue(oData.Imptot);
+						oView.byId("LRS4_TOT_KM").setValue(oData.Kmtot);
 
-							}
+					}
 
-						}
+				}
 
 				function fnReadEtot(oError) {
 					//	console.log(oError);
-				//	alert("Error in read: " + oError.message);
+					//	alert("Error in read: " + oError.message);
 				}
 
-////FINE TOTALI	
+				////FINE TOTALI	
 
-////INIZIO LISTE
+				////INIZIO LISTE
 
 				/* filter */
 				var f1 = new sap.ui.model.odata.Filter('Calmonth', [{
@@ -1142,7 +1152,7 @@ sap.ui.define([
 				//navigation service binding
 				oTableTree.bindRows({
 					path: "/ListaCommesseGroupSet",
-          parameters: {
+					parameters: {
 						expand: 'ToChildExpNodes',
 
 						navigation: {
@@ -1151,8 +1161,8 @@ sap.ui.define([
 					},
 					filters: [f1, f2]
 				});
-        
-        	//////////////////////////////////////
+
+				//////////////////////////////////////
 				//definisco tabella commessa
 
 				//Per creare tabella in javascript, al momento definisco tabella e colonne in xml
@@ -1168,49 +1178,45 @@ sap.ui.define([
 				//////////////////	
 				// definisco template listItem in riferimento alla tabella creata in vista xml
 
+				var oTableComm = oView.byId("COMMESSE_CONTENTS");
 
-  var oTableComm = oView.byId("COMMESSE_CONTENTS");
-     
-	oTableComm.setModel(oModel);
-				
-	 var oTemplate = new sap.m.ColumnListItem({
-    cells : [
-    	
-        new sap.m.ObjectIdentifier({
-            title : "{Giorno}",
-    //        id : "Comm_cellGiorno",
-            wrapping : false
-        }),
-        new sap.m.ObjectIdentifier({
-           title : "{Descrorder}",
-   //         id : "Comm_cellDescrorder",
-            wrapping : false
-        }),
-        new sap.m.Text({
-            text : "{Descr}"
-    //        id : "Comm_cellDescr"
-        }),
-        
-        new sap.m.Text({
-            text : "{Office}"
-    //         id : "Comm_cellOffice"
-        }),
-        
-  /*       new sap.m.Text({
-            text : "{Oretot}"
-    //         id : "Comm_cellOffice"
-        }),*/
-        
-         new sap.m.Text({
-            text : "{Expdescr}"
-   //         id : "Comm_cellExpdescr"
-        })
-    ],
-type : "Active"}
-);		
-	  
+				oTableComm.setModel(oModel);
 
+				var oTemplate = new sap.m.ColumnListItem({
+					cells: [
 
+						new sap.m.ObjectIdentifier({
+							title: "{Giorno}",
+							//        id : "Comm_cellGiorno",
+							wrapping: false
+						}),
+						new sap.m.ObjectIdentifier({
+							title: "{Descrorder}",
+							//         id : "Comm_cellDescrorder",
+							wrapping: false
+						}),
+						new sap.m.Text({
+							text: "{Descr}"
+								//        id : "Comm_cellDescr"
+						}),
+
+						new sap.m.Text({
+							text: "{Office}"
+								//         id : "Comm_cellOffice"
+						}),
+
+						/*       new sap.m.Text({
+						          text : "{Oretot}"
+						  //         id : "Comm_cellOffice"
+						      }),*/
+
+						new sap.m.Text({
+							text: "{Expdescr}"
+								//         id : "Comm_cellExpdescr"
+						})
+					],
+					type: "Active"
+				});
 
 				/////////////////////////
 				//	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
@@ -1222,50 +1228,45 @@ type : "Active"}
         template: oTemplate
     });	*/
 
-    
-    // esegue binding delle righe
-    ////////////////////////////////
-    oTableComm.bindItems({
-    	        
-				 path : "/ListaCommesseGroupSet",
-			
-				 template : oTemplate,
-		         filters : [f1, f2]
+				// esegue binding delle righe
+				////////////////////////////////
+				oTableComm.bindItems({
 
+					path: "/ListaCommesseGroupSet",
 
+					template: oTemplate,
+					filters: [f1, f2]
 
-//	sorter: [new sap.ui.model.Sorter("Descrorder", true)
-		     //		groupHeaderFactory: ".getGroupHeader"
-//		]	 			 
-				 });
+					//	sorter: [new sap.ui.model.Sorter("Descrorder", true)
+					//		groupHeaderFactory: ".getGroupHeader"
+					//		]	 			 
+				});
 
-	var oBinding = oTableComm.getBinding("items");
-     var aSorters = [];
-	    
-	      var sPath = "Giorno";
-	      var bDescending = false;
-	      
-	      
-	      var vGroup = this.mGroupFunctions[sPath];
-	      
-        /*  var vGroup = function(oContext) {
+				var oBinding = oTableComm.getBinding("items");
+				var aSorters = [];
+
+				var sPath = "Giorno";
+				var bDescending = false;
+
+				var vGroup = this.mGroupFunctions[sPath];
+
+				/*  var vGroup = function(oContext) {
 	             var name = oContext.getProperty("Giorno");
 	             return {
 	                 key: name,
 	                 text: name
 	             };
 	         };*/
-	         aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
-	    
-	     oBinding.sort(aSorters);
-	     
-	     				 
-/////////////////////////////////////				 
-        //per inserire tabella creata in javascript in vista xml
-		//		oTableComm.placeAt(oView.byId("commesse"));
-		
-		//		
-			/*	var aColumns = [
+				aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+
+				oBinding.sort(aSorters);
+
+				/////////////////////////////////////				 
+				//per inserire tabella creata in javascript in vista xml
+				//		oTableComm.placeAt(oView.byId("commesse"));
+
+				//		
+				/*	var aColumns = [
 
         new sap.m.Column({
             header : new sap.m.Label({
@@ -1289,75 +1290,71 @@ type : "Active"}
 				//definisco tabella spese
 				var oTableExp = oView.byId("SPESE_CONTENTS");
 
-				
-					 var oTemplateSpese = new sap.m.ColumnListItem({
-    cells : [
-    	
-    		
-    		
-        new sap.m.ObjectIdentifier({
-            title : "{Giorno}",
-     //       id : "Exp_cellGiorno",
-            
-            wrapping : false
-        }),
-        new sap.m.ObjectIdentifier({
-           title : "{Descrorder}",
-      //      id : "Exp_cellDescrorder",
-            wrapping : false
-        }),
-        new sap.m.Text({
-            text : "{Descr}"
-     //       id : "Exp_cellDescr"
-        }),
-        
-        new sap.m.Text({
-            text : "{Office}"
-     //        id : "Exp_cellOffice"
-        }),
-        
-         new sap.m.Text({
-            text : "{Expdescr}"
-      //      id : "Exp_cellExpdescr"
-        })
-       ],
-type : "Active"}
-);		
-				
-				oTableExp.setModel(oModel);
-                
-                // esegue binding delle righe
-                 oTableExp.bindItems({
-				 path : "/ListaSpeseGroupSet",
-			
-		     	filters : [f1, f2],
-		     	
-		     	template : oTemplateSpese
-					
-				 });
-				 
+				var oTemplateSpese = new sap.m.ColumnListItem({
+					cells: [
 
-	var oBindingExp = oTableExp.getBinding("items");
-     var aSortersExp = [];
-	    
-	      var sPathExp = "Giorno";
-	      var bDescendingExp = false;
-	      
-	      var vGroupExp = this.mGroupFunctions[sPathExp];
-	      
-         /* var vGroupExp = function(oContext) {
+						new sap.m.ObjectIdentifier({
+							title: "{Giorno}",
+							//       id : "Exp_cellGiorno",
+
+							wrapping: false
+						}),
+						new sap.m.ObjectIdentifier({
+							title: "{Descrorder}",
+							//      id : "Exp_cellDescrorder",
+							wrapping: false
+						}),
+						new sap.m.Text({
+							text: "{Descr}"
+								//       id : "Exp_cellDescr"
+						}),
+
+						new sap.m.Text({
+							text: "{Office}"
+								//        id : "Exp_cellOffice"
+						}),
+
+						new sap.m.Text({
+							text: "{Expdescr}"
+								//      id : "Exp_cellExpdescr"
+						})
+					],
+					type: "Active"
+				});
+
+				oTableExp.setModel(oModel);
+
+				// esegue binding delle righe
+				oTableExp.bindItems({
+					path: "/ListaSpeseGroupSet",
+
+					filters: [f1, f2],
+
+					template: oTemplateSpese
+
+				});
+
+				var oBindingExp = oTableExp.getBinding("items");
+				var aSortersExp = [];
+
+				var sPathExp = "Giorno";
+				var bDescendingExp = false;
+
+				var vGroupExp = this.mGroupFunctions[sPathExp];
+
+				/* var vGroupExp = function(oContext) {
 	             var name = oContext.getProperty("Giorno");
 	             return {
 	                 key: name,
 	                 text: name
 	             };
 	         };*/
-	         aSortersExp.push(new sap.ui.model.Sorter(sPathExp, bDescendingExp, vGroupExp));
-	    
-	     oBindingExp.sort(aSortersExp);
-	     
-////FINE LISTE	     
-	     //////////////////////////////
+				aSortersExp.push(new sap.ui.model.Sorter(sPathExp, bDescendingExp, vGroupExp));
+
+				oBindingExp.sort(aSortersExp);
+
+				////FINE LISTE	     
+				//////////////////////////////
 
 				//////////////////////////////
 
