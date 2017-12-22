@@ -278,10 +278,13 @@ sap.ui.define([
 				sap.ui.getCore().byId("descrizione").setValueState("None");
 				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
-				this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-				this._onBindingChange();
+			//	this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+			
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
+					this._onBindingChange();
+						this.byId("LRS4_DAT_CALENDAR").rerender();
+			
 			},
 
 			//MP: funzione che richiama il fragment contenente l'albero
@@ -777,8 +780,10 @@ sap.ui.define([
 				oEntry.Exptype = oContext.getProperty("Exptype");
 
 				var oItem = oEvent.getSource().getParent();
-				
-				if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+			    var EventType =	oEvent.getSource().getType();
+			    if(EventType === "Reject"){ // MP: sono in cancellazione
+			
+			//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
 				oEntry.Deletionflag = "X";
 				}else{  // sono in modifica
 						oEntry.Deletionflag = "";
@@ -838,79 +843,6 @@ sap.ui.define([
 					});
 			},
 			
-			
-			onExpenseListCancelOrSave: function(oEvent) {
-				var oModel = sap.ui.getCore().getModel();
-				var oEntry = {};
-
-				var oContext = oEvent.getSource().getBindingContext();
-				oEntry.Tmskey = oContext.getProperty("Tmskey");
-				oEntry.Giorno = oContext.getProperty("Giorno");
-				oEntry.Expkey = oContext.getProperty("Expkey");
-				oEntry.Exptype = oContext.getProperty("Exptype");
-
-				var oItem = oEvent.getSource().getParent();
-				
-				if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
-				oEntry.Deletionflag = "X";
-				}else{  // sono in modifica
-						oEntry.Deletionflag = "";
-						//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
-						//oEntry.Descr = oInputDescr.getValue();
-						
-						 oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
-						// var oCell1 = oItem.getParent().mAggregations.cells[1];
-		                // oEntry.Expdescr = oCell1["_lastValue"];
-						
-						if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
-				     	{
-				     	//	var oCell2 = oItem.getParent().mAggregations.cells[2];
-				     		oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
-				     	
-		                //    oEntry.Km = oCell2["_lastValue"];
-						//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
-						///(SE)
-					//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
-					    ///(SE)
-						} else {
-						//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
-						///(SE)
-				     //	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
-						  oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
-					//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
-			        //     oEntry.Importo = oCell2["_lastValue"];
-
-						}
-			}	
-
-				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
-					"',Exptype='" + oEntry.Exptype + "')",
-					oEntry, {
-						method: "PUT",
-						success: function(data) {
-							var msg = "Success";
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
-
-							});
-							oModel.refresh();
-						},
-						error: function(e) {
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
-
-								});
-
-						}
-
-					});
-			},
-
 
 			handleDeleteComm: function(oEvent) {
 				var oModel = this.getView().getModel();
@@ -1332,20 +1264,24 @@ var oDateFormat = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyy/MM/d
   
        new sap.m.ObjectIdentifier({
             title : "{Weekday} {Giorno}",
+             
+            
             wrapping : false
         }),
  
         
         new sap.m.ObjectIdentifier({
            title : "{Descrorder}",
+           text : "{Descr}",
    //         id : "Comm_cellDescrorder",
             wrapping : false
         }),
         
-        new sap.m.Text({
-            text : "{Descr}"
+    /*    new sap.m.Text({
+            text : "{Descr}",
     //        id : "Comm_cellDescr"
-        }),
+     wrapping : true
+        }),*/
         
         new sap.m.Text({
             text : "{Office}"
@@ -1462,21 +1398,54 @@ type : "Active"}
 							text: "{Office}"
 								//        id : "Exp_cellOffice"
 						}),
-
-						new sap.m.Text({
+                      
+                      //	<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
+                      	
+                      		new sap.m.Input({
+							value: "{Importo}",
+							editable: false
+								//      id : "Exp_cellExpdescr"
+						}),
+                      	
+					/*	new sap.m.Text({
 							text: "{Expdescr}"
 								//      id : "Exp_cellExpdescr"
 						}),
+				*/
+				new sap.ui.layout.HorizontalLayout({content:[
+				
 					
+							new sap.m.Button({
+				//	id : "btnD" ,
+					type :  sap.m.ButtonType.Default,
+					icon : "sap-icon://edit" ,
 					
+					tooltip : "Modifica" ,
+					press : this.onExpenseModify
+					}),
+					
+			
+						
 					new sap.m.Button({
-					id : "btnDD" ,
+				//	id : "btnD" ,
+					type :  sap.m.ButtonType.Accept,
+					icon : "sap-icon://save" ,
+					
+					tooltip : "Salva" ,
+					press : this.onExpenseCancelOrSave
+					}),
+					
+							new sap.m.Button({
+				//	id : "btnD" ,
 					type :  sap.m.ButtonType.Reject,
 					icon : "sap-icon://delete" ,
 					
 					tooltip : "Elimina" ,
-					press : this.onExpenseListCancelOrSave
-						})
+					press : this.onExpenseCancelOrSave
+					})
+
+					]})					
+										
 					],
 					
 				
