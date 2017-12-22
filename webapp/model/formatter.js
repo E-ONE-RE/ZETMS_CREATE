@@ -119,6 +119,8 @@ sap.ui.define([], function() {
 			});
 			return oDateFormat.format(new Date(sDate));
 		},
+		
+
 
 		formatAbsence: function(sAbtType) {
 

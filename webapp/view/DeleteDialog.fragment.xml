@@ -77,7 +77,10 @@
 									</Column>
 									<Column id="col4" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
 										<Text text="Modifica / Elimina spesa" id="nameC4"/>
+											<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
 									</Column>
+									
+							
 								
 								</columns>
 								<items>
@@ -94,10 +97,10 @@
 										<cells>
 											<sap.ui.layout:HorizontalLayout>
 												<sap.ui.layout:content>
-											<Button id="btnM" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
-											<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
-											<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
-											</sap.ui.layout:content>
+													<Button id="btnM" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
+													<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
+													<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
+												</sap.ui.layout:content>
 											</sap.ui.layout:HorizontalLayout>
 										</cells>
 									</ColumnListItem>
@@ -218,7 +221,7 @@
 		<buttons>
 			<Button id="EliminaSel" text="Elimina Commessa" press="handleDeleteComm" type="Reject"/>
 			<!-- Fare Check su ore !-->
-			<Button id="Modifica" text="Modifica Commessa" press="handleMod" type="Emphasized"/>
+			<Button id="Modifica" text="Modifica Commessa" press="onConfirmation" type="Emphasized"/>
 			<Button text="Indietro" press="closeDialogSel" />
 	
 		</buttons>
