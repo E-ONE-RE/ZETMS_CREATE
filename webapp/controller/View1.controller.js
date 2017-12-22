@@ -276,12 +276,10 @@ sap.ui.define([
 				sap.ui.getCore().byId("ore").setValueState("None");
 				sap.ui.getCore().byId("descrizione").setValue("");
 				sap.ui.getCore().byId("descrizione").setValueState("None");
-				sap.ui.getCore().byId("chilometri").setValue("");
-				sap.ui.getCore().byId("chilometri").setValueState("None");
-				sap.ui.getCore().byId("descrizioneChilometri").setValue("");
 				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
 				this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+				this._onBindingChange();
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
 			},
@@ -501,9 +499,9 @@ sap.ui.define([
 						oSelect.destroyItems();
 						oSelect.removeAllItems();
 						aSediResult = data.results;
-						var oModel = new sap.ui.model.json.JSONModel();
-						oModel.setData(data);
-						sap.ui.getCore().setModel(oModel, "results");
+						var oJsonModel = new sap.ui.model.json.JSONModel();
+						oJsonModel.setData(data);
+						sap.ui.getCore().setModel(oJsonModel, "results");
 						oSelect.setModel(sap.ui.getCore().getModel("results"));
 						var oTemplate = new sap.ui.core.Item({
 							key: "{Office}",
@@ -554,59 +552,81 @@ sap.ui.define([
 				//check per completezza dati inseriti
 
 				var aControls = [];
+				var aParam = [];
+				var oInput;
 				
 				var buttonEvent = oEvent.getSource().getId();
 				
-				if (buttonEvent === "Modifica") {
-					aControls.push(sap.ui.getCore().byId("commessaSelDel"), sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
-					} else {
+				if (buttonEvent !== "Modifica") {
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
-				    } 
-				
-				var oInput;
-				var aParam = [];
-				
-		 if (buttonEvent =! "Modifica") {
-				for (var i = 0; i < aControls.length; i++) {
-					oInput = aControls[i];
-					if (oInput.getValue() == "") {
+					} else {
+				    aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
+					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
+					for (var k = 0; k < aControls.length; k++) {
+					oInput = aControls[k];
+					if (oInput.getValue() === "") {
 						oInput.setValueState("Error");
 						oInput.setValueStateText("il campo è obbligatorio");
 					} else {
 						aParam.push(oInput.getValue());
 					}
-
 				}
-		 }
+				    } 
+	
+	           if(buttonEvent !== "Modifica"){
+				for (var i = 0; i < aControls.length; i++) {
+					oInput = aControls[i];
+					if (oInput.getValue() === "") {
+						oInput.setValueState("Error");
+						oInput.setValueStateText("il campo è obbligatorio");
+					} else {
+						aParam.push(oInput.getValue());
+					}
+				}
+	           }
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
-					sDay, sMonth, sYear, sKmDesc;
+					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
 
 				var aDate = [];
+				var oExpenseTable; 
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 3) {
-
-					sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
-
-					sCommessaId = this.sCommessaId;
-
-					sOre = sap.ui.getCore().byId("ore").getValue();
-					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
-					sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
-					sKmDesc = sap.ui.getCore().byId("descrizioneChilometri").getValue();
-
-					aDate = this.formattedDate.split("/");
+                   if (buttonEvent === "Modifica") {
+					sOffice = sap.ui.getCore().byId("sedeSel").getText();
+					sOre = sap.ui.getCore().byId("oreSel").getValue();
+					sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
+					sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
+					sDay = this.sDay;
+					sMonth = this.sMonth;
+					sYear = this.sYear;
+					sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
+                    sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
+                    oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
+                   }else{
+                   	sCommessaId = this.sCommessaId;
+                   	sTimesheetKey = this.sTimesheetKey;
+                   	sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+                   	sOre = sap.ui.getCore().byId("ore").getValue();
+                   	sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
+                   	aDate = this.formattedDate.split("/");
 					sDay = aDate[0];
 					sMonth = aDate[1];
 					sYear = aDate[2];
-
-					//		var oView = this.getView();
+					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
+                    sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
+                    oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+                   }
+            
+                   
+				
+					//var oView = this.getView();
 					var oModel = this.getView().getModel();
 
 					var oUrlParams = {
-						Tmskey: this.sTimesheetKey,
+						Tmskey: sTimesheetKey,
 						Orderjob: sCommessaId,
 						Descr: sDescrizione,
 						Office: sOffice,
@@ -618,7 +638,8 @@ sap.ui.define([
 					};
 
 					oUrlParams.FromCommToExp = [];
-
+                   
+                 
 					// passo eventuale riga km
 					if (sChilometri > 0) {
 						oUrlParams.FromCommToExp.push({
@@ -633,10 +654,10 @@ sap.ui.define([
 					}
 
 					// passo eventuale righe spese
-					var oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+					
 					var aItem = oExpenseTable.getAggregation("items");
 					var sExpType, sExpDesc, sExpImp;
-					for (var j = 0; j < aItem.length; j++) {
+					for (var j = 1; j < aItem.length; j++) {
 						var oItem = aItem[j];
 						if (oItem.getSelected()) {
 							sExpType = oItem.getAggregation("cells")[0].getTitle().substring(0, 2);
@@ -689,7 +710,8 @@ sap.ui.define([
 								closeOnBrowserNavigation: false
 
 							});
-
+							
+						
 						} else {
 
 							//jQuery.sap.require("sap.m.MessageBox");
@@ -712,6 +734,12 @@ sap.ui.define([
 					}
 
 				}
+				
+					if (buttonEvent !== "Modifica"){
+							this.closeDialog();
+							}else{
+							this.closeDialogSel();
+							}
 
 			},
 
@@ -901,8 +929,8 @@ sap.ui.define([
 
 			handleCommessaSelection: function(oEvent) {
 				this.openDialogSel(oEvent);
+			
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
-				var oModel = this.getView().getModel();
 				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
 				oDialog.bindElement({
 					path: sSelItemPath,
@@ -911,7 +939,11 @@ sap.ui.define([
 					}
 
 				});
-
+			   this.sDay = oDialog.getBindingContext().getProperty("Giorno");
+				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
+				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
+				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
+	oDialog.setTitle("Dettaglio commessa " + sDate);
 			},
 
 			openDialogSel: function(oEvent) {
@@ -920,7 +952,6 @@ sap.ui.define([
 				if (!that.DialogSel) {
 
 					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DeleteDialog", this, "ZETMS_CREATE.controller.View1");
-
 					//to get access to the global model
 					this.getView().addDependent(that.Dialog);
 					if (sap.ui.Device.system.phone) {
@@ -935,7 +966,7 @@ sap.ui.define([
 				this.DialogSel.close();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-				this.getView().byId("TREETABLE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
 				
 			},
 
