@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" id="FragDel" xmlns:smartTable="sap.ui.comp.smarttable"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-	<Dialog id="dialogDelComm" title="Dettaglio Commessa" stretch="true">
+	<Dialog id="dialogDelComm"  stretch="true">
 		<html:style>
 			.sapMILILabel { font-size: 14px; !important }
 		</html:style>
@@ -33,13 +33,13 @@
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Text id="oreSel" text="{Ore}"/>
+										<Input id="oreSel" value="{Ore}"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
 										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione attività." value="{Descr}"
-											enabled="false"/>
+											/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
@@ -131,9 +131,9 @@
 										<ColumnListItem>
 											<cells>
 												<ObjectIdentifier title="00 - Chilometri (KM)"/>
-												<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+												<TextArea id="descrizioneKmSel" enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
 													placeholder="descrizione spesa (opzionale)"/>
-												<Input tooltip="Chilometri" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+												<Input id="chilometriSel" tooltip="Chilometri" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 											</cells>
 										</ColumnListItem>
 										<ColumnListItem>
