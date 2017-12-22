@@ -98,8 +98,9 @@
 											<sap.ui.layout:HorizontalLayout>
 												<sap.ui.layout:content>
 													<Button id="btnM" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
-													<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
-													<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
+														<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
+											        <Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
+												
 												</sap.ui.layout:content>
 											</sap.ui.layout:HorizontalLayout>
 										</cells>

@@ -232,9 +232,9 @@
 									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 								</Column>
 								
-								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
+							<!--	<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
-								</Column>
+								</Column>-->
 								
 								<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="Sede" id="comm_label_Office"/>
@@ -335,7 +335,7 @@
 					
 					<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
 							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" tooltip=""
-							itemPress="handleCommessaSelection">
+							>
 								
 							<headerToolbar>
 								<Toolbar>
@@ -367,8 +367,8 @@
 									<Label text="Quantità" id="exp_label_Qta"/>
 								</Column>
 								
-								<Column id="exp_del" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
-										<Text text="Elimina spesa" id="exp_name_del"/>
+								<Column id="exp_del" hAlign="Center" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
+										<Text text="Gestisci spesa" id="exp_name_del"/>
 											<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
 								</Column>
 								
