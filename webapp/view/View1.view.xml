@@ -391,7 +391,7 @@
 							<t:columns>
 								<t:Column label="Giorno">
 									<t:template>
-										<Text text="{Giorno}" wrapping="false"/>
+										<ObjectIdentifier title="{Weekday} {Giorno}" />
 									</t:template>
 								</t:Column>
 								<t:Column label="Commessa">

@@ -1016,6 +1016,7 @@ sap.ui.define([
 			//	this.timeInputElem = this.byId("LRS4_FELEM_TIMEINPUT");
 			//	this.balanceElem = this.byId("LRS4_FELEM_BALANCES");
 			//	this.noteElem = this.byId("LRS4_FELEM_NOTE");
+			    this.expdescr = this.byId("descrSpesa");
 				this.timeFrom = this.byId("LRS4_DAT_STARTTIME");
 				this.timeTo = this.byId("LRS4_DAT_ENDTIME");
 				this.oreTot = this.byId("LRS4_DAT_ORETOT");

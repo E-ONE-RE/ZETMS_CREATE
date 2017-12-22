@@ -88,25 +88,26 @@ sap.ui.define([
 
 				this.mGroupFunctions = {
 					Giorno: function(oContext) {
-						var name = oContext.getProperty("Giorno");
-						var oretot = oContext.getProperty("Oretot");
-						var imptot = oContext.getProperty("Imptot");
-						var kmtot = oContext.getProperty("Kmtot");
+						var sName = oContext.getProperty("Giorno");
+						var sWeekday= oContext.getProperty("Weekday");
+						var sOretot = oContext.getProperty("Oretot");
+						var sImptot = oContext.getProperty("Imptot");
+						var sKmtot = oContext.getProperty("Kmtot");
 						return {
-							key: name,
-							text: name + " - Ore: " + oretot + " - Spese: " + imptot + " - Km: " + kmtot
+							key: sName,
+							text: sWeekday + " " + sName + " - Ore: " + sOretot + " - Spese: " + sImptot + " - Km: " + sKmtot
 						};
 
 					},
 
 					Descrorder: function(oContext) {
-						var name = oContext.getProperty("Descrorder");
-						var oretotcomm = oContext.getProperty("Oretotcomm");
-						var imptotcomm = oContext.getProperty("Imptotcomm");
-						var kmtotcomm = oContext.getProperty("Kmtotcomm");
+						var sName = oContext.getProperty("Descrorder");
+						var sOretotcomm = oContext.getProperty("Oretotcomm");
+						var sImptotcomm = oContext.getProperty("Imptotcomm");
+						var sKmtotcomm = oContext.getProperty("Kmtotcomm");
 						return {
-							key: name,
-							text: name + " - Ore: " + oretotcomm + " - Spese: " + imptotcomm + " - Km: " + kmtotcomm
+							key: sName,
+							text: sName + " - Ore: " + sOretotcomm + " - Spese: " + sImptotcomm + " - Km: " + sKmtotcomm
 						};
 					}
 
@@ -549,13 +550,23 @@ sap.ui.define([
 			},
 
 			//MP function per salvare riga timesheet
-			onConfirmation: function() {
+			onConfirmation: function(oEvent) {
 				//check per completezza dati inseriti
 
 				var aControls = [];
-				aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
+				
+				var buttonEvent = oEvent.getSource().getId();
+				
+				if (buttonEvent === "Modifica") {
+					aControls.push(sap.ui.getCore().byId("commessaSelDel"), sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
+					} else {
+					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
+				    } 
+				
 				var oInput;
 				var aParam = [];
+				
+		 if (buttonEvent =! "Modifica") {
 				for (var i = 0; i < aControls.length; i++) {
 					oInput = aControls[i];
 					if (oInput.getValue() == "") {
@@ -566,7 +577,7 @@ sap.ui.define([
 					}
 
 				}
-
+		 }
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc;
@@ -736,20 +747,40 @@ sap.ui.define([
 				oEntry.Giorno = oContext.getProperty("Giorno");
 				oEntry.Expkey = oContext.getProperty("Expkey");
 				oEntry.Exptype = oContext.getProperty("Exptype");
+
+				var oItem = oEvent.getSource().getParent();
 				
 				if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
 				oEntry.Deletionflag = "X";
 				}else{  // sono in modifica
-				oEntry.Deletionflag = "";
-				var oInputDescr = sap.ui.getCore().byId("descrSpesa");
-				oEntry.Descr = oInputDescr.getValue();
-				if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
-				{
-				oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
-				}
-				oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
-				}
-			
+						oEntry.Deletionflag = "";
+						//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
+						//oEntry.Descr = oInputDescr.getValue();
+						
+						 oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
+						// var oCell1 = oItem.getParent().mAggregations.cells[1];
+		                // oEntry.Expdescr = oCell1["_lastValue"];
+						
+						if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
+				     	{
+				     	//	var oCell2 = oItem.getParent().mAggregations.cells[2];
+				     		oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
+				     	
+		                //    oEntry.Km = oCell2["_lastValue"];
+						//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
+						///(SE)
+					//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
+					    ///(SE)
+						} else {
+						//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
+						///(SE)
+				     //	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
+						  oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
+					//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
+			        //     oEntry.Importo = oCell2["_lastValue"];
+
+						}
+			}	
 
 				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
 					"',Exptype='" + oEntry.Exptype + "')",
@@ -903,6 +934,9 @@ sap.ui.define([
 			closeDialogSel: function() {
 				this.DialogSel.close();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("items").refresh();
+				
 			},
 
 			_onRouteMatched: function(oEvent) {
@@ -1179,6 +1213,10 @@ sap.ui.define([
 				// definisco template listItem in riferimento alla tabella creata in vista xml
 
 			
+	//		var oWeekDay = this.oFormatYyyymmdd.parse(res);
+var oDateFormat = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyy/MM/dd"});
+
+
 
   var oTableComm = oView.byId("COMMESSE_CONTENTS");
      
@@ -1186,17 +1224,19 @@ sap.ui.define([
 				
 	 var oTemplate = new sap.m.ColumnListItem({
     cells : [
-    	
-        new sap.m.ObjectIdentifier({
-            title : "{Giorno} { path: 'ZrequestId', formatter: '.formatter.formatRequestId'}",
-    //        id : "Comm_cellGiorno",
+  
+       new sap.m.ObjectIdentifier({
+            title : "{Weekday} {Giorno}",
             wrapping : false
         }),
+ 
+        
         new sap.m.ObjectIdentifier({
            title : "{Descrorder}",
    //         id : "Comm_cellDescrorder",
             wrapping : false
         }),
+        
         new sap.m.Text({
             text : "{Descr}"
     //        id : "Comm_cellDescr"
@@ -1298,7 +1338,7 @@ type : "Active"}
 					cells: [
 
 						new sap.m.ObjectIdentifier({
-							title: "{Giorno}",
+							title: "{Weekday} {Giorno}",
 							//       id : "Exp_cellGiorno",
 
 							wrapping: false
