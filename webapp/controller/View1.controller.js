@@ -837,6 +837,80 @@ sap.ui.define([
 
 					});
 			},
+			
+			
+			onExpenseListCancelOrSave: function(oEvent) {
+				var oModel = sap.ui.getCore().getModel();
+				var oEntry = {};
+
+				var oContext = oEvent.getSource().getBindingContext();
+				oEntry.Tmskey = oContext.getProperty("Tmskey");
+				oEntry.Giorno = oContext.getProperty("Giorno");
+				oEntry.Expkey = oContext.getProperty("Expkey");
+				oEntry.Exptype = oContext.getProperty("Exptype");
+
+				var oItem = oEvent.getSource().getParent();
+				
+				if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+				oEntry.Deletionflag = "X";
+				}else{  // sono in modifica
+						oEntry.Deletionflag = "";
+						//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
+						//oEntry.Descr = oInputDescr.getValue();
+						
+						 oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
+						// var oCell1 = oItem.getParent().mAggregations.cells[1];
+		                // oEntry.Expdescr = oCell1["_lastValue"];
+						
+						if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
+				     	{
+				     	//	var oCell2 = oItem.getParent().mAggregations.cells[2];
+				     		oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
+				     	
+		                //    oEntry.Km = oCell2["_lastValue"];
+						//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
+						///(SE)
+					//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
+					    ///(SE)
+						} else {
+						//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
+						///(SE)
+				     //	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
+						  oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
+					//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
+			        //     oEntry.Importo = oCell2["_lastValue"];
+
+						}
+			}	
+
+				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
+					"',Exptype='" + oEntry.Exptype + "')",
+					oEntry, {
+						method: "PUT",
+						success: function(data) {
+							var msg = "Success";
+							sap.m.MessageToast.show(msg, {
+								duration: 5000,
+								autoClose: true,
+								closeOnBrowserNavigation: false
+
+							});
+							oModel.refresh();
+						},
+						error: function(e) {
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+
+						}
+
+					});
+			},
+
 
 			handleDeleteComm: function(oEvent) {
 				var oModel = this.getView().getModel();
@@ -1392,8 +1466,20 @@ type : "Active"}
 						new sap.m.Text({
 							text: "{Expdescr}"
 								//      id : "Exp_cellExpdescr"
+						}),
+					
+					
+					new sap.m.Button({
+					id : "btnDD" ,
+					type :  sap.m.ButtonType.Reject,
+					icon : "sap-icon://delete" ,
+					
+					tooltip : "Elimina" ,
+					press : this.onExpenseListCancelOrSave
 						})
 					],
+					
+				
 					type: "Active"
 				});
 

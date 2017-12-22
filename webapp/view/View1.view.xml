@@ -367,6 +367,11 @@
 									<Label text="Quantità" id="exp_label_Qta"/>
 								</Column>
 								
+								<Column id="exp_del" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
+										<Text text="Elimina spesa" id="exp_name_del"/>
+											<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
+								</Column>
+								
 
 							</columns>
 							
