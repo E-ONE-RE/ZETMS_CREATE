@@ -33,13 +33,13 @@
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Input id="oreSel" value="{Ore}"/>
+										<Input id="oreSel" value="{Ore}" change = "onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
 										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione attività." value="{Descr}"
-											/>
+											change = "onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
@@ -223,7 +223,7 @@
 			<Button id="EliminaSel" text="Elimina Commessa" press="handleDeleteComm" type="Reject"/>
 			<!-- Fare Check su ore !-->
 			<Button id="Modifica" text="Modifica Commessa" press="onConfirmation" type="Emphasized"/>
-			<Button text="Indietro" press="closeDialogSel" />
+			<Button id="Indietro" text="Indietro" press="closeDialogSel" />
 	
 		</buttons>
 	</Dialog>
