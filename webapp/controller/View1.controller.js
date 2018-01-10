@@ -91,7 +91,7 @@ sap.ui.define([
 				this.mGroupFunctions = {
 					Giorno: function(oContext) {
 						var sName = oContext.getProperty("Giorno");
-						var sWeekday= oContext.getProperty("Weekday");
+						var sWeekday = oContext.getProperty("Weekday");
 						var sOretot = oContext.getProperty("Oretot");
 						var sImptot = oContext.getProperty("Imptot");
 						var sKmtot = oContext.getProperty("Kmtot");
@@ -233,18 +233,65 @@ sap.ui.define([
 
 			},
 
-			//MP: selezione di una data del calendario da rivedere!!!!!
+			//MP: lasciate ogni speranza o voi che entrate 
 			handleCalendarSelect: function(oEvent) {
-				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si selziona una data
-
-				/*		var oButton = this.getView().byId("btn1");
-						if (oButton.getEnabled() == true) {
-							oButton.setEnabled(false);
-						} else {
-							oButton.setEnabled(true);
-						}*/
+				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
+				// e si possono ancora inserire delle ore (meno di 8 ore inserite per un giorno)
 				if (oEvent.getSource().getSelectedDates()[0] != undefined) {
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
+				}
+				var oButton = this.getView().byId("btn1");
+				var oCal = oEvent.getSource();
+				var oSelectedDate;
+				var sSelectedDate;
+				var aSpecialDates;
+				var oSpecialDate;
+				var flag = 0; //flag per controllare la logica
+				aSpecialDates = oCal.getSpecialDates(); //date che hanno già inserimenti
+				if (oButton.getEnabled() == true) {
+					if (oCal.getSelectedDates().length == 0) {
+						oButton.setEnabled(false);
+					} else {
+						oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
+						sSelectedDate = oSelectedDate.toString();
+						for (var j = 0; j < oCal.getSelectedDates().length; j++) {
+							for (var k = 0; k < aSpecialDates.length; k++) {
+								oSpecialDate = oCal.getSpecialDates()[k];
+								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+									flag = 1;
+									if (oSpecialDate.getProperty("type") == "Type09") {
+										oButton.setEnabled(false);
+									} else {
+										oButton.setEnabled(true);
+									}
+								}
+							}
+						}
+					}
+				} else {
+					if (oCal.getSelectedDates().length > 0) {
+						oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
+						sSelectedDate = oSelectedDate.toString();
+					}
+					if (oCal.getSpecialDates().length == 0) {
+						oButton.setEnabled(true);
+					} else {
+						for (var i = 0; i < aSpecialDates.length; i++) {
+							oSpecialDate = oCal.getSpecialDates()[i];
+							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+								flag = 1;
+								if (oSpecialDate.getProperty("type") == "Type09") {
+									oButton.setEnabled(false);
+								} else {
+									oButton.setEnabled(true);
+								}
+								//Controllare meglio la logica per il bottone
+							}
+						}
+						if (flag == 0 && sSelectedDate != undefined) {
+							oButton.setEnabled(true);
+						}
+					}
 				}
 			},
 
@@ -280,13 +327,15 @@ sap.ui.define([
 				sap.ui.getCore().byId("descrizione").setValueState("None");
 				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
-			//	this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-			
+				//	this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
-					this._onBindingChange();
-						this.byId("LRS4_DAT_CALENDAR").rerender();
-			
+
+				//MP: per gestire refresh
+				//this._onBindingChange();
+				//this.byId("LRS4_DAT_CALENDAR").rerender();
+
 			},
 
 			//MP: funzione che richiama il fragment contenente l'albero
@@ -523,8 +572,12 @@ sap.ui.define([
 
 			onExpenseSelect: function(oEvent) {
 				var oTable;
-				if (oEvent == undefined) {
-					oTable = sap.ui.getCore().byId("tabellaSpese");
+				if (oEvent == undefined || oEvent.getSource().getId() == "Modifica" || oEvent.getSource().getId() == "Indietro") {
+					if (oEvent == undefined) {
+						oTable = sap.ui.getCore().byId("tabellaSpese");
+					} else {
+						oTable = sap.ui.getCore().byId("tabellaSpeseSel");
+					}
 				} else {
 					oTable = oEvent.getSource();
 				}
@@ -555,78 +608,78 @@ sap.ui.define([
 			//MP function per salvare riga timesheet
 			onConfirmation: function(oEvent) {
 				//check per completezza dati inseriti
-
+				this.oEvent = oEvent;
 				var aControls = [];
 				var aParam = [];
 				var oInput;
-				
-				var buttonEvent = oEvent.getSource().getId();
-				
-				if (buttonEvent !== "Modifica") {
+				var that = this;
+
+				this.buttonEvent = oEvent.getSource().getId();
+
+				if (this.buttonEvent !== "Modifica") {
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
-					} else {
-				    aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
+				} else {
+					aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
 					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
 					for (var k = 0; k < aControls.length; k++) {
-					oInput = aControls[k];
-					if (oInput.getValue() === "") {
-						oInput.setValueState("Error");
-						oInput.setValueStateText("il campo è obbligatorio");
-					} else {
-						aParam.push(oInput.getValue());
+						oInput = aControls[k];
+						if (oInput.getValue() === "") {
+							oInput.setValueState("Error");
+							oInput.setValueStateText("il campo è obbligatorio");
+						} else {
+							aParam.push(oInput.getValue());
+						}
 					}
 				}
-				    } 
-	
-	           if(buttonEvent !== "Modifica"){
-				for (var i = 0; i < aControls.length; i++) {
-					oInput = aControls[i];
-					if (oInput.getValue() === "") {
-						oInput.setValueState("Error");
-						oInput.setValueStateText("il campo è obbligatorio");
-					} else {
-						aParam.push(oInput.getValue());
+
+				if (this.buttonEvent !== "Modifica") {
+					for (var i = 0; i < aControls.length; i++) {
+						oInput = aControls[i];
+						if (oInput.getValue() === "") {
+							oInput.setValueState("Error");
+							oInput.setValueStateText("il campo è obbligatorio");
+						} else {
+							aParam.push(oInput.getValue());
+						}
 					}
 				}
-	           }
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
 
 				var aDate = [];
-				var oExpenseTable; 
+				var oExpenseTable;
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 3) {
-                   if (buttonEvent === "Modifica") {
-					sOffice = sap.ui.getCore().byId("sedeSel").getText();
-					sOre = sap.ui.getCore().byId("oreSel").getValue();
-					sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
-					sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
-					sDay = this.sDay;
-					sMonth = this.sMonth;
-					sYear = this.sYear;
-					sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
-                    sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
-                    oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
-                   }else{
-                   	sCommessaId = this.sCommessaId;
-                   	sTimesheetKey = this.sTimesheetKey;
-                   	sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
-                   	sOre = sap.ui.getCore().byId("ore").getValue();
-                   	sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
-                   	aDate = this.formattedDate.split("/");
-					sDay = aDate[0];
-					sMonth = aDate[1];
-					sYear = aDate[2];
-					sChilometri = sap.ui.getCore().byId("chilometri").getValue();
-                    sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
-                    oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
-                   }
-            
-                   
-				
+					this.getView().byId("btn1").setEnabled(false);
+					if (this.buttonEvent === "Modifica") {
+						sOffice = sap.ui.getCore().byId("sedeSel").getText();
+						sOre = sap.ui.getCore().byId("oreSel").getValue();
+						sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
+						sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
+						sDay = this.sDay;
+						sMonth = this.sMonth;
+						sYear = this.sYear;
+						sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
+						sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
+						oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
+					} else {
+						sCommessaId = this.sCommessaId;
+						sTimesheetKey = this.sTimesheetKey;
+						sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+						sOre = sap.ui.getCore().byId("ore").getValue();
+						sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
+						aDate = this.formattedDate.split("/");
+						sDay = aDate[0];
+						sMonth = aDate[1];
+						sYear = aDate[2];
+						sChilometri = sap.ui.getCore().byId("chilometri").getValue();
+						sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
+						oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+					}
+
 					//var oView = this.getView();
 					var oModel = this.getView().getModel();
 
@@ -643,8 +696,7 @@ sap.ui.define([
 					};
 
 					oUrlParams.FromCommToExp = [];
-                   
-                 
+
 					// passo eventuale riga km
 					if (sChilometri > 0) {
 						oUrlParams.FromCommToExp.push({
@@ -659,7 +711,7 @@ sap.ui.define([
 					}
 
 					// passo eventuale righe spese
-					
+
 					var aItem = oExpenseTable.getAggregation("items");
 					var sExpType, sExpDesc, sExpImp;
 					for (var j = 1; j < aItem.length; j++) {
@@ -681,6 +733,12 @@ sap.ui.define([
 						}
 					}
 
+					if (oEvent.getSource().getId() != "Modifica") {
+						that.onExpenseSelect(undefined);
+					} else {
+						that.closeDialogSel(oEvent);
+					}
+
 					//		}
 					//	this.oModel.setData(oData);
 					//	} else {
@@ -696,7 +754,8 @@ sap.ui.define([
 					});
 
 					//}
-					//}	
+					//}
+
 					function fnS(oData, response) {
 						//	console.log(oData);
 						//	console.log(response);
@@ -715,8 +774,21 @@ sap.ui.define([
 								closeOnBrowserNavigation: false
 
 							});
-							
-						
+
+							if (that.buttonEvent !== "Modifica") {
+								that.closeDialog();
+								that._onBindingChange();
+							} else {
+								that._onBindingChange();
+								that.DialogSel.close();
+								sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+								sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+								that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+								that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+								that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+
+							}
+
 						} else {
 
 							//jQuery.sap.require("sap.m.MessageBox");
@@ -738,13 +810,20 @@ sap.ui.define([
 						alert("Error in read: " + oError.message + "\n" + oError.responseText);
 					}
 
+				} else {
+                   this.getView().byId("btn1").setEnabled(true);
+					//jQuery.sap.require("sap.m.MessageBox");
+					sap.m.MessageBox.show(
+						"Errore: controllare gli inserimenti", {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Errore",
+							actions: [sap.m.MessageBox.Action.CLOSE]
+						});
+			
+
 				}
+
 				
-					if (buttonEvent !== "Modifica"){
-							this.closeDialog();
-							}else{
-							this.closeDialogSel();
-							}
 
 			},
 
@@ -756,19 +835,18 @@ sap.ui.define([
 				var oInput, oModel;
 				var oSaveButton = aCells[3].getAggregation("content")[1];
 				oSaveButton.setEnabled(true);
-				oModel=this.getView().getModel();
+				oModel = this.getView().getModel();
 				for (var i = 1; i < 3; i++) {
 					oInput = aCells[i];
 					if (oInput.getEditable() == false) {
 						oInput.setEditable(true);
 						oInput.unbindElement();
-					
 					} else {
 						oInput.setEditable(false);
 						oSaveButton.setEnabled(false);
 					}
 				}
-					oModel.updateBindings(true);
+				oModel.updateBindings(true);
 			},
 			
 			
@@ -812,40 +890,52 @@ sap.ui.define([
 				oEntry.Exptype = oContext.getProperty("Exptype");
 
 				var oItem = oEvent.getSource().getParent();
-			    var EventType =	oEvent.getSource().getType();
-			    if(EventType === "Reject"){ // MP: sono in cancellazione
-			
-			//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
-				oEntry.Deletionflag = "X";
-				}else{  // sono in modifica
-						oEntry.Deletionflag = "";
-						//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
-						//oEntry.Descr = oInputDescr.getValue();
-						
-						 oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
-						// var oCell1 = oItem.getParent().mAggregations.cells[1];
-		                // oEntry.Expdescr = oCell1["_lastValue"];
-						
-						if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
-				     	{
-				     	//	var oCell2 = oItem.getParent().mAggregations.cells[2];
-				     		oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
-				     	
-		                //    oEntry.Km = oCell2["_lastValue"];
+				var EventType = oEvent.getSource().getType();
+				if (EventType === "Reject") { // MP: sono in cancellazione
+
+					//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+					oEntry.Deletionflag = "X";
+				} else { // sono in modifica
+					oEntry.Deletionflag = "";
+					//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
+					//oEntry.Descr = oInputDescr.getValue();
+
+					oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
+					// var oCell1 = oItem.getParent().mAggregations.cells[1];
+					// oEntry.Expdescr = oCell1["_lastValue"];
+
+					if (oEntry.Exptype == "00") // differenza tra i tipi spesa 
+					{
+						//	var oCell2 = oItem.getParent().mAggregations.cells[2];
+						oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
+
+						//    oEntry.Km = oCell2["_lastValue"];
 						//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
 						///(SE)
-					//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
-					    ///(SE)
-						} else {
+						//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
+						///(SE)
+					} else {
 						//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
 						///(SE)
-				     //	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
-						  oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
-					//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
-			        //     oEntry.Importo = oCell2["_lastValue"];
+						//	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
+						oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
+						//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
+						//     oEntry.Importo = oCell2["_lastValue"];
 
-						}
-			}	
+					}
+				}
+
+				var aCells;
+				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
+				var oSaveButton = aCells[3].getAggregation("content")[1];
+				oSaveButton.setEnabled(false);
+				var oInput;
+
+				for (var i = 1; i < 3; i++) {
+					oInput = aCells[i];
+					oInput.setEditable(false);
+
+				}
 
 				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
 					"',Exptype='" + oEntry.Exptype + "')",
@@ -874,6 +964,7 @@ sap.ui.define([
 
 					});
 			},
+
 			
 			
 			onSingleExpenseCancelOrSave: function(oEvent) {
@@ -941,10 +1032,13 @@ sap.ui.define([
 					this.closeDialogSpese();
 			},
 
+
 			handleDeleteComm: function(oEvent) {
 				var oModel = this.getView().getModel();
 				var oContext = oEvent.getSource().getBindingContext();
 				var oEntry = {};
+				var oDialog = this.DialogSel;
+				var that = this;
 
 				oEntry.Tmskey = oContext.getProperty("Tmskey");
 				oEntry.Giorno = oContext.getProperty("Giorno");
@@ -961,6 +1055,9 @@ sap.ui.define([
 
 							});
 							oModel.refresh();
+							oDialog.close();
+							that._onBindingChange();
+
 						},
 						error: function(e) {
 							sap.m.MessageBox.show(
@@ -981,9 +1078,22 @@ sap.ui.define([
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
 			onLiveChange: function(oEvent) {
 				var oInput;
+				var sNameOre;
+				var sNameDescr;
+				if (oEvent.getSource().getId() == "ore") {
+					sNameOre = "ore";
+				} else {
+					sNameOre = "oreSel";
+				}
+
+				if (oEvent.getSource().getId() == "descrizione") {
+					sNameDescr = "descrizione";
+				} else {
+					sNameDescr = "descrizioneSel";
+				}
 				switch (oEvent.getSource().getId()) {
-					case "ore":
-						oInput = sap.ui.getCore().byId("ore");
+					case sNameOre:
+						oInput = sap.ui.getCore().byId(sNameOre);
 						if (oInput.getValue() < 1 || oInput.getValue() > 8) {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
 							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e 8");
@@ -1000,8 +1110,8 @@ sap.ui.define([
 							oInput.setValueState(sap.ui.core.ValueState.None);
 						}
 						break;
-					case "descrizione":
-						oInput = sap.ui.getCore().byId("descrizione");
+					case sNameDescr:
+						oInput = sap.ui.getCore().byId(sNameDescr);
 						if (oInput.getValue() == "") {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
 							oInput.setValueStateText("la descrizione è obbligatoria");
@@ -1035,10 +1145,12 @@ sap.ui.define([
 			
 			
 			handleCommessaSelection: function(oEvent) {
+
 				this.openDialogSel(oEvent);
-			
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
-				
+
+				oDialog.unbindElement();
+
 				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
 				oDialog.bindElement({
 					path: sSelItemPath,
@@ -1046,12 +1158,31 @@ sap.ui.define([
 						expand: 'ToChildExpNodes'
 					}
 				});
-				
-			    this.sDay = oDialog.getBindingContext().getProperty("Giorno");
+
+
+				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
-                oDialog.setTitle("Dettaglio commessa " + sDate);
+				oDialog.setTitle("Dettaglio commessa " + sDate);
+
+				var aCommesseItems = this.getView().byId("COMMESSE_CONTENTS").getBinding("items");
+				var aSpeseItems = this.getView().byId("SPESE_CONTENTS").getBinding("items");
+				var aTreeTableRows = this.getView().byId("TREETABLE_CONTENTS").getBinding("rows");
+
+				//MP: utilizzato per fare il refresh delle liste nell'IconTabFilter della View
+				//solo quando viene effettuata un'operazione sulle spese (cancellazione o modifica)
+				var oExpenseList = sap.ui.getCore().byId("speseCommessa");
+				if (oExpenseList.getBinding("items") != undefined) {
+					oExpenseList.getBinding("items").attachChange(function() {
+						aCommesseItems.refresh();
+						aSpeseItems.refresh();
+						aTreeTableRows.refresh();
+					});
+					oExpenseList.getBinding("items").refresh();
+
+				}
+
 			},
 
 			openDialogSel: function(oEvent) {
@@ -1068,14 +1199,23 @@ sap.ui.define([
 				}
 				that.DialogSel.open();
 				this._DialogSel = that.DialogSel;
+
 			},
 
-			closeDialogSel: function() {
+			closeDialogSel: function(oEvent) {
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
+				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//RISOLVERE DISCORSO SPESE (RESET)
+
 				this.DialogSel.close();
-				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-				
+				/////////////////////////////////////////////////////////////////////
+				// MP: per pulire i campi della tabella nel panel e chiudere il panel
+				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+				this.onExpenseSelect(oEvent);
+				/////////////////////////////////////////////////////////////////////
+
 			},
 			
 			
@@ -1278,8 +1418,9 @@ sap.ui.define([
 
 				var nowForYear = new Date();
 				var oYear = this.oFormatYear.format(nowForYear);
-
 				var oYearN = Number(oYear);
+				var oDay = nowForYear.getDate();
+				var oDayN = Number(oDay);
 
 				var oYear2 = oYearN + 1;
 
@@ -1477,59 +1618,54 @@ sap.ui.define([
 				//////////////////	
 				// definisco template listItem in riferimento alla tabella creata in vista xml
 
-			
-	//		var oWeekDay = this.oFormatYyyymmdd.parse(res);
-var oDateFormat = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyy/MM/dd"});
+				//		var oWeekDay = this.oFormatYyyymmdd.parse(res);
+				var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
+					pattern: "yyyy/MM/dd"
+				});
 
+				var oTableComm = oView.byId("COMMESSE_CONTENTS");
 
+				oTableComm.setModel(oModel);
 
-  var oTableComm = oView.byId("COMMESSE_CONTENTS");
-     
-	oTableComm.setModel(oModel);
-				
-	 var oTemplate = new sap.m.ColumnListItem({
-    cells : [
-  
-       new sap.m.ObjectIdentifier({
-            title : "{Weekday} {Giorno}",
-             
-            
-            wrapping : false
-        }),
- 
-        
-        new sap.m.ObjectIdentifier({
-           title : "{Descrorder}",
-           text : "{Descr}",
-   //         id : "Comm_cellDescrorder",
-            wrapping : false
-        }),
-        
-    /*    new sap.m.Text({
-            text : "{Descr}",
-    //        id : "Comm_cellDescr"
-     wrapping : true
-        }),*/
-        
-        new sap.m.Text({
-            text : "{Office}"
-    //         id : "Comm_cellOffice"
-        }),
-        
-  /*       new sap.m.Text({
-            text : "{Oretot}"
-    //         id : "Comm_cellOffice"
-        }),*/
-        
-         new sap.m.Text({
-            text : "{Expdescr}"
-   //         id : "Comm_cellExpdescr"
-        })
-    ],
-type : "Active"}
-);		
-	  
+				var oTemplate = new sap.m.ColumnListItem({
+					cells: [
 
+						new sap.m.ObjectIdentifier({
+							title: "{Weekday} {Giorno}",
+
+							wrapping: false
+						}),
+
+						new sap.m.ObjectIdentifier({
+							title: "{Descrorder}",
+							text: "{Descr}",
+							//         id : "Comm_cellDescrorder",
+							wrapping: false
+						}),
+
+						/*    new sap.m.Text({
+						        text : "{Descr}",
+						//        id : "Comm_cellDescr"
+						 wrapping : true
+						    }),*/
+
+						new sap.m.Text({
+							text: "{Office}"
+								//         id : "Comm_cellOffice"
+						}),
+
+						/*       new sap.m.Text({
+						          text : "{Oretot}"
+						  //         id : "Comm_cellOffice"
+						      }),*/
+
+						new sap.m.Text({
+							text: "{Expdescr}"
+								//         id : "Comm_cellExpdescr"
+						})
+					],
+					type: "Active"
+				});
 
 				/////////////////////////
 				//	oTableComm.bindAggregation e oTableComm.bindItems  hanno la stessa funzione
@@ -1626,6 +1762,7 @@ type : "Active"}
 							text: "{Office}"
 								//        id : "Exp_cellOffice"
 						}),
+
 						
 						new sap.m.Text({
 							text: "{Expdescr}"
@@ -1645,10 +1782,12 @@ type : "Active"}
 						})
                       	
 					/*	new sap.m.Text({
+
 							text: "{Expdescr}"
 								//      id : "Exp_cellExpdescr"
 						}),
 				*/
+
 			/*	new sap.ui.layout.HorizontalLayout({content:[
 				
 					
@@ -1683,9 +1822,43 @@ type : "Active"}
 
 					]})		*/			
 										
+
+						new sap.ui.layout.HorizontalLayout({
+							content: [
+
+								new sap.m.Button({
+									//	id : "btnD" ,
+									type: sap.m.ButtonType.Default,
+									icon: "sap-icon://edit",
+
+									tooltip: "Modifica",
+									press: this.onExpenseModify
+								}),
+
+								new sap.m.Button({
+									//	id : "btnD" ,
+									type: sap.m.ButtonType.Accept,
+									icon: "sap-icon://save",
+
+									tooltip: "Salva",
+									press: this.onExpenseCancelOrSave
+								}),
+
+								new sap.m.Button({
+									//	id : "btnD" ,
+									type: sap.m.ButtonType.Reject,
+									icon: "sap-icon://delete",
+
+									tooltip: "Elimina",
+									press: this.onExpenseCancelOrSave
+								})
+
+							]
+						})
+
+
 					],
-					
-				
+
 					type: "Active"
 				});
 
