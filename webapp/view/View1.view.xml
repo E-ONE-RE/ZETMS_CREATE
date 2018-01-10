@@ -428,7 +428,7 @@
 					<OverflowToolbar id="footerToolbar">
 			  
 		<ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet">
+							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
 						  </Button>
 			 
