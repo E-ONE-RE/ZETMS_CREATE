@@ -1823,7 +1823,7 @@ sap.ui.define([
 					]})		*/			
 										
 
-						new sap.ui.layout.HorizontalLayout({
+			/*			new sap.ui.layout.HorizontalLayout({
 							content: [
 
 								new sap.m.Button({
@@ -1854,7 +1854,7 @@ sap.ui.define([
 								})
 
 							]
-						})
+						})*/
 
 
 					],
