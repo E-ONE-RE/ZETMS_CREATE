@@ -128,12 +128,15 @@ sap.ui.define([
 			},
 
 			onCollapseAll: function() {
-				var oTreeTable = this.getView().byId("treeTable");
+				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
+			//	var oTreeTable = sap.ui.getCore().byId("treeTable");
 				oTreeTable.collapseAll();
+				
+				
 			},
 
 			onExpandFirstLevel: function() {
-				var oTreeTable = this.getView().byId("treeTable");
+				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
 				oTreeTable.expandToLevel(1);
 			},
 
@@ -141,9 +144,31 @@ sap.ui.define([
 				if (this._oDialog) {
 					this._oDialog.destroy();
 				}
+				
+					if (this._oPopover) {
+				this._oPopover.destroy();
+			}
+			
+				if (this._oPopover) {
+				this._oPopover.destroy();
+			}
 
 			},
+            
+            	handleResponsivePopoverPress: function (oEvent) {
+			if (!this._oPopoverHelp) {
+				this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
+				
+				this.getView().addDependent(this._oPopoverHelp);
+			}
 
+			this._oPopoverHelp.openBy(oEvent.getSource());
+		},
+
+		handleCloseButton: function (oEvent) {
+			this._oPopoverHelp.close();
+		},
+		
 			handleConfirm: function(oEvent) {
 
 				var oView = this.getView();
@@ -198,10 +223,10 @@ sap.ui.define([
 				if (!that._oDialog) {
 					that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
-					this.getView().addDependent(that.Dialog);
-					if (sap.ui.Device.system.phone) {
-						that.Dialog.setStretch(true);
-					}
+					this.getView().addDependent(that._oDialog);
+				/*	if (sap.ui.Device.system.phone) {
+						that._oDialog.setStretch(true);
+					}*/
 				}
 				// toggle compact style
 				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
@@ -259,7 +284,7 @@ sap.ui.define([
 								oSpecialDate = oCal.getSpecialDates()[k];
 								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 									flag = 1;
-									if (oSpecialDate.getProperty("type") == "Type09") {
+									if (oSpecialDate.getProperty("type") == "Type07") {
 										oButton.setEnabled(false);
 									} else {
 										oButton.setEnabled(true);
@@ -280,7 +305,7 @@ sap.ui.define([
 							oSpecialDate = oCal.getSpecialDates()[i];
 							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 								flag = 1;
-								if (oSpecialDate.getProperty("type") == "Type09") {
+								if (oSpecialDate.getProperty("type") == "Type07") {
 									oButton.setEnabled(false);
 								} else {
 									oButton.setEnabled(true);
@@ -293,6 +318,35 @@ sap.ui.define([
 						}
 					}
 				}
+				
+				//CHECK GIORNI NON LAVORATIVI///////////////////////////////
+					var aSelectedDates = oCal.getSelectedDates();
+					if (aSelectedDates.length > 0) {
+
+						for (var i = 0; i < aSelectedDates.length; i++) {
+
+						
+						var	oDate = aSelectedDates[i].getStartDate();
+					
+						var oDayOfWeek = this.oFormatDaysShort.format(oDate);
+
+						if(oDayOfWeek === "sab" || oDayOfWeek === "sat" || oDayOfWeek === "dom" || oDayOfWeek=== "sun") {
+						//if(oDate === sap.ui.unified.CalendarDayType.NonWorking) {
+								//jQuery.sap.require("sap.m.MessageBox");
+								sap.m.MessageBox.show(
+									"Attenzione: Non è possibile selezionare giorni non lavorativi, rimuovere la selezione, " + oDate, {
+										icon: sap.m.MessageBox.Icon.WARNING,
+										title: "Error",
+										actions: [sap.m.MessageBox.Action.CLOSE]
+
+									});
+								
+
+								//oCalendar.removeAllSelectedDates();
+								return;
+							}
+						}
+					}
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
@@ -1124,8 +1178,10 @@ sap.ui.define([
 								closeOnBrowserNavigation: false
 
 							});
-							oModel.refresh();
-							that.closeDialogSpese();
+
+							
+						//    oModel.refresh();
+
 						
 						},
 						error: function(e) {
@@ -1141,25 +1197,10 @@ sap.ui.define([
 
 					});
 					
-		
+
+				this.closeDialogSpese();	
 					
-					}
-				}),
-					endButton: new sap.m.Button({
-					text: 'Annulla',
-					type: 'Reject',
-					press: function () {
-						dialog.close();
-					}
-				}),
-				afterClose: function() {
-					dialog.destroy();
-				}
-			});
-            
-			dialog.open();	
-			
-			
+
 			},
 
 
@@ -1474,9 +1515,9 @@ sap.ui.define([
 
 					that.DialogSpese = sap.ui.xmlfragment("ZETMS_CREATE.view.SpeseDialog", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
-					this.getView().addDependent(that.Dialog);
+					this.getView().addDependent(that.DialogSpese);
 					if (sap.ui.Device.system.phone) {
-						that.Dialog.setStretch(true);
+						that.DialogSpese.setStretch(true);
 					}
 				}
 				that.DialogSpese.open();
@@ -1485,7 +1526,10 @@ sap.ui.define([
 			
 			
 			closeDialogSpese: function() {
+				
+				this._onBindingChange();
 				this.DialogSpese.close();
+			
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
@@ -1867,7 +1911,7 @@ sap.ui.define([
 
 						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
-							text: "{Descr}",
+							text: "{Office}",
 							//         id : "Comm_cellDescrorder",
 							wrapping: false
 						}),
@@ -1879,7 +1923,8 @@ sap.ui.define([
 						    }),*/
 
 						new sap.m.Text({
-							text: "{Office}"
+						//	text: "{Office}",
+							text: "{Descr}",
 								//         id : "Comm_cellOffice"
 						}),
 
@@ -1889,7 +1934,7 @@ sap.ui.define([
 						      }),*/
 
 						new sap.m.Text({
-							text: "{Expdescr}"
+							text: "{Ore}"
 								//         id : "Comm_cellExpdescr"
 						})
 					],
@@ -1977,38 +2022,50 @@ sap.ui.define([
 
 							wrapping: false
 						}),
-						new sap.m.ObjectIdentifier({
+					
+						
+							new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
-							//      id : "Exp_cellDescrorder",
+							text: "{Office}",
+							//         id : "Comm_cellDescrorder",
 							wrapping: false
 						}),
+						
+						
+						/*	new sap.m.Text({
+							text: "{Office}"
+								//        id : "Exp_cellOffice"
+						}),
+*/
 						new sap.m.Text({
 							text: "{Descr}"
 								//       id : "Exp_cellDescr"
 						}),
 
-						new sap.m.Text({
-							text: "{Office}"
-								//        id : "Exp_cellOffice"
-						}),
-
+					
 						
-						new sap.m.Text({
+						/*new sap.m.Text({
 							text: "{Expdescr}"
 								//        id : "Exp_cellOffice"
-						}),
+						}),*/
                       
                       //	<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
                       	
-								
-                      		new sap.m.Text({
+								new sap.m.ObjectIdentifier({
+							title: "{Expdescr}",
+							text: "{= ${Exptype} === '00' ? ${Km} : ${Importo}}",
+							//         id : "Comm_cellDescrorder",
+							wrapping: false
+						})
+						
+                      	/*	new sap.m.Text({
                       			
                       			text: "{= ${Exptype} === '00' ? ${Km} : ${Importo}}"
 					//		text: "{Importo}"
 					//			value: "{Importo}"
 					//		editable: false
 								//      id : "Exp_cellExpdescr"
-						})
+						})*/
                       	
 					/*	new sap.m.Text({
 
@@ -2187,7 +2244,7 @@ sap.ui.define([
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
-										type: "Type09",
+										type: "Type07",
 										tooltip: "Ore: " + oData.results[i].Ore
 
 									}));
@@ -2197,7 +2254,7 @@ sap.ui.define([
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
-										type: "Type01",
+										type: "Type03",
 										tooltip: "Ore: " + oData.results[i].Ore
 									}));
 								}
@@ -2224,14 +2281,14 @@ sap.ui.define([
 							oLeg1.addItem(new CalendarLegendItem({
 								text: "Completo",
 								id: "leg1",
-								type: "Type09"
+								type: "Type07"
 
 							}));
 
 							oLeg1.addItem(new CalendarLegendItem({
 								text: "Incompleto",
 								id: "leg2",
-								type: "Type01"
+								type: "Type03"
 							}));
 
 							/*	oLeg1.addItem(new CalendarLegendItem({

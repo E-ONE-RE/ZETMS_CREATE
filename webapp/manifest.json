@@ -39,11 +39,7 @@
 			"tablet": true,
 			"phone": true
 		},
-		"supportedThemes": [
-			"sap_hcb",
-			"sap_bluecrystal",
-			"sap_belize"
-		]
+		"supportedThemes": ["sap_hcb", "sap_bluecrystal", "sap_belize"]
 	},
 	"sap.ui5": {
 		"rootView": {
@@ -108,59 +104,25 @@
 					"target": "notFound"
 				}
 			},
-			"routes": [
-				{
-					"name": "view1",
-					"pattern": "",
-					"greedy": false,
-					"target": "view1",
-					"view": "View1"
-				},
-				{
-					"name": "view1s",
-					"pattern": "view1s",
-					"greedy": false,
-					"target": "view1s",
-					"view": "View1s"
-				},
-				{
-					"name": "view2",
-					"pattern": "view2/{ZrequestId}",
-					"greedy": false,
-					"target": "view2",
-					"view": "View2"
-				}
-			],
+			"routes": [{
+				"name": "view1",
+				"pattern": "",
+				"greedy": false,
+				"target": "view1",
+				"view": "View1"
+			}],
 			"targets": {
 				"view1": {
 					"viewName": "View1",
 					"viewId": "V1",
 					"viewLevel": 1
-				},
-				"view2": {
-					"viewName": "View2",
-					"viewId": "V2",
-					"viewLevel": 3,
-					"transition": "slide"
-				},
-				"notFound": {
-					"viewName": "NotFound",
-					"transition": "show"
-				},
-				"view1s": {
-					"transition": "slide",
-					"viewName": "View1s",
-					"viewId": "V1S",
-					"viewLevel": 2
 				}
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			]
+			"css": [{
+				"uri": "css/style.css"
+			}]
 		}
 	},
 	"sap.platform.abap": {
