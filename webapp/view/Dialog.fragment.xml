@@ -51,7 +51,7 @@
 								</f:FormElement>
 								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
-										<Select enabled="false" width="100%" id="sedi"></Select>
+										<Select width="100%" id="sedi"></Select>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">
@@ -81,7 +81,7 @@
 															<Text text="Descrizione"/>
 														</Column>
 														<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-															<Text text="Importo (EUR)"/>
+															<Text text="Importo (EUR) / Distanza (KM)"/>
 														</Column>
 													</columns>
 													<items>
@@ -169,10 +169,9 @@
 			</VBox>
 		</content>
 		<beginButton>
-			
-			
-				
-			<Button id="conferma" text="Conferma" press="onConfirmation" type="Accept"/>
+
+			<Button id="conferma" text="Conferma" press="openMessageDialog" type="Accept"/>
+
 			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>
