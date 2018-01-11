@@ -40,7 +40,7 @@
 								</f:FormElement>
 								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
-										<Select enabled="false" width="100%" id="sedi"></Select>
+										<Select width="100%" id="sedi"></Select>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">

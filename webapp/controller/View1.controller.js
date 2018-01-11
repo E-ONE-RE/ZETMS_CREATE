@@ -317,7 +317,7 @@ sap.ui.define([
 				this.Dialog.close();
 				sap.ui.getCore().byId("commessa").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
-				sap.ui.getCore().byId("sedi").setEnabled(false);
+				//sap.ui.getCore().byId("sedi").setEnabled(false);
 				sap.ui.getCore().byId("sedi").unbindItems();
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("ore").setValueState("None");
@@ -338,6 +338,7 @@ sap.ui.define([
 
 			//MP: funzione che richiama il fragment contenente l'albero
 			showPopoverCommessa: function(oEvent) {
+			
 				var that = this;
 
 				if (!that._oPopover) {
@@ -382,6 +383,9 @@ sap.ui.define([
 
 			//MP: funzione richiamata alla selezione di una commessa
 			onCommessaSelect: function(oEvent) {
+				this.sTimesheetKey = undefined;
+				sap.ui.getCore().byId("ore").setValue("");
+				sap.ui.getCore().byId("descrizione").setValue("");
 				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
 				var oTree = sap.ui.getCore().byId("Tree");
 				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
@@ -667,7 +671,7 @@ sap.ui.define([
 						this.sDescrOriginale = sDescrizione;
 					} else {
 						sCommessaId = this.sCommessaId;
-						//sTimesheetKey = this.sTimesheetKey;
+						sTimesheetKey = this.sTimesheetKey;
 						sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
 						sOre = sap.ui.getCore().byId("ore").getValue();
 						sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
