@@ -20,17 +20,28 @@
 								</Toolbar>
 							</f:toolbar>
 							<f:formElements>
-								<f:FormElement label="Commesse esistenti">
+								<f:FormElement label="Commessa esistente">
 									<f:fields>
 										<Hbox>
 										<Button text="Seleziona una Commessa esistente" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
-												<Button text="Seleziona una nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
-											press="showPopoverCommessa" enabled="true"></Button>
+											
 										</Hbox>
+									
+									</f:fields>
+								</f:FormElement>
+								
+								<f:FormElement label="Nuova commessa">
+									<f:fields>
+										
+										<Hbox>
+										<Button text="Seleziona una nuova Commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+											press="showPopoverCommessa" enabled="true"></Button>
+												</Hbox>
 										<!--<Input id="commessaEx" required="false" enabled="false"/>-->
 									</f:fields>
 								</f:FormElement>
+								
 								
 								<f:FormElement label="Commessa">
 									<f:fields>
@@ -158,11 +169,32 @@
 			</VBox>
 		</content>
 		<beginButton>
+			
+			
+				
 			<Button id="conferma" text="Conferma" press="onConfirmation" type="Accept"/>
 			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>
 			<Button text="Indietro" press="closeDialog" type="Reject"/>
 		</endButton>
+		
+	
+					<OverflowToolbar id="footerToolbar">
+			  
+		
+		
+	     	<Button id="info1"
+				text="Help"
+				press="handleResponsivePopoverPress"  type="Emphasized" icon="sap-icon://message-information" tooltip="Clicca per informazioni sull'uso del Timesheet">
+			   <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+			 </Button>	
+				<ToolbarSpacer/>
+							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
+						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+						  </Button>
+			 
+					</OverflowToolbar>
+				
 	</Dialog>
 </core:FragmentDefinition>
