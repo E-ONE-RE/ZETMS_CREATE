@@ -70,7 +70,7 @@ xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 			<Button id="EliminaSelSpese" text="Elimina Spesa" press="onSingleExpenseCancelOrSave" type="Reject"/>
 			<!-- Fare Check su ore !-->
 			<Button id="ModificaSpese" text="Modifica Spesa" press="onSingleExpenseCancelOrSave" type="Emphasized"/>
-			<Button text="Indietro" press="closeDialogSpese" />
+			<Button text="Indietro" press="navBackDialogSpese" />
 	
 		</buttons>
 	</Dialog>

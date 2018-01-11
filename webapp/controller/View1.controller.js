@@ -8,13 +8,14 @@ sap.ui.define([
 		'sap/m/Label',
 		'sap/ui/model/Filter',
 		'sap/ui/model/Sorter',
+		"sap/m/MessageBox",
 
 		//	'sap/m/MessageToast',
 		//	'sap/m/MessageBox',
 		"ZETMS_CREATE/model/formatter"
 	],
 	function(BaseController, JSONModel, CalendarLegendItem, DateTypeRange, Button, GroupHeaderListItem, Dialog, Label, Filter, Sorter,
-		formatter) {
+		MessageBox, formatter) {
 		"use strict";
 		var sJson; //variabile per lo stringone Json
 		var aSediResult;
@@ -1116,7 +1117,7 @@ sap.ui.define([
 			    var EventType =	oEvent.getSource().getType();
 				var sDialogMessage, msg;
 				var that = this;
-					
+				
 				if(EventType == "Reject"){
 					sDialogMessage = "La spesa verrà cancellata. Continuare?";
 					msg = "Spesa eliminata correttamente";
@@ -1125,6 +1126,7 @@ sap.ui.define([
 					msg = "Spesa modificata correttamente";
 				}
 				
+	
 					var dialog = new Dialog({
 				title: 'Attenzione',
 				type: 'Message',
@@ -1181,7 +1183,7 @@ sap.ui.define([
 
 							
 						//    oModel.refresh();
-
+                       that.closeDialogSpese();
 						
 						},
 						error: function(e) {
@@ -1198,9 +1200,30 @@ sap.ui.define([
 					});
 					
 
-				this.closeDialogSpese();	
+				
 					
 
+					}
+					
+					
+				}),
+					endButton: new sap.m.Button({
+					text: 'Annulla',
+					type: 'Reject',
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function() {
+					dialog.destroy();
+						
+				}
+			});
+            
+			dialog.open();	
+			
+			
+			
 			},
 
 
@@ -1445,7 +1468,7 @@ sap.ui.define([
 
 				if (!that.DialogSel) {
 
-					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DeleteDialog", this, "ZETMS_CREATE.controller.View1");
+					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogDelete", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that.Dialog);
 					if (sap.ui.Device.system.phone) {
@@ -1513,7 +1536,7 @@ sap.ui.define([
 
 				if (!that.DialogSpese) {
 
-					that.DialogSpese = sap.ui.xmlfragment("ZETMS_CREATE.view.SpeseDialog", this, "ZETMS_CREATE.controller.View1");
+					that.DialogSpese = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogSpese", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that.DialogSpese);
 					if (sap.ui.Device.system.phone) {
@@ -1533,6 +1556,12 @@ sap.ui.define([
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+			},
+			
+				navBackDialogSpese: function() {
+
+				this.DialogSpese.close();
+
 			},
 
 			_onRouteMatched: function(oEvent) {
