@@ -1,9 +1,17 @@
-<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:t="sap.ui.table" xmlns:sap.ui.layout.form="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" xmlns:sap.me="sap.me" xmlns:sap.ui.core="sap.ui.core" xmlns:ui="sap.ca.ui" xmlns:sap.ui.unified="sap.ui.unified" controllerName="ZETMS_CREATE.controller.View1" displayBlock="true">
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" 
 
-	
-
-	
-
+xmlns:smartTable="sap.ui.comp.smarttable" 
+xmlns:mvc="sap.ui.core.mvc" 
+xmlns="sap.m" 
+xmlns:t="sap.ui.table" 
+xmlns:sap.ui.layout.form="sap.ui.layout.form" 
+xmlns:sap.ui.layout="sap.ui.layout" 
+xmlns:sap.me="sap.me"
+xmlns:sap.ui.core="sap.ui.core" 
+xmlns:ui="sap.ca.ui" 
+xmlns:sap.ui.unified="sap.ui.unified" 
+controllerName="ZETMS_CREATE.controller.View1" 
+displayBlock="true">
 
 	<!--<App>-->
 	<!--<pages>-->
@@ -334,7 +342,9 @@
 					</IconTabFilter>
 					
 					<IconTabFilter key="spese" id="spese" icon="sap-icon://expense-report" tooltip="Spese" text="Spese">
-							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished" tooltip=""
+							<Table noDataText="Drop column list items here and columns in the area above" id="SPESE_CONTENTS" updateFinished="onUpdateFinished"
+							
+						 itemPress="handleSpeseSelection" tooltip=""
 							>
 								
 							<headerToolbar>
@@ -363,14 +373,18 @@
 									<Label text="Sede" id="exp_label_Office"/>
 								</Column>
 								
+							    <Column id="exp_column_Expdescr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
+									<Label text="Tipo" id="exp_label_Expdescr"/>
+								</Column>
+								
 								<Column id="exp_column_Qta" width="auto" visible="true">
 									<Label text="Quantità" id="exp_label_Qta"/>
 								</Column>
 								
-								<Column id="exp_del" hAlign="Center" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
+							<!--	<Column id="exp_del" hAlign="Center" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 										<Text text="Gestisci spesa" id="exp_name_del"/>
-											<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
-								</Column>
+										
+								</Column>-->
 								
 
 							</columns>
@@ -416,6 +430,42 @@
 								</t:Column>
 							</t:columns>
 						</t:TreeTable>
+					</IconTabFilter>
+					
+					
+					
+				<IconTabFilter key="pdfDoc" id="pdfDoc" icon="sap-icon://pdf-attachment" tooltip="Report" text="Report">
+						
+				  <content>
+							
+					<Panel id="panel_doc" width="auto" class="sapUiResponsiveMargin" backgroundDesign="Transparent" expandable="false">
+				
+							<headerToolbar>
+								<Toolbar height="auto">
+									<Title text="Download report"/>
+								</Toolbar>
+							</headerToolbar>
+							
+						<html:div style="text-align:center">
+						
+							 <Button id="btnTms" icon="sap-icon://pdf-attachment" type="Emphasized" text="Timesheet" press="onOpenDoc">
+									  <layoutData>
+									  	<OverflowToolbarLayoutData moveToOverflow="false" />
+									  </layoutData>
+							  </Button>
+						 </html:div>
+						 
+						 <html:div style="text-align:center">
+						
+							 <Button id="btnExp" icon="sap-icon://pdf-attachment" type="Emphasized" text="Spese" press="onOpenDoc">
+									  <layoutData>
+									  	<OverflowToolbarLayoutData moveToOverflow="false" />
+									  </layoutData>
+							  </Button>
+						 </html:div>
+
+						</Panel>
+					</content>
 					</IconTabFilter>
 					
 					
