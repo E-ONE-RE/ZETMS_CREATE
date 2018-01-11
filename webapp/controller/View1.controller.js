@@ -327,8 +327,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("descrizione").setValueState("None");
 				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
-				//	this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-
+				//this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
 
@@ -576,7 +575,7 @@ sap.ui.define([
 
 			onExpenseSelect: function(oEvent) {
 				var oTable;
-				if (oEvent == undefined || oEvent.getSource().getId() == "Modifica" || oEvent.getSource().getId() == "Indietro") {
+				if (oEvent == undefined || oEvent.getSource().getId() == "Modificaa" || oEvent.getSource().getId() == "Indietro") {
 					if (oEvent == undefined) {
 						oTable = sap.ui.getCore().byId("tabellaSpese");
 					} else {
@@ -608,6 +607,43 @@ sap.ui.define([
 
 				}
 			},
+			
+			
+			openMessageDialog: function(oEvent){
+				var that;
+		        
+		        var sButtonName = oEvent.getSource().getId() + "a";
+		         that = this;
+				var dialog = new Dialog({
+				title: 'Attenzione',
+				type: 'Message',
+				state: 'Warning',
+				content: new sap.m.Text({
+					text: "Sei sicuro di voler confermare l'azione?" 
+				}),
+				beginButton: new sap.m.Button(sButtonName,{
+					text: 'Conferma',
+					type: 'Accept',
+					press: function () {
+						dialog.close();
+						that.onConfirmation(oEvent);
+					}
+				}),
+					endButton: new sap.m.Button({
+					text: 'Annulla',
+					type: 'Reject',
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function() {
+					dialog.destroy();
+				}
+			});
+            
+			dialog.open();		
+		
+			},
 
 			//MP function per salvare riga timesheet
 			onConfirmation: function(oEvent) {
@@ -617,10 +653,11 @@ sap.ui.define([
 				var aParam = [];
 				var oInput;
 				var that = this;
-
+				
+           
 				this.buttonEvent = oEvent.getSource().getId();
-
-				if (this.buttonEvent !== "Modifica") {
+                
+				if (this.buttonEvent !== "Modificaa") {
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
 				} else {
 					aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
@@ -636,7 +673,7 @@ sap.ui.define([
 					}
 				}
 
-				if (this.buttonEvent !== "Modifica") {
+				if (this.buttonEvent !== "Modificaa") {
 					for (var i = 0; i < aControls.length; i++) {
 						oInput = aControls[i];
 						if (oInput.getValue() === "" || oInput.getValueState() == "Error") {
@@ -658,7 +695,7 @@ sap.ui.define([
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 3) {
 					this.getView().byId("btn1").setEnabled(false);
-					if (this.buttonEvent === "Modifica") {
+					if (this.buttonEvent === "Modificaa") {
 						sOffice = sap.ui.getCore().byId("sedeSel").getText();
 						sOre = sap.ui.getCore().byId("oreSel").getValue();
 						sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
@@ -739,7 +776,7 @@ sap.ui.define([
 						}
 					}
 
-					if (oEvent.getSource().getId() != "Modifica") {
+			if (this.buttonEvent != "Modificaa") {
 						that.onExpenseSelect(undefined);
 					} else {
 						that.closeDialogSel(oEvent);
@@ -772,8 +809,12 @@ sap.ui.define([
 
 							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
-
-							var msg = "Success ";
+							var msg;
+                            	if (that.buttonEvent !== "Modificaa") {
+							    msg = "Commessa creata con successo";
+                             	}else{
+                             	msg = "Commessa modificata con successo";	
+                             	}
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
 								autoClose: true,
@@ -781,9 +822,9 @@ sap.ui.define([
 
 							});
 
-							if (that.buttonEvent !== "Modifica") {
-								that.closeDialog();
+							if (that.buttonEvent !== "Modificaa") {
 								that._onBindingChange();
+								that.closeDialog();
 							} else {
 								that._onBindingChange();
 								that.DialogSel.close();
@@ -885,15 +926,44 @@ sap.ui.define([
 			onExpenseCancelOrSave: function(oEvent) {
 				var oModel = sap.ui.getCore().getModel();
 				var oEntry = {};
-
 				var oContext = oEvent.getSource().getBindingContext();
-				oEntry.Tmskey = oContext.getProperty("Tmskey");
+				var oItem = oEvent.getSource().getParent();
+				var EventType = oEvent.getSource().getType();
+				var aCells;
+				var oSaveButton;
+				var sDialogMessage, msg;
+				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
+				oSaveButton =  aCells[3].getAggregation("content")[1];
+				
+				if(EventType == "Reject"){
+					sDialogMessage = "La spesa verrà cancellata. Continuare?";
+					msg = "Spesa eliminata correttamente";
+				}else{
+					sDialogMessage = "La spesa verrà modificata. Continuare?";
+					msg = "Spesa modificata correttamente";
+				}
+				
+				
+				
+					var dialog = new Dialog({
+				title: 'Attenzione',
+				type: 'Message',
+				state: 'Warning',
+				content: new sap.m.Text({
+					text: sDialogMessage
+				}),
+				beginButton: new sap.m.Button({
+					text: 'Conferma',
+					type: 'Accept',
+					press: function () {
+						dialog.close();
+						
+			   oEntry.Tmskey = oContext.getProperty("Tmskey");
 				oEntry.Giorno = oContext.getProperty("Giorno");
 				oEntry.Expkey = oContext.getProperty("Expkey");
 				oEntry.Exptype = oContext.getProperty("Exptype");
 
-				var oItem = oEvent.getSource().getParent();
-				var EventType = oEvent.getSource().getType();
+				
 				if (EventType === "Reject") { // MP: sono in cancellazione
 
 					//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
@@ -928,9 +998,7 @@ sap.ui.define([
 					}
 				}
 
-				var aCells;
-				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
-				var oSaveButton = aCells[3].getAggregation("content")[1];
+			
 				oSaveButton.setEnabled(false);
 				var oInput;
 
@@ -945,7 +1013,6 @@ sap.ui.define([
 					oEntry, {
 						method: "PUT",
 						success: function(data) {
-							var msg = "Success";
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
 								autoClose: true,
@@ -966,24 +1033,65 @@ sap.ui.define([
 						}
 
 					});
+					}
+				}),
+					endButton: new sap.m.Button({
+					text: 'Annulla',
+					type: 'Reject',
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function() {
+					dialog.destroy();
+				}
+			});
+            
+			dialog.open();		
+				
+	
 			},
 
 			
 			
 			onSingleExpenseCancelOrSave: function(oEvent) {
 				
-			
 				var oModel = sap.ui.getCore().getModel();
 				var oEntry = {};
-
 				var oContext = oEvent.getSource().getBindingContext();
+			    var EventType =	oEvent.getSource().getType();
+				var sDialogMessage, msg;
+				var that = this;
+					
+				if(EventType == "Reject"){
+					sDialogMessage = "La spesa verrà cancellata. Continuare?";
+					msg = "Spesa eliminata correttamente";
+				}else{
+					sDialogMessage = "La spesa verrà modificata. Continuare?";
+					msg = "Spesa modificata correttamente";
+				}
+				
+					var dialog = new Dialog({
+				title: 'Attenzione',
+				type: 'Message',
+				state: 'Warning',
+				content: new sap.m.Text({
+					text: sDialogMessage
+				}),
+				beginButton: new sap.m.Button({
+					text: 'Conferma',
+					type: 'Accept',
+					press: function () {
+						dialog.close();
+								
+			
 				oEntry.Tmskey = oContext.getProperty("Tmskey");
 				oEntry.Giorno = oContext.getProperty("Giorno");
 				oEntry.Expkey = oContext.getProperty("Expkey");
 				oEntry.Exptype = oContext.getProperty("Exptype");
 
 			//	var oItem = oEvent.getSource().getParent();
-			    var EventType =	oEvent.getSource().getType();
+			  
 			    if(EventType === "Reject"){ // MP: sono in cancellazione
 			
 			//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
@@ -1010,7 +1118,6 @@ sap.ui.define([
 					oEntry, {
 						method: "PUT",
 						success: function(data) {
-							var msg = "Success";
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
 								autoClose: true,
@@ -1018,6 +1125,8 @@ sap.ui.define([
 
 							});
 							oModel.refresh();
+							that.closeDialogSpese();
+						
 						},
 						error: function(e) {
 							sap.m.MessageBox.show(
@@ -1032,7 +1141,25 @@ sap.ui.define([
 
 					});
 					
-					this.closeDialogSpese();
+		
+					
+					}
+				}),
+					endButton: new sap.m.Button({
+					text: 'Annulla',
+					type: 'Reject',
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function() {
+					dialog.destroy();
+				}
+			});
+            
+			dialog.open();	
+			
+			
 			},
 
 
@@ -1042,6 +1169,20 @@ sap.ui.define([
 				var oEntry = {};
 				var oDialog = this.DialogSel;
 				var that = this;
+				
+					var dialog = new Dialog({
+				title: 'Attenzione',
+				type: 'Message',
+				state: 'Warning',
+				content: new sap.m.Text({
+					text: "La commessa verrà eliminata. Continuare?" 
+				}),
+				beginButton: new sap.m.Button({
+					text: 'Conferma',
+					type: 'Accept',
+					press: function () {
+						dialog.close();
+						
 
 				oEntry.Tmskey = oContext.getProperty("Tmskey");
 				oEntry.Giorno = oContext.getProperty("Giorno");
@@ -1050,17 +1191,16 @@ sap.ui.define([
 					oEntry, {
 						method: "PUT",
 						success: function(data) {
-							var msg = "Success";
+							var msg = "Commessa eliminata con successo";
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
 								autoClose: true,
 								closeOnBrowserNavigation: false
 
 							});
+							that._onBindingChange();
 							oModel.refresh();
 							oDialog.close();
-							that._onBindingChange();
-
 						},
 						error: function(e) {
 							sap.m.MessageBox.show(
@@ -1074,6 +1214,23 @@ sap.ui.define([
 						}
 
 					});
+					}
+				}),
+					endButton: new sap.m.Button({
+					text: 'Annulla',
+					type: 'Reject',
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function() {
+					dialog.destroy();
+				}
+			});
+            
+			dialog.open();		
+				
+			
 
 			},
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1184,12 +1341,20 @@ sap.ui.define([
                 var sHour;
 				this.openDialogSel(oEvent);
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
-
+                var sSelItemPath;
 				oDialog.unbindElement();
 
 
-
-				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+                if(oEvent.getId()=="itemPress"){
+				sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+                }else{
+                sSelItemPath = oEvent.getParameter("rowContext").getPath();	
+                if(sSelItemPath.substring(1, sSelItemPath.indexOf("(")) == "ListaSpeseGroupSet"){
+                this.handleSpeseSelection(oEvent);
+                this.DialogSel.close();
+                return;
+                }
+                }
 				oDialog.bindElement({
 					path: sSelItemPath,
 					parameters: {
@@ -1261,7 +1426,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
 				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
 				
-				if(oEvent.getSource().getId("Indietro")){
+				if(oEvent.getSource().getId()=="Indietro"){
 			    oInputOre.setValue(this.sOraOriginale);
 				oInputDescr.setValue(this.sDescrOriginale);
 				oInputOre.setValueStateText("");
@@ -1279,9 +1444,14 @@ sap.ui.define([
 			
 			 	handleSpeseSelection: function(oEvent) {
 				this.openDialogSpese(oEvent);
-			
+				var sSelItemPath;
 				var oDialog = sap.ui.getCore().byId("dialogSpese");
-				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+				 if(oEvent.getId()=="itemPress"){
+				sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+                }else{
+                sSelItemPath = oEvent.getParameter("rowContext").getPath();	
+                }
+			
 				oDialog.bindElement({
 				path: sSelItemPath
 				
@@ -1319,7 +1489,6 @@ sap.ui.define([
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-				
 			},
 
 			_onRouteMatched: function(oEvent) {
