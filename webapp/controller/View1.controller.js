@@ -319,7 +319,7 @@ sap.ui.define([
 				this.Dialog.close();
 				sap.ui.getCore().byId("commessa").setValue("");
 				sap.ui.getCore().byId("commessa").setValueState("None");
-				sap.ui.getCore().byId("sedi").setEnabled(false);
+				//sap.ui.getCore().byId("sedi").setEnabled(false);
 				sap.ui.getCore().byId("sedi").unbindItems();
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("ore").setValueState("None");
@@ -340,6 +340,7 @@ sap.ui.define([
 
 			//MP: funzione che richiama il fragment contenente l'albero
 			showPopoverCommessa: function(oEvent) {
+			
 				var that = this;
 
 				if (!that._oPopover) {
@@ -384,6 +385,9 @@ sap.ui.define([
 
 			//MP: funzione richiamata alla selezione di una commessa
 			onCommessaSelect: function(oEvent) {
+				this.sTimesheetKey = undefined;
+				sap.ui.getCore().byId("ore").setValue("");
+				sap.ui.getCore().byId("descrizione").setValue("");
 				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
 				var oTree = sap.ui.getCore().byId("Tree");
 				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
@@ -623,9 +627,9 @@ sap.ui.define([
 					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
 					for (var k = 0; k < aControls.length; k++) {
 						oInput = aControls[k];
-						if (oInput.getValue() === "") {
+						if (oInput.getValue() === "" || oInput.getValueState() == "Error") {
 							oInput.setValueState("Error");
-							oInput.setValueStateText("il campo è obbligatorio");
+							oInput.setValueStateText("il campo non è valorizzato oppure il valore è errato.");
 						} else {
 							aParam.push(oInput.getValue());
 						}
@@ -635,9 +639,9 @@ sap.ui.define([
 				if (this.buttonEvent !== "Modifica") {
 					for (var i = 0; i < aControls.length; i++) {
 						oInput = aControls[i];
-						if (oInput.getValue() === "") {
+						if (oInput.getValue() === "" || oInput.getValueState() == "Error") {
 							oInput.setValueState("Error");
-							oInput.setValueStateText("il campo è obbligatorio");
+							oInput.setValueStateText("il campo non è valorizzato oppure il valore è errato.");
 						} else {
 							aParam.push(oInput.getValue());
 						}
@@ -665,6 +669,8 @@ sap.ui.define([
 						sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
 						sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
 						oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
+						this.sOraOriginale = sOre;
+						this.sDescrOriginale = sDescrizione;
 					} else {
 						sCommessaId = this.sCommessaId;
 						sTimesheetKey = this.sTimesheetKey;
@@ -811,7 +817,7 @@ sap.ui.define([
 					}
 
 				} else {
-                   this.getView().byId("btn1").setEnabled(true);
+					this.getView().byId("btn1").setEnabled(true);
 					//jQuery.sap.require("sap.m.MessageBox");
 					sap.m.MessageBox.show(
 						"Errore: controllare gli inserimenti", {
@@ -819,11 +825,8 @@ sap.ui.define([
 							title: "Errore",
 							actions: [sap.m.MessageBox.Action.CLOSE]
 						});
-			
 
 				}
-
-				
 
 			},
 
@@ -1080,11 +1083,27 @@ sap.ui.define([
 				var oInput;
 				var sNameOre;
 				var sNameDescr;
+				var oCal, aSpecialDates, oSpecialDate, oSelectedDate, sSelectedDate;
+				oCal = this.getView().byId("LRS4_DAT_CALENDAR");
+				aSpecialDates = oCal.getSpecialDates();
+				
+				if(oCal.getSelectedDates().length > 0){
+				oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
+				sSelectedDate = oSelectedDate.toString();
+				}
+			
+				var sInsertedHours;
+				var nInsertedHours;
+				var nRemainingHours;
+				var sTooltip;
+				var flag = 0;
 				if (oEvent.getSource().getId() == "ore") {
 					sNameOre = "ore";
 				} else {
 					sNameOre = "oreSel";
 				}
+				
+			
 
 				if (oEvent.getSource().getId() == "descrizione") {
 					sNameDescr = "descrizione";
@@ -1093,10 +1112,27 @@ sap.ui.define([
 				}
 				switch (oEvent.getSource().getId()) {
 					case sNameOre:
+							for (var i = 0; i < aSpecialDates.length; i++) {
+							oSpecialDate = oCal.getSpecialDates()[i];
+							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+								flag = 1;
+								if (oSpecialDate.getProperty("type") == "Type01") {
+							    sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
+							    sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
+							    nInsertedHours = Number(sInsertedHours);
+							    nRemainingHours = 8 - nInsertedHours;
+								} else {
+								nRemainingHours = 8;
+								}
+							}
+						}
+						if (flag == 0){
+							nRemainingHours = 8;
+						}
 						oInput = sap.ui.getCore().byId(sNameOre);
-						if (oInput.getValue() < 1 || oInput.getValue() > 8) {
+						if (oInput.getValue() < 1 || oInput.getValue() > nRemainingHours) {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e 8");
+							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e " + nRemainingHours);
 						} else {
 							oInput.setValueState(sap.ui.core.ValueState.None);
 						}
@@ -1145,11 +1181,13 @@ sap.ui.define([
 			
 			
 			handleCommessaSelection: function(oEvent) {
-
+                var sHour;
 				this.openDialogSel(oEvent);
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
 
 				oDialog.unbindElement();
+
+
 
 				var sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
 				oDialog.bindElement({
@@ -1159,17 +1197,26 @@ sap.ui.define([
 					}
 				});
 
+				
+				if(this.sOraOriginale == undefined || this.sDescrOriginale == undefined)
+				{
+		        this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
+		        this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
+				}
+				
+
+
 
 				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
 				oDialog.setTitle("Dettaglio commessa " + sDate);
-
+    
 				var aCommesseItems = this.getView().byId("COMMESSE_CONTENTS").getBinding("items");
 				var aSpeseItems = this.getView().byId("SPESE_CONTENTS").getBinding("items");
 				var aTreeTableRows = this.getView().byId("TREETABLE_CONTENTS").getBinding("rows");
-
+             
 				//MP: utilizzato per fare il refresh delle liste nell'IconTabFilter della View
 				//solo quando viene effettuata un'operazione sulle spese (cancellazione o modifica)
 				var oExpenseList = sap.ui.getCore().byId("speseCommessa");
@@ -1181,9 +1228,11 @@ sap.ui.define([
 					});
 					oExpenseList.getBinding("items").refresh();
 
+
 				}
 
 			},
+			
 
 			openDialogSel: function(oEvent) {
 				var that = this;
@@ -1203,16 +1252,25 @@ sap.ui.define([
 			},
 
 			closeDialogSel: function(oEvent) {
-
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				//RISOLVERE DISCORSO SPESE (RESET)
-
+                var oInputOre, oInputDescr;
+				oInputOre = sap.ui.getCore().byId("oreSel");
+                oInputDescr = sap.ui.getCore().byId("descrizioneSel");
 				this.DialogSel.close();
 				/////////////////////////////////////////////////////////////////////
 				// MP: per pulire i campi della tabella nel panel e chiudere il panel
 				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
 				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+				
+				if(oEvent.getSource().getId("Indietro")){
+			    oInputOre.setValue(this.sOraOriginale);
+				oInputDescr.setValue(this.sDescrOriginale);
+				oInputOre.setValueStateText("");
+				oInputOre.setValueState("None");
+				oInputDescr.setValueStateText("");
+				oInputDescr.setValueState("None");             
+				this.sOraOriginale = undefined;
+				this.sDescrOriginale = undefined;
+				}
 				this.onExpenseSelect(oEvent);
 				/////////////////////////////////////////////////////////////////////
 
@@ -1396,9 +1454,11 @@ sap.ui.define([
 				var startDate = oCal1.getStartDate();
 				var startMonth = this.oFormatMonth.format(startDate);
 				if (startMonth.length === 1) {
+
 				startMonth = "0" + startMonth;
 				}
 				
+
 				var startYear = this.oFormatYear.format(startDate);
 
 				var oLeg1 = oView.byId("legend1");
