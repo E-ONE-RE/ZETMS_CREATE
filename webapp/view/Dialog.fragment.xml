@@ -158,7 +158,7 @@
 			</VBox>
 		</content>
 		<beginButton>
-			<Button id="conferma" text="Conferma" press="onConfirmation" type="Accept"/>
+			<Button id="conferma" text="Conferma" press="openMessageDialog" type="Accept"/>
 			<!--Fare Check su ore !-->
 		</beginButton>
 		<endButton>

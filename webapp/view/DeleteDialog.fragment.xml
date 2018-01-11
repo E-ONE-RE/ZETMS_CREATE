@@ -222,7 +222,7 @@
 		<buttons>
 			<Button id="EliminaSel" text="Elimina Commessa" press="handleDeleteComm" type="Reject"/>
 			<!-- Fare Check su ore !-->
-			<Button id="Modifica" text="Modifica Commessa" press="onConfirmation" type="Emphasized"/>
+			<Button id="Modifica" text="Modifica Commessa" press="openMessageDialog" type="Emphasized"/>
 			<Button id="Indietro" text="Indietro" press="closeDialogSel" />
 	
 		</buttons>
