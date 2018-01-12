@@ -179,21 +179,7 @@
 		</endButton>
 		
 	
-					<OverflowToolbar id="footerToolbar">
-			  
-		
-		
-	     	<Button id="info1"
-				text="Help"
-				press="handleResponsivePopoverPress"  type="Emphasized" icon="sap-icon://message-information" tooltip="Clicca per informazioni sull'uso del Timesheet">
-			   <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
-			 </Button>	
-				<ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
-						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
-						  </Button>
-			 
-					</OverflowToolbar>
+				
 				
 	</Dialog>
 </core:FragmentDefinition>

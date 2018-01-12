@@ -44,7 +44,7 @@ xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 								
 							    <f:FormElement label="Valore">
 									<f:fields>
-										<Input id="ValueSelSpese" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}"/>
+										<Input liveChange="onLiveChange" required="true" id="ValueSelSpese" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}"/>
 									
 								
 									</f:fields>
@@ -70,7 +70,7 @@ xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 			<Button id="EliminaSelSpese" text="Elimina Spesa" press="onSingleExpenseCancelOrSave" type="Reject"/>
 			<!-- Fare Check su ore !-->
 			<Button id="ModificaSpese" text="Modifica Spesa" press="onSingleExpenseCancelOrSave" type="Emphasized"/>
-			<Button text="Indietro" press="navBackDialogSpese" />
+			<Button id="IndietroExp" text="Indietro" press="navBackDialogSpese" />
 	
 		</buttons>
 	</Dialog>
