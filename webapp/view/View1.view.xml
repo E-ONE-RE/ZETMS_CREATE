@@ -227,7 +227,7 @@ displayBlock="true">
         </t:TreeTable>
         </IconTabFilter>-->
 
-					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Lista commesse">
+					<IconTabFilter key="commesse" id="commesse" icon="sap-icon://activities" tooltip="Lista commesse" text="Commesse">
 						
         	
 					<Table noDataText="Drop column list items here and columns in the area above" id="COMMESSE_CONTENTS" updateFinished="onUpdateFinished" tooltip="Clicca sulla riga per modificare"
@@ -412,7 +412,7 @@ displayBlock="true">
 						
 							<t:toolbar>
 			                    <Toolbar>
-			                        <Title id="title2" text="Lista commesse"/>
+			                        <Title id="title2" text="Lista commesse/spese"/>
 			                        <ToolbarSpacer/>
 			                        <Button text="Collapse all" press="onCollapseAll"/>
 			                        <Button text="Expand first level" press="onExpandFirstLevel"/>
@@ -427,16 +427,34 @@ displayBlock="true">
 								<t:Column label="Commessa">
 									<t:template>
 										<Text text="{Descrorder}" wrapping="false"/>
+										
+									</t:template>
+								</t:Column>
+									<t:Column label="Sede">
+									<t:template>
+										
+										<Text text="{Office}" wrapping="false"/>
 									</t:template>
 								</t:Column>
 								<t:Column label="Descr"  >
 									<t:template>
-										<Text  text="{Descr}" wrapping="false"/>
+										<Text  text="{Descr}" wrapping="False"/>
 									</t:template>
 								</t:Column>
-								<t:Column label="Quantità">
+								
+									<t:Column label="Tipo"  >
 									<t:template>
-										<Text text="{Expdescr}" wrapping="false"/>
+										<Text  text="{= ${Exptype} === '' ? 'Ore' : ${Expdescr}}" wrapping="false"/>
+								<!--		<Text  text="{Expdescr}" wrapping="false"/>-->
+									</t:template>
+								</t:Column>
+								
+								<t:Column label="Quantità" >
+									<t:template>
+										<Text text="{= ${Exptype} !== '00' &amp;&amp;  ${Exptype} !== '' ? ${Importo} : ''} {= ${Exptype} === '00'  ? ${Km} : ''} {= ${Exptype} === ''  ? ${Ore} : ''}" wrapping="false"/>
+										<!--	<Text visible = "{= ${Exptype} === '' ? true : false}" text="{Ore}" wrapping="false"/>-->
+										
+										
 									</t:template>
 								</t:Column>
 							</t:columns>
