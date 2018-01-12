@@ -86,9 +86,7 @@ sap.ui.define([
 
 				//  	var oModel = this.getView().getModel();
 				//	this.getView().setModel(oModel);
-              
-               
-                
+
 				this.mGroupFunctions = {
 					Giorno: function(oContext) {
 						var sName = oContext.getProperty("Giorno");
@@ -118,7 +116,7 @@ sap.ui.define([
 
 				var oRouter = this.getRouter();
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
-    
+
 			},
 
 			getGroupHeader: function(oGroup) {
@@ -130,10 +128,9 @@ sap.ui.define([
 
 			onCollapseAll: function() {
 				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
-			//	var oTreeTable = sap.ui.getCore().byId("treeTable");
+				//	var oTreeTable = sap.ui.getCore().byId("treeTable");
 				oTreeTable.collapseAll();
-				
-				
+
 			},
 
 			onExpandFirstLevel: function() {
@@ -145,31 +142,31 @@ sap.ui.define([
 				if (this._oDialog) {
 					this._oDialog.destroy();
 				}
-				
-					if (this._oPopover) {
-				this._oPopover.destroy();
-			}
-			
+
 				if (this._oPopover) {
-				this._oPopover.destroy();
-			}
+					this._oPopover.destroy();
+				}
+
+				if (this._oPopover) {
+					this._oPopover.destroy();
+				}
 
 			},
-            
-            	handleResponsivePopoverPress: function (oEvent) {
-			if (!this._oPopoverHelp) {
-				this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
-				
-				this.getView().addDependent(this._oPopoverHelp);
-			}
 
-			this._oPopoverHelp.openBy(oEvent.getSource());
-		},
+			handleResponsivePopoverPress: function(oEvent) {
+				if (!this._oPopoverHelp) {
+					this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
 
-		handleCloseButton: function (oEvent) {
-			this._oPopoverHelp.close();
-		},
-		
+					this.getView().addDependent(this._oPopoverHelp);
+				}
+
+				this._oPopoverHelp.openBy(oEvent.getSource());
+			},
+
+			handleCloseButton: function(oEvent) {
+				this._oPopoverHelp.close();
+			},
+
 			handleConfirm: function(oEvent) {
 
 				var oView = this.getView();
@@ -225,9 +222,9 @@ sap.ui.define([
 					that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that._oDialog);
-				/*	if (sap.ui.Device.system.phone) {
-						that._oDialog.setStretch(true);
-					}*/
+					/*	if (sap.ui.Device.system.phone) {
+							that._oDialog.setStretch(true);
+						}*/
 				}
 				// toggle compact style
 				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
@@ -261,11 +258,35 @@ sap.ui.define([
 
 			//MP: lasciate ogni speranza o voi che entrate 
 			handleCalendarSelect: function(oEvent) {
-				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
-				// e si possono ancora inserire delle ore (meno di 8 ore inserite per un giorno)
+			
+				var sDate, sDayFilter, oFilter, oTreeFilter;
+				
+				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
+				var oTableExp = this.getView().byId("SPESE_CONTENTS");
+				//var oTreeTable =  this.getView().byId("TREETABLE_CONTENTS");
+				
+				var oTableCommBinding = oTableComm.getBinding("items");
+                var oTableExpBinding = oTableExp.getBinding("items");
+                //var oTreeTableBinding = oTreeTable.getBinding("rows");
+			
 				if (oEvent.getSource().getSelectedDates()[0] != undefined) {
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
+					//MP: Client side filtering. Per il momento non applicato alla treeTable
+					sDate = formatter.formatCalDate(this.selectedDate.toString());
+					sDayFilter = sDate.substring(0, sDate.indexOf("/"));
+					oFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
+					//oTreeFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.Contains, sDayFilter);
+					oTableCommBinding.filter(oFilter);
+					oTableExpBinding.filter(oFilter);
+					//oTreeTableBinding.filter(oTreeFilter);
+				}else{
+					oTableCommBinding.filter();
+					oTableExpBinding.filter();
+					//oTreeTableBinding.filter();
 				}
+				
+				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
+				// e si possono ancora inserire delle ore (meno di 8 ore inserite per un giorno)
 				var oButton = this.getView().byId("btn1");
 				var oCal = oEvent.getSource();
 				var oSelectedDate;
@@ -319,35 +340,33 @@ sap.ui.define([
 						}
 					}
 				}
-				
+
 				//CHECK GIORNI NON LAVORATIVI///////////////////////////////
-					var aSelectedDates = oCal.getSelectedDates();
-					if (aSelectedDates.length > 0) {
+				var aSelectedDates = oCal.getSelectedDates();
+				if (aSelectedDates.length > 0) {
 
-						for (var i = 0; i < aSelectedDates.length; i++) {
+					for (var i = 0; i < aSelectedDates.length; i++) {
 
-						
-						var	oDate = aSelectedDates[i].getStartDate();
-					
+						var oDate = aSelectedDates[i].getStartDate();
+
 						var oDayOfWeek = this.oFormatDaysShort.format(oDate);
 
-						if(oDayOfWeek === "sab" || oDayOfWeek === "sat" || oDayOfWeek === "dom" || oDayOfWeek=== "sun") {
-						//if(oDate === sap.ui.unified.CalendarDayType.NonWorking) {
-								//jQuery.sap.require("sap.m.MessageBox");
-								sap.m.MessageBox.show(
-									"Attenzione: Non è possibile selezionare giorni non lavorativi, rimuovere la selezione, " + oDate, {
-										icon: sap.m.MessageBox.Icon.WARNING,
-										title: "Error",
-										actions: [sap.m.MessageBox.Action.CLOSE]
+						if (oDayOfWeek === "sab" || oDayOfWeek === "sat" || oDayOfWeek === "dom" || oDayOfWeek === "sun") {
+							//if(oDate === sap.ui.unified.CalendarDayType.NonWorking) {
+							//jQuery.sap.require("sap.m.MessageBox");
+							sap.m.MessageBox.show(
+								"Attenzione: Non è possibile selezionare giorni non lavorativi, rimuovere la selezione, " + oDate, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
 
-									});
-								
+								});
 
-								//oCalendar.removeAllSelectedDates();
-								return;
-							}
+							//oCalendar.removeAllSelectedDates();
+							return;
 						}
 					}
+				}
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
@@ -394,7 +413,7 @@ sap.ui.define([
 
 			//MP: funzione che richiama il fragment contenente l'albero
 			showPopoverCommessa: function(oEvent) {
-			
+
 				var that = this;
 
 				if (!that._oPopover) {
@@ -662,42 +681,41 @@ sap.ui.define([
 
 				}
 			},
-			
-			
-			openMessageDialog: function(oEvent){
+
+			openMessageDialog: function(oEvent) {
 				var that;
-		        
-		        var sButtonName = oEvent.getSource().getId() + "a";
-		         that = this;
+
+				var sButtonName = oEvent.getSource().getId() + "a";
+				that = this;
 				var dialog = new Dialog({
-				title: 'Attenzione',
-				type: 'Message',
-				state: 'Warning',
-				content: new sap.m.Text({
-					text: "Sei sicuro di voler confermare l'azione?" 
-				}),
-				beginButton: new sap.m.Button(sButtonName,{
-					text: 'Conferma',
-					type: 'Accept',
-					press: function () {
-						dialog.close();
-						that.onConfirmation(oEvent);
-					}
-				}),
+					title: 'Attenzione',
+					type: 'Message',
+					state: 'Warning',
+					content: new sap.m.Text({
+						text: "Sei sicuro di voler confermare l'azione?"
+					}),
+					beginButton: new sap.m.Button(sButtonName, {
+						text: 'Conferma',
+						type: 'Accept',
+						press: function() {
+							dialog.close();
+							that.onConfirmation(oEvent);
+						}
+					}),
 					endButton: new sap.m.Button({
-					text: 'Annulla',
-					type: 'Reject',
-					press: function () {
-						dialog.close();
+						text: 'Annulla',
+						type: 'Reject',
+						press: function() {
+							dialog.close();
+						}
+					}),
+					afterClose: function() {
+						dialog.destroy();
 					}
-				}),
-				afterClose: function() {
-					dialog.destroy();
-				}
-			});
-            
-			dialog.open();		
-		
+				});
+
+				dialog.open();
+
 			},
 
 			//MP function per salvare riga timesheet
@@ -708,10 +726,9 @@ sap.ui.define([
 				var aParam = [];
 				var oInput;
 				var that = this;
-				
-           
+
 				this.buttonEvent = oEvent.getSource().getId();
-                
+
 				if (this.buttonEvent !== "Modificaa") {
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
 				} else {
@@ -831,7 +848,7 @@ sap.ui.define([
 						}
 					}
 
-			if (this.buttonEvent != "Modificaa") {
+					if (this.buttonEvent != "Modificaa") {
 						that.onExpenseSelect(undefined);
 					} else {
 						that.closeDialogSel(oEvent);
@@ -865,11 +882,11 @@ sap.ui.define([
 							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
 							var msg;
-                            	if (that.buttonEvent !== "Modificaa") {
-							    msg = "Commessa creata con successo";
-                             	}else{
-                             	msg = "Commessa modificata con successo";	
-                             	}
+							if (that.buttonEvent !== "Modificaa") {
+								msg = "Commessa creata con successo";
+							} else {
+								msg = "Commessa modificata con successo";
+							}
 							sap.m.MessageToast.show(msg, {
 								duration: 5000,
 								autoClose: true,
@@ -947,35 +964,32 @@ sap.ui.define([
 				}
 				oModel.updateBindings(true);
 			},
-			
-			
+
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
 			onExpenseListModify: function(oEvent) {
-				
-			//	var that = this;
+
+				//	var that = this;
 				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
 				var oInput, oModel;
 				var oSaveButton = aCells[6].getAggregation("content")[1];
 				oSaveButton.setEnabled(true);
-				
-			//	oModel=this.getView().getModel();
-				
-			
-				
+
+				//	oModel=this.getView().getModel();
+
 				for (var i = 1; i < 3; i++) {
 					oInput = aCells[i];
-						oInput.setEditable(true);
-						
+					oInput.setEditable(true);
+
 					if (oInput.getEditable() == false) {
 						oInput.setEditable(true);
 						oInput.unbindElement();
-					
+
 					} else {
 						oInput.setEditable(false);
 						oSaveButton.setEnabled(false);
 					}
 				}
-			//		oModel.updateBindings(true);
+				//		oModel.updateBindings(true);
 			},
 
 			onExpenseCancelOrSave: function(oEvent) {
@@ -988,244 +1002,244 @@ sap.ui.define([
 				var oSaveButton;
 				var sDialogMessage, msg;
 				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
-				oSaveButton =  aCells[3].getAggregation("content")[1];
-				
-				if(EventType == "Reject"){
+				oSaveButton = aCells[3].getAggregation("content")[1];
+
+				if (EventType == "Reject") {
 					sDialogMessage = "La spesa verrà cancellata. Continuare?";
 					msg = "Spesa eliminata correttamente";
-				}else{
+				} else {
 					sDialogMessage = "La spesa verrà modificata. Continuare?";
 					msg = "Spesa modificata correttamente";
 				}
-				
-				
-				
-					var dialog = new Dialog({
-				title: 'Attenzione',
-				type: 'Message',
-				state: 'Warning',
-				content: new sap.m.Text({
-					text: sDialogMessage
-				}),
-				beginButton: new sap.m.Button({
-					text: 'Conferma',
-					type: 'Accept',
-					press: function () {
-						dialog.close();
-						
-			   oEntry.Tmskey = oContext.getProperty("Tmskey");
-				oEntry.Giorno = oContext.getProperty("Giorno");
-				oEntry.Expkey = oContext.getProperty("Expkey");
-				oEntry.Exptype = oContext.getProperty("Exptype");
 
-				
-				if (EventType === "Reject") { // MP: sono in cancellazione
+				var dialog = new Dialog({
+					title: 'Attenzione',
+					type: 'Message',
+					state: 'Warning',
+					content: new sap.m.Text({
+						text: sDialogMessage
+					}),
+					beginButton: new sap.m.Button({
+						text: 'Conferma',
+						type: 'Accept',
+						press: function() {
+							dialog.close();
 
-					//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
-					oEntry.Deletionflag = "X";
-				} else { // sono in modifica
-					oEntry.Deletionflag = "";
-					//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
-					//oEntry.Descr = oInputDescr.getValue();
+							oEntry.Tmskey = oContext.getProperty("Tmskey");
+							oEntry.Giorno = oContext.getProperty("Giorno");
+							oEntry.Expkey = oContext.getProperty("Expkey");
+							oEntry.Exptype = oContext.getProperty("Exptype");
 
-					oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
-					// var oCell1 = oItem.getParent().mAggregations.cells[1];
-					// oEntry.Expdescr = oCell1["_lastValue"];
+							if (EventType === "Reject") { // MP: sono in cancellazione
 
-					if (oEntry.Exptype == "00") // differenza tra i tipi spesa 
-					{
-						//	var oCell2 = oItem.getParent().mAggregations.cells[2];
-						oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
+								//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+								oEntry.Deletionflag = "X";
+							} else { // sono in modifica
+								oEntry.Deletionflag = "";
+								//var oInputDescr = sap.ui.getCore().byId("descrSpesa");
+								//oEntry.Descr = oInputDescr.getValue();
 
-						//    oEntry.Km = oCell2["_lastValue"];
-						//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
-						///(SE)
-						//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
-						///(SE)
-					} else {
-						//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
-						///(SE)
-						//	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
-						oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
-						//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
-						//     oEntry.Importo = oCell2["_lastValue"];
+								oEntry.Expdescr = oItem.getParent().getAggregation("cells")[1].getValue();
+								// var oCell1 = oItem.getParent().mAggregations.cells[1];
+								// oEntry.Expdescr = oCell1["_lastValue"];
 
-					}
-				}
+								if (oEntry.Exptype == "00") // differenza tra i tipi spesa 
+								{
+									//	var oCell2 = oItem.getParent().mAggregations.cells[2];
+									oEntry.Km = oItem.getParent().getAggregation("cells")[2].getValue();
 
-			
-				oSaveButton.setEnabled(false);
-				var oInput;
+									//    oEntry.Km = oCell2["_lastValue"];
+									//	oEntry.Km = sap.ui.getCore().byId("ImpOrKm").getValue();
+									///(SE)
+									//	oEntry.Expdescr = this.getView().getModel().getProperty("Km", oEvent.getSource().getBindingContext());
+									///(SE)
+								} else {
+									//	oEntry.Importo = sap.ui.getCore().byId("ImpOrKm").getValue();
+									///(SE)
+									//	oEntry.Importo = this.getView().getModel().getProperty("Importo", oEvent.getSource().getBindingContext());
+									oEntry.Importo = oItem.getParent().getAggregation("cells")[2].getValue();
+									//	 var oCell2 = oItem.getParent().mAggregations.cells[2];
+									//     oEntry.Importo = oCell2["_lastValue"];
 
-				for (var i = 1; i < 3; i++) {
-					oInput = aCells[i];
-					oInput.setEditable(false);
+								}
+							}
 
-				}
+							oSaveButton.setEnabled(false);
+							var oInput;
 
-				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
-					"',Exptype='" + oEntry.Exptype + "')",
-					oEntry, {
-						method: "PUT",
-						success: function(data) {
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
+							for (var i = 1; i < 3; i++) {
+								oInput = aCells[i];
+								oInput.setEditable(false);
 
-							});
-							oModel.refresh();
-						},
-						error: function(e) {
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
+							}
+
+							oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
+								"',Exptype='" + oEntry.Exptype + "')",
+								oEntry, {
+									method: "PUT",
+									success: function(data) {
+										sap.m.MessageToast.show(msg, {
+											duration: 5000,
+											autoClose: true,
+											closeOnBrowserNavigation: false
+
+										});
+										oModel.refresh();
+									},
+									error: function(e) {
+										sap.m.MessageBox.show(
+											"Error: " + oData.Message, {
+												icon: sap.m.MessageBox.Icon.WARNING,
+												title: "Error",
+												actions: [sap.m.MessageBox.Action.CLOSE]
+
+											});
+
+									}
 
 								});
-
 						}
-
-					});
-					}
-				}),
+					}),
 					endButton: new sap.m.Button({
-					text: 'Annulla',
-					type: 'Reject',
-					press: function () {
-						dialog.close();
+						text: 'Annulla',
+						type: 'Reject',
+						press: function() {
+							dialog.close();
+						}
+					}),
+					afterClose: function() {
+						dialog.destroy();
 					}
-				}),
-				afterClose: function() {
-					dialog.destroy();
-				}
-			});
-            
-			dialog.open();		
-				
-	
+				});
+
+				dialog.open();
+
 			},
 
-			
-			
 			onSingleExpenseCancelOrSave: function(oEvent) {
-				
+
 				var oModel = sap.ui.getCore().getModel();
 				var oEntry = {};
 				var oContext = oEvent.getSource().getBindingContext();
-			    var EventType =	oEvent.getSource().getType();
+				var EventType = oEvent.getSource().getType();
 				var sDialogMessage, msg;
 				var that = this;
-				
-				if(EventType == "Reject"){
+				var oInputImp = sap.ui.getCore().byId("ValueSelSpese");
+				var sImporto = oInputImp.getValue();
+
+				if (EventType == "Reject") {
 					sDialogMessage = "La spesa verrà cancellata. Continuare?";
 					msg = "Spesa eliminata correttamente";
-				}else{
+				} else {
 					sDialogMessage = "La spesa verrà modificata. Continuare?";
 					msg = "Spesa modificata correttamente";
 				}
-				
-	
+
+				if (EventType !== "Reject" && sImporto == "") {
+					oInputImp.setValueState("Error");
+					oInputImp.setValueStateText("Inserire importo");
+
+					sap.m.MessageBox.show(
+						"Errore: controllare gli inserimenti", {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Errore",
+							actions: [sap.m.MessageBox.Action.CLOSE]
+						});
+
+				} else {
+
 					var dialog = new Dialog({
-				title: 'Attenzione',
-				type: 'Message',
-				state: 'Warning',
-				content: new sap.m.Text({
-					text: sDialogMessage
-				}),
-				beginButton: new sap.m.Button({
-					text: 'Conferma',
-					type: 'Accept',
-					press: function () {
-						dialog.close();
-								
-			
-				oEntry.Tmskey = oContext.getProperty("Tmskey");
-				oEntry.Giorno = oContext.getProperty("Giorno");
-				oEntry.Expkey = oContext.getProperty("Expkey");
-				oEntry.Exptype = oContext.getProperty("Exptype");
+						title: 'Attenzione',
+						type: 'Message',
+						state: 'Warning',
+						content: new sap.m.Text({
+							text: sDialogMessage
+						}),
+						beginButton: new sap.m.Button({
+							text: 'Conferma',
+							type: 'Accept',
+							press: function() {
+								dialog.close();
 
-			//	var oItem = oEvent.getSource().getParent();
-			  
-			    if(EventType === "Reject"){ // MP: sono in cancellazione
-			
-			//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
-				oEntry.Deletionflag = "X";
-				}else{  // sono in modifica
-						oEntry.Deletionflag = "";
-			
-						
-						oEntry.Expdescr = sap.ui.getCore().byId("descrizioneSelSpese").getValue();
-					
-						if(oEntry.Exptype == "00") // differenza tra i tipi spesa 
-				     	{
-				     		oEntry.Km = sap.ui.getCore().byId("ValueSelSpese").getValue();;
-				     	
-						} else {
-						  oEntry.Importo = sap.ui.getCore().byId("ValueSelSpese").getValue();
-				
+								oEntry.Tmskey = oContext.getProperty("Tmskey");
+								oEntry.Giorno = oContext.getProperty("Giorno");
+								oEntry.Expkey = oContext.getProperty("Expkey");
+								oEntry.Exptype = oContext.getProperty("Exptype");
+
+								//	var oItem = oEvent.getSource().getParent();
+
+								if (EventType === "Reject") { // MP: sono in cancellazione
+
+									//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
+									oEntry.Deletionflag = "X";
+								} else { // sono in modifica
+									oEntry.Deletionflag = "";
+
+									oEntry.Expdescr = sap.ui.getCore().byId("descrizioneSelSpese").getValue();
+
+									if (oEntry.Exptype == "00") // differenza tra i tipi spesa 
+									{
+										oEntry.Km = sap.ui.getCore().byId("ValueSelSpese").getValue();
+
+									} else {
+										oEntry.Importo = sap.ui.getCore().byId("ValueSelSpese").getValue();
+
+									}
+
+									that.sImportoOriginale = sap.ui.getCore().byId("ValueSelSpese").getValue();
+									that.sDescrExpOriginale = sap.ui.getCore().byId("descrizioneSelSpese").getValue();
+								}
+
+								oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
+									"',Exptype='" + oEntry.Exptype + "')",
+									oEntry, {
+										method: "PUT",
+										success: function(data) {
+											sap.m.MessageToast.show(msg, {
+												duration: 5000,
+												autoClose: true,
+												closeOnBrowserNavigation: false
+
+											});
+
+											//    oModel.refresh();
+											that.closeDialogSpese();
+
+										},
+										error: function(e) {
+											sap.m.MessageBox.show(
+												"Error: " + oData.Message, {
+													icon: sap.m.MessageBox.Icon.WARNING,
+													title: "Error",
+													actions: [sap.m.MessageBox.Action.CLOSE]
+
+												});
+
+										}
+
+									});
+
+							}
+
+						}),
+						endButton: new sap.m.Button({
+							text: 'Annulla',
+							type: 'Reject',
+							press: function() {
+								dialog.close();
+							}
+						}),
+						afterClose: function() {
+							dialog.destroy();
 
 						}
-			}	
-
-				oModel.update("/ListaSpeseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "',Expkey='" + oEntry.Expkey +
-					"',Exptype='" + oEntry.Exptype + "')",
-					oEntry, {
-						method: "PUT",
-						success: function(data) {
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
-
-							});
-
-							
-						//    oModel.refresh();
-                       that.closeDialogSpese();
-						
-						},
-						error: function(e) {
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
-
-								});
-
-						}
-
 					});
-					
 
-				
-					
+					dialog.open();
 
-					}
-					
-					
-				}),
-					endButton: new sap.m.Button({
-					text: 'Annulla',
-					type: 'Reject',
-					press: function () {
-						dialog.close();
-					}
-				}),
-				afterClose: function() {
-					dialog.destroy();
-						
 				}
-			});
-            
-			dialog.open();	
-			
-			
-			
-			},
 
+			},
 
 			handleDeleteComm: function(oEvent) {
 				var oModel = this.getView().getModel();
@@ -1233,68 +1247,65 @@ sap.ui.define([
 				var oEntry = {};
 				var oDialog = this.DialogSel;
 				var that = this;
-				
-					var dialog = new Dialog({
-				title: 'Attenzione',
-				type: 'Message',
-				state: 'Warning',
-				content: new sap.m.Text({
-					text: "La commessa verrà eliminata. Continuare?" 
-				}),
-				beginButton: new sap.m.Button({
-					text: 'Conferma',
-					type: 'Accept',
-					press: function () {
-						dialog.close();
-						
 
-				oEntry.Tmskey = oContext.getProperty("Tmskey");
-				oEntry.Giorno = oContext.getProperty("Giorno");
+				var dialog = new Dialog({
+					title: 'Attenzione',
+					type: 'Message',
+					state: 'Warning',
+					content: new sap.m.Text({
+						text: "La commessa verrà eliminata. Continuare?"
+					}),
+					beginButton: new sap.m.Button({
+						text: 'Conferma',
+						type: 'Accept',
+						press: function() {
+							dialog.close();
 
-				oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
-					oEntry, {
-						method: "PUT",
-						success: function(data) {
-							var msg = "Commessa eliminata con successo";
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
+							oEntry.Tmskey = oContext.getProperty("Tmskey");
+							oEntry.Giorno = oContext.getProperty("Giorno");
 
-							});
-							that._onBindingChange();
-							oModel.refresh();
-							oDialog.close();
-						},
-						error: function(e) {
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
+							oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
+								oEntry, {
+									method: "PUT",
+									success: function(data) {
+										var msg = "Commessa eliminata con successo";
+										sap.m.MessageToast.show(msg, {
+											duration: 5000,
+											autoClose: true,
+											closeOnBrowserNavigation: false
+
+										});
+										that._onBindingChange();
+										oModel.refresh();
+										oDialog.close();
+									},
+									error: function(e) {
+										sap.m.MessageBox.show(
+											"Error: " + oData.Message, {
+												icon: sap.m.MessageBox.Icon.WARNING,
+												title: "Error",
+												actions: [sap.m.MessageBox.Action.CLOSE]
+
+											});
+
+									}
 
 								});
-
 						}
-
-					});
-					}
-				}),
+					}),
 					endButton: new sap.m.Button({
-					text: 'Annulla',
-					type: 'Reject',
-					press: function () {
-						dialog.close();
+						text: 'Annulla',
+						type: 'Reject',
+						press: function() {
+							dialog.close();
+						}
+					}),
+					afterClose: function() {
+						dialog.destroy();
 					}
-				}),
-				afterClose: function() {
-					dialog.destroy();
-				}
-			});
-            
-			dialog.open();		
-				
-			
+				});
+
+				dialog.open();
 
 			},
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1307,12 +1318,12 @@ sap.ui.define([
 				var oCal, aSpecialDates, oSpecialDate, oSelectedDate, sSelectedDate;
 				oCal = this.getView().byId("LRS4_DAT_CALENDAR");
 				aSpecialDates = oCal.getSpecialDates();
-				
-				if(oCal.getSelectedDates().length > 0){
-				oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
-				sSelectedDate = oSelectedDate.toString();
+
+				if (oCal.getSelectedDates().length > 0) {
+					oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
+					sSelectedDate = oSelectedDate.toString();
 				}
-			
+
 				var sInsertedHours;
 				var nInsertedHours;
 				var nRemainingHours;
@@ -1323,8 +1334,6 @@ sap.ui.define([
 				} else {
 					sNameOre = "oreSel";
 				}
-				
-			
 
 				if (oEvent.getSource().getId() == "descrizione") {
 					sNameDescr = "descrizione";
@@ -1333,21 +1342,21 @@ sap.ui.define([
 				}
 				switch (oEvent.getSource().getId()) {
 					case sNameOre:
-							for (var i = 0; i < aSpecialDates.length; i++) {
+						for (var i = 0; i < aSpecialDates.length; i++) {
 							oSpecialDate = oCal.getSpecialDates()[i];
 							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 								flag = 1;
-								if (oSpecialDate.getProperty("type") == "Type01") {
-							    sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
-							    sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
-							    nInsertedHours = Number(sInsertedHours);
-							    nRemainingHours = 8 - nInsertedHours;
+								if (oSpecialDate.getProperty("type") == "Type03") {
+									sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
+									sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
+									nInsertedHours = Number(sInsertedHours);
+									nRemainingHours = 8 - nInsertedHours;
 								} else {
-								nRemainingHours = 8;
+									nRemainingHours = 8;
 								}
 							}
 						}
-						if (flag == 0){
+						if (flag == 0) {
 							nRemainingHours = 8;
 						}
 						oInput = sap.ui.getCore().byId(sNameOre);
@@ -1376,6 +1385,16 @@ sap.ui.define([
 							oInput.setValueState(sap.ui.core.ValueState.None);
 						}
 						break;
+
+					case "ValueSelSpese":
+						oInput = sap.ui.getCore().byId("ValueSelSpese");
+						if (oInput.getValue() == "") {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("inserisci un importo");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
 					default:
 						var oTable = oEvent.getSource().getParent().getParent();
 						var aItems = oTable.getAggregation("items");
@@ -1397,28 +1416,22 @@ sap.ui.define([
 
 			},
 
-
-    
-			
-			
 			handleCommessaSelection: function(oEvent) {
-                var sHour;
 				this.openDialogSel(oEvent);
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
-                var sSelItemPath;
+				var sSelItemPath;
 				oDialog.unbindElement();
 
-
-                if(oEvent.getId()=="itemPress"){
-				sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
-                }else{
-                sSelItemPath = oEvent.getParameter("rowContext").getPath();	
-                if(sSelItemPath.substring(1, sSelItemPath.indexOf("(")) == "ListaSpeseGroupSet"){
-                this.handleSpeseSelection(oEvent);
-                this.DialogSel.close();
-                return;
-                }
-                }
+				if (oEvent.getId() == "itemPress") {
+					sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+				} else {
+					sSelItemPath = oEvent.getParameter("rowContext").getPath();
+					if (sSelItemPath.substring(1, sSelItemPath.indexOf("(")) == "ListaSpeseGroupSet") {
+						this.handleSpeseSelection(oEvent);
+						this.DialogSel.close();
+						return;
+					}
+				}
 				oDialog.bindElement({
 					path: sSelItemPath,
 					parameters: {
@@ -1426,26 +1439,21 @@ sap.ui.define([
 					}
 				});
 
-				
-				if(this.sOraOriginale == undefined || this.sDescrOriginale == undefined)
-				{
-		        this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
-		        this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
+				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined) {
+					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
+					this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
 				}
-				
-
-
 
 				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
 				oDialog.setTitle("Dettaglio commessa " + sDate);
-    
+
 				var aCommesseItems = this.getView().byId("COMMESSE_CONTENTS").getBinding("items");
 				var aSpeseItems = this.getView().byId("SPESE_CONTENTS").getBinding("items");
 				var aTreeTableRows = this.getView().byId("TREETABLE_CONTENTS").getBinding("rows");
-             
+
 				//MP: utilizzato per fare il refresh delle liste nell'IconTabFilter della View
 				//solo quando viene effettuata un'operazione sulle spese (cancellazione o modifica)
 				var oExpenseList = sap.ui.getCore().byId("speseCommessa");
@@ -1457,11 +1465,9 @@ sap.ui.define([
 					});
 					oExpenseList.getBinding("items").refresh();
 
-
 				}
 
 			},
-			
 
 			openDialogSel: function(oEvent) {
 				var that = this;
@@ -1481,57 +1487,66 @@ sap.ui.define([
 			},
 
 			closeDialogSel: function(oEvent) {
-                var oInputOre, oInputDescr;
+				var oInputOre, oInputDescr;
 				oInputOre = sap.ui.getCore().byId("oreSel");
-                oInputDescr = sap.ui.getCore().byId("descrizioneSel");
+				oInputDescr = sap.ui.getCore().byId("descrizioneSel");
 				this.DialogSel.close();
 				/////////////////////////////////////////////////////////////////////
 				// MP: per pulire i campi della tabella nel panel e chiudere il panel
 				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
 				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-				
-				if(oEvent.getSource().getId()=="Indietro"){
-			    oInputOre.setValue(this.sOraOriginale);
-				oInputDescr.setValue(this.sDescrOriginale);
-				oInputOre.setValueStateText("");
-				oInputOre.setValueState("None");
-				oInputDescr.setValueStateText("");
-				oInputDescr.setValueState("None");             
-				this.sOraOriginale = undefined;
-				this.sDescrOriginale = undefined;
+
+				if (oEvent.getSource().getId() == "Indietro") {
+					oInputOre.setValue(this.sOraOriginale);
+					oInputDescr.setValue(this.sDescrOriginale);
+					oInputOre.setValueStateText("");
+					oInputOre.setValueState("None");
+					oInputDescr.setValueStateText("");
+					oInputDescr.setValueState("None");
+					this.sOraOriginale = undefined;
+					this.sDescrOriginale = undefined;
 				}
 				this.onExpenseSelect(oEvent);
 				/////////////////////////////////////////////////////////////////////
 
 			},
-			
-			
-			 	handleSpeseSelection: function(oEvent) {
+
+			handleSpeseSelection: function(oEvent) {
 				this.openDialogSpese(oEvent);
 				var sSelItemPath;
 				var oDialog = sap.ui.getCore().byId("dialogSpese");
-				 if(oEvent.getId()=="itemPress"){
-				sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
-                }else{
-                sSelItemPath = oEvent.getParameter("rowContext").getPath();	
-                }
-			
+				if (oEvent.getId() == "itemPress") {
+					sSelItemPath = oEvent.getParameter("listItem").getBindingContext().getPath(); //MP: service path della commessa selezionata
+				} else {
+					sSelItemPath = oEvent.getParameter("rowContext").getPath(); // MP: caso in cui ci navigo dalla Treetable
+				}
+
 				oDialog.bindElement({
-				path: sSelItemPath
-				
+					path: sSelItemPath
+
 				});
-				
-			    this.sDay = oDialog.getBindingContext().getProperty("Giorno");
+
+				var sExpType;
+
+				if (this.sImportoOriginale == undefined || this.sDescrExpOriginale == undefined) {
+					sExpType = oDialog.getBindingContext().getProperty("Exptype");
+					if (sExpType == "00") {
+						this.sImportoOriginale = oDialog.getBindingContext().getProperty("Km");
+					} else {
+						this.sImportoOriginale = oDialog.getBindingContext().getProperty("Importo");
+					}
+					this.sDescrExpOriginale = oDialog.getBindingContext().getProperty("Descr");
+				}
+
+				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				//this.sValue = oDialog.getBindingContext().getProperty("Importo");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
-                oDialog.setTitle("Dettaglio spesa " + sDate);
+				oDialog.setTitle("Dettaglio spesa " + sDate);
 			},
-			
-			
-			
-				openDialogSpese        : function(oEvent) {
+
+			openDialogSpese: function(oEvent) {
 				var that = this;
 
 				if (!that.DialogSpese) {
@@ -1546,21 +1561,31 @@ sap.ui.define([
 				that.DialogSpese.open();
 				this._DialogSpese = that.DialogSpese;
 			},
-			
-			
+
 			closeDialogSpese: function() {
-				
+
 				this._onBindingChange();
 				this.DialogSpese.close();
-			
+
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
 			},
-			
-				navBackDialogSpese: function() {
 
+			navBackDialogSpese: function(oEvent) {
+				var oInputImp = sap.ui.getCore().byId("ValueSelSpese");
+				var oInputExpDescr = sap.ui.getCore().byId("descrizioneSelSpese");
 				this.DialogSpese.close();
+
+				oInputImp.setValueState("None");
+				oInputImp.setValueStateText("");
+
+				if (oEvent.getSource().getId() == "IndietroExp") {
+					oInputImp.setValue(this.sImportoOriginale);
+					oInputExpDescr.setValue(this.sDescrExpOriginale);
+					this.sImportoOriginale = undefined;
+					this.sDescrExpOriginale = undefined;
+				}
 
 			},
 
@@ -1599,66 +1624,66 @@ sap.ui.define([
 				this._onBindingChange();
 
 			},
-			
-			 // evento button per apertura pdf odc (SE) per apertura diretta
-		onOpenDoc: function(oEvent) {
-			//var OData = new sap.ui.mode.odata.ODataModel(); 
-		    //jQuery.sap.require("sap.ui.model.odata.datajs");
-			var service = "http://newton.domain.eonegroup.it:8001";
-		//	var oView = this.getView();
-		//	var oObject = oView.getBindingContext().getObject();
-			var oModel = this.getModel();
 
-		//	var sRead = "/PdfdocSet(ZWfProcid='" + oObject.ZWfProcid + "',ZWfTaskid='" + oObject.ZWfTaskid + "',ZWfDocument='" + oObject.ZWfDocument + "',ZWfTipodoc='" + oObject.ZWfTipodoc + "')";
-			   	
-			  // var sViewIdStart = oView.getId().indexOf("---");
-			   	var sButtonId = oEvent.getSource().getId();
-			   	var sButtonEvent = sButtonId.substring(sButtonId.indexOf("---V1--"));
-			
+			// evento button per apertura pdf odc (SE) per apertura diretta
+			onOpenDoc: function(oEvent) {
+				//var OData = new sap.ui.mode.odata.ODataModel(); 
+				//jQuery.sap.require("sap.ui.model.odata.datajs");
+				var service = "http://newton.domain.eonegroup.it:8001";
+				//	var oView = this.getView();
+				//	var oObject = oView.getBindingContext().getObject();
+				var oModel = this.getModel();
+
+				//	var sRead = "/PdfdocSet(ZWfProcid='" + oObject.ZWfProcid + "',ZWfTaskid='" + oObject.ZWfTaskid + "',ZWfDocument='" + oObject.ZWfDocument + "',ZWfTipodoc='" + oObject.ZWfTipodoc + "')";
+
+				// var sViewIdStart = oView.getId().indexOf("---");
+				var sButtonId = oEvent.getSource().getId();
+				var sButtonEvent = sButtonId.substring(sButtonId.indexOf("---V1--"));
+
 				var sPrinttype = "";
 				if (sButtonEvent === "---V1--btnTms") {
-			    sPrinttype = "T";
-				}else{
-				sPrinttype = "E";
+					sPrinttype = "T";
+				} else {
+					sPrinttype = "E";
 				}
-			    var oView = this.getView();
+				var oView = this.getView();
 				var oCal1 = oView.byId("LRS4_DAT_CALENDAR");
 
 				var startDate = oCal1.getStartDate();
 				var startMonth = this.oFormatMonth.format(startDate);
 				if (startMonth.length === 1) {
-				startMonth = "0" + startMonth;
+					startMonth = "0" + startMonth;
 				}
-				
+
 				var startYear = this.oFormatYear.format(startDate);
-			    var sRead =  "/PdfSet(Calyear='" + startYear + "',Calmonth='" + startMonth + "',Extcall='',Printtype='" + sPrinttype + "')";
-				oModel.read( sRead, {
-				 
-				 	success: function (oData) {
-				 		console.log(oData); 
-				               if(!window.open(service + oData.Url, '_blank')){
-							   alert("Popup blocked, please allow popup opening from your browser settings.");		                
-        
-							   }
-							//	win.focus();
+				var sRead = "/PdfSet(Calyear='" + startYear + "',Calmonth='" + startMonth + "',Extcall='',Printtype='" + sPrinttype + "')";
+				oModel.read(sRead, {
+
+					success: function(oData) {
+						console.log(oData);
+						if (!window.open(service + oData.Url, '_blank')) {
+							alert("Popup blocked, please allow popup opening from your browser settings.");
+
+						}
+						//	win.focus();
 					},
-				
-				/*	error: function(){
+
+					/*	error: function(){
 			            alert("No document available");
 					}*/
-				
+
 					error: function() {
-						jQuery.sap.require("sap.m.MessageBox");
-			            sap.m.MessageBox.show(
-					      "Error: No document available", {
-					          icon: sap.m.MessageBox.Icon.WARNING,
-					          title: "Error",
-					          actions: [sap.m.MessageBox.Action.CLOSE]
-					          
-					      }
-					    );
-					}	    
-					/*	error: function() {
+							jQuery.sap.require("sap.m.MessageBox");
+							sap.m.MessageBox.show(
+								"Error: No document available", {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								}
+							);
+						}
+						/*	error: function() {
 						
 						jQuery.sap.require("sap.m.MessageBox");
 			            sap.m.MessageBox.show(
@@ -1671,10 +1696,10 @@ sap.ui.define([
 					    );
 			    
 						}*/
-	
+
 				});
-			            
-		},	
+
+			},
 
 			_onBindingChange: function() {
 
@@ -1697,9 +1722,8 @@ sap.ui.define([
 				var startMonth = this.oFormatMonth.format(startDate);
 				if (startMonth.length === 1) {
 
-				startMonth = "0" + startMonth;
+					startMonth = "0" + startMonth;
 				}
-				
 
 				var startYear = this.oFormatYear.format(startDate);
 
@@ -1903,6 +1927,15 @@ sap.ui.define([
 					},
 					filters: [f1, f2]
 				});
+				
+				// NON FUNZIONA
+				/*
+				var oTreeTableBinding = oTableTree.getBinding("rows");
+			   oTreeTableBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+					var oSource = oEvent.getSource();
+					oSource.bClientOperation = true; 
+					oSource.sOperationMode = "Client"; //operationMode = Client
+				});*/
 
 				//////////////////////////////////////
 				//definisco tabella commessa
@@ -1952,9 +1985,9 @@ sap.ui.define([
 						    }),*/
 
 						new sap.m.Text({
-						//	text: "{Office}",
+							//	text: "{Office}",
 							text: "{Descr}",
-								//         id : "Comm_cellOffice"
+							//         id : "Comm_cellOffice"
 						}),
 
 						/*       new sap.m.Text({
@@ -1985,7 +2018,6 @@ sap.ui.define([
 				oTableComm.bindItems({
 
 					path: "/ListaCommesseGroupSet",
-
 					template: oTemplate,
 					filters: [f1, f2]
 
@@ -1995,6 +2027,15 @@ sap.ui.define([
 				});
 
 				var oBinding = oTableComm.getBinding("items");
+
+				oBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+					var oSource = oEvent.getSource();
+					oSource.bClientOperation = true; 
+					oSource.sOperationMode = "Client"; //operationMode = Client
+					
+				});
+				
+				
 				var aSorters = [];
 
 				var sPath = "Giorno";
@@ -2051,16 +2092,14 @@ sap.ui.define([
 
 							wrapping: false
 						}),
-					
-						
-							new sap.m.ObjectIdentifier({
+
+						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
 							text: "{Office}",
 							//         id : "Comm_cellDescrorder",
 							wrapping: false
 						}),
-						
-						
+
 						/*	new sap.m.Text({
 							text: "{Office}"
 								//        id : "Exp_cellOffice"
@@ -2071,23 +2110,21 @@ sap.ui.define([
 								//       id : "Exp_cellDescr"
 						}),
 
-					
-						
 						/*new sap.m.Text({
 							text: "{Expdescr}"
 								//        id : "Exp_cellOffice"
 						}),*/
-                      
-                      //	<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
-                      	
-								new sap.m.ObjectIdentifier({
+
+						//	<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
+
+						new sap.m.ObjectIdentifier({
 							title: "{Expdescr}",
 							text: "{= ${Exptype} === '00' ? ${Km} : ${Importo}}",
 							//         id : "Comm_cellDescrorder",
 							wrapping: false
 						})
-						
-                      	/*	new sap.m.Text({
+
+						/*	new sap.m.Text({
                       			
                       			text: "{= ${Exptype} === '00' ? ${Km} : ${Importo}}"
 					//		text: "{Importo}"
@@ -2095,82 +2132,80 @@ sap.ui.define([
 					//		editable: false
 								//      id : "Exp_cellExpdescr"
 						})*/
-                      	
-					/*	new sap.m.Text({
+
+						/*	new sap.m.Text({
 
 							text: "{Expdescr}"
 								//      id : "Exp_cellExpdescr"
 						}),
 				*/
 
-			/*	new sap.ui.layout.HorizontalLayout({content:[
-				
-					
-							new sap.m.Button({
-				//	id : "btnD" ,
-					type :  sap.m.ButtonType.Default,
-					icon : "sap-icon://edit" ,
-					
-					tooltip : "Modifica" ,
-					press : this.onExpenseListModify
-					}),
-					
+						/*	new sap.ui.layout.HorizontalLayout({content:[
+							
+								
+										new sap.m.Button({
+							//	id : "btnD" ,
+								type :  sap.m.ButtonType.Default,
+								icon : "sap-icon://edit" ,
+								
+								tooltip : "Modifica" ,
+								press : this.onExpenseListModify
+								}),
+								
 			
-						
-					new sap.m.Button({
-				//	id : "btnD" ,
-					type :  sap.m.ButtonType.Accept,
-					icon : "sap-icon://save" ,
-					enabled: false,
-					tooltip : "Salva" ,
-					press : this.onExpenseCancelOrSave
-					}),
-					
-							new sap.m.Button({
-				//	id : "btnD" ,
-					type :  sap.m.ButtonType.Reject,
-					icon : "sap-icon://delete" ,
-					
-					tooltip : "Elimina" ,
-					press : this.onExpenseCancelOrSave
-					})
-
-					]})		*/			
-										
-
-			/*			new sap.ui.layout.HorizontalLayout({
-							content: [
-
+									
 								new sap.m.Button({
-									//	id : "btnD" ,
-									type: sap.m.ButtonType.Default,
-									icon: "sap-icon://edit",
-
-									tooltip: "Modifica",
-									press: this.onExpenseModify
+							//	id : "btnD" ,
+								type :  sap.m.ButtonType.Accept,
+								icon : "sap-icon://save" ,
+								enabled: false,
+								tooltip : "Salva" ,
+								press : this.onExpenseCancelOrSave
 								}),
-
-								new sap.m.Button({
-									//	id : "btnD" ,
-									type: sap.m.ButtonType.Accept,
-									icon: "sap-icon://save",
-
-									tooltip: "Salva",
-									press: this.onExpenseCancelOrSave
-								}),
-
-								new sap.m.Button({
-									//	id : "btnD" ,
-									type: sap.m.ButtonType.Reject,
-									icon: "sap-icon://delete",
-
-									tooltip: "Elimina",
-									press: this.onExpenseCancelOrSave
+								
+										new sap.m.Button({
+							//	id : "btnD" ,
+								type :  sap.m.ButtonType.Reject,
+								icon : "sap-icon://delete" ,
+								
+								tooltip : "Elimina" ,
+								press : this.onExpenseCancelOrSave
 								})
 
-							]
-						})*/
+								]})		*/
 
+						/*			new sap.ui.layout.HorizontalLayout({
+										content: [
+
+											new sap.m.Button({
+												//	id : "btnD" ,
+												type: sap.m.ButtonType.Default,
+												icon: "sap-icon://edit",
+
+												tooltip: "Modifica",
+												press: this.onExpenseModify
+											}),
+
+											new sap.m.Button({
+												//	id : "btnD" ,
+												type: sap.m.ButtonType.Accept,
+												icon: "sap-icon://save",
+
+												tooltip: "Salva",
+												press: this.onExpenseCancelOrSave
+											}),
+
+											new sap.m.Button({
+												//	id : "btnD" ,
+												type: sap.m.ButtonType.Reject,
+												icon: "sap-icon://delete",
+
+												tooltip: "Elimina",
+												press: this.onExpenseCancelOrSave
+											})
+
+										]
+									})*/
 
 					],
 
@@ -2190,6 +2225,15 @@ sap.ui.define([
 				});
 
 				var oBindingExp = oTableExp.getBinding("items");
+				
+				
+				  oBindingExp.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+					var oSource = oEvent.getSource();
+					oSource.bClientOperation = true; 
+					oSource.sOperationMode = "Client"; //operationMode = Client
+				});
+				
+				
 				var aSortersExp = [];
 
 				var sPathExp = "Giorno";

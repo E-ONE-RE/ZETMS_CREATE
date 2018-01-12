@@ -2,10 +2,9 @@
    xmlns="sap.m"
    xmlns:l="sap.ui.layout"
    xmlns:core="sap.ui.core"
-   	xmlns:mvc="sap.ui.core.mvc"
-   	xmlns:html="http://www.w3.org/1999/xhtml">
+   xmlns:mvc="sap.ui.core.mvc"
+   xmlns:html="http://www.w3.org/1999/xhtml">
 	
-
 
 
 
@@ -41,7 +40,7 @@
 		<html:li>Cliccare sul tab "Report" e selezionare il documento da visualizzare</html:li>
 		</html:ul>
 		
-		<html:strong>Come modificare ordinamento e raggrummpamento delle liste</html:strong>
+		<html:strong>Come modificare ordinamento e raggruppamento delle liste</html:strong>
 		<html:ul>
 		<html:li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliare il settaggio desiderato.</html:li>
 		</html:ul>
