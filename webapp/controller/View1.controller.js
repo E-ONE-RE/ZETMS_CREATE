@@ -258,18 +258,24 @@ sap.ui.define([
 
 			//MP: lasciate ogni speranza o voi che entrate 
 			handleCalendarSelect: function(oEvent) {
-			
+
 				var sDate, sDayFilter, oFilter, oTreeFilter;
-				
+
 				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
 				var oTableExp = this.getView().byId("SPESE_CONTENTS");
 				//var oTreeTable =  this.getView().byId("TREETABLE_CONTENTS");
-				
+
 				var oTableCommBinding = oTableComm.getBinding("items");
-                var oTableExpBinding = oTableExp.getBinding("items");
-                //var oTreeTableBinding = oTreeTable.getBinding("rows");
-			
-				if (oEvent.getSource().getSelectedDates()[0] != undefined) {
+				var oTableExpBinding = oTableExp.getBinding("items");
+				//var oTreeTableBinding = oTreeTable.getBinding("rows");
+
+				if (oEvent.getSource().getSelectedDates()[0] != undefined) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
+					var iSelCount;
+					iSelCount++;
+					if (iSelCount == 1) {
+						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
+						oTableExpBinding.aAllKeys = oTableExpBinding.aKeys;
+					}
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 					//MP: Client side filtering. Per il momento non applicato alla treeTable
 					sDate = formatter.formatCalDate(this.selectedDate.toString());
@@ -279,12 +285,12 @@ sap.ui.define([
 					oTableCommBinding.filter(oFilter);
 					oTableExpBinding.filter(oFilter);
 					//oTreeTableBinding.filter(oTreeFilter);
-				}else{
+				} else {
 					oTableCommBinding.filter();
 					oTableExpBinding.filter();
 					//oTreeTableBinding.filter();
 				}
-				
+
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
 				// e si possono ancora inserire delle ore (meno di 8 ore inserite per un giorno)
 				var oButton = this.getView().byId("btn1");
@@ -362,7 +368,9 @@ sap.ui.define([
 
 								});
 
-							//oCalendar.removeAllSelectedDates();
+							oCal.removeAllSelectedDates();
+							oButton.setEnabled(false);
+
 							return;
 						}
 					}
@@ -962,7 +970,6 @@ sap.ui.define([
 						oSaveButton.setEnabled(false);
 					}
 				}
-				oModel.updateBindings(true);
 			},
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
@@ -1001,6 +1008,7 @@ sap.ui.define([
 				var aCells;
 				var oSaveButton;
 				var sDialogMessage, msg;
+				var that = this;
 				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
 				oSaveButton = aCells[3].getAggregation("content")[1];
 
@@ -1084,7 +1092,8 @@ sap.ui.define([
 											closeOnBrowserNavigation: false
 
 										});
-										oModel.refresh();
+										that._onBindingChange();
+										sap.ui.getCore().byId("speseCommessa").getBinding("items").refresh();
 									},
 									error: function(e) {
 										sap.m.MessageBox.show(
@@ -1458,11 +1467,12 @@ sap.ui.define([
 				//solo quando viene effettuata un'operazione sulle spese (cancellazione o modifica)
 				var oExpenseList = sap.ui.getCore().byId("speseCommessa");
 				if (oExpenseList.getBinding("items") != undefined) {
-					oExpenseList.getBinding("items").attachChange(function() {
-						aCommesseItems.refresh();
-						aSpeseItems.refresh();
-						aTreeTableRows.refresh();
-					});
+					//MP: non usato al momento.
+					/*	oExpenseList.getBinding("items").attachChange(function() {
+							aCommesseItems.refresh(); 
+							aSpeseItems.refresh();
+							aTreeTableRows.refresh();
+						});*/
 					oExpenseList.getBinding("items").refresh();
 
 				}
@@ -1612,6 +1622,12 @@ sap.ui.define([
 			},
 
 			onAfterRendering: function(oEvent) {
+
+				var oIconTabFilterTree = this.getView().byId("commesseTree");
+				if (sap.ui.Device.system.phone) {
+					oIconTabFilterTree.setVisible(false);
+
+				}
 
 			},
 
@@ -1927,7 +1943,7 @@ sap.ui.define([
 					},
 					filters: [f1, f2]
 				});
-				
+
 				// NON FUNZIONA
 				/*
 				var oTreeTableBinding = oTableTree.getBinding("rows");
@@ -2030,12 +2046,11 @@ sap.ui.define([
 
 				oBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
-					oSource.bClientOperation = true; 
+					oSource.bClientOperation = true;
 					oSource.sOperationMode = "Client"; //operationMode = Client
-					
+
 				});
-				
-				
+
 				var aSorters = [];
 
 				var sPath = "Giorno";
@@ -2225,15 +2240,13 @@ sap.ui.define([
 				});
 
 				var oBindingExp = oTableExp.getBinding("items");
-				
-				
-				  oBindingExp.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+
+				oBindingExp.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
-					oSource.bClientOperation = true; 
+					oSource.bClientOperation = true;
 					oSource.sOperationMode = "Client"; //operationMode = Client
 				});
-				
-				
+
 				var aSortersExp = [];
 
 				var sPathExp = "Giorno";

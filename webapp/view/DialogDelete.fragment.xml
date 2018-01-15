@@ -1,10 +1,16 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" id="FragDel" xmlns:smartTable="sap.ui.comp.smarttable"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-	<Dialog id="dialogDelComm"  stretch="true">
+	<Dialog id="dialogDelComm" stretch="true">
 		<html:style>
 			.sapMILILabel { font-size: 14px; !important }
 		</html:style>
+		<FlexBox alignItems="End" justifyContent="End">
+			<items>
+				<Button id="help1" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
+					tooltip="Clicca per informazioni sull'uso del Timesheet"></Button>
+			</items>
+		</FlexBox>
 		<content>
 			<VBox class="sapUiSmallMargin">
 				<f:Form id="FormToolbarDelComm" editable="true" ariaLabelledBy="Title1">
@@ -16,7 +22,7 @@
 						<f:FormContainer ariaLabelledBy="Title2">
 							<f:toolbar>
 								<Toolbar>
-									<Title id="dettaglioComm" text="Dettaglio commessa selezionata" level="H5" titleStyle="H5"/>
+									<Title text="Dettaglio commessa selezionata" level="H5" titleStyle="H5"/>
 									<ToolbarSpacer/>
 								</Toolbar>
 							</f:toolbar>
@@ -33,13 +39,13 @@
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Input id="oreSel" value="{Ore}" change = "onLiveChange"/>
+										<Input id="oreSel" value="{Ore}" change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
 										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione attività." value="{Descr}"
-											change = "onLiveChange"/>
+											change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>
@@ -57,9 +63,9 @@
 				</f:Form>
 				<sap.ui.layout:VerticalLayout>
 					<sap.ui.layout:content>
-						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false" showVariantManagement="false"
-							useExportToExcel="false" useTablePersonalisation="false" header="Modifica Spese inserite" showRowCount="true" enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding"
-							enableCustomFilter="false">
+						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false"
+							showVariantManagement="false" useExportToExcel="false" useTablePersonalisation="false" header="Modifica Spese inserite" showRowCount="true"
+							enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding" enableCustomFilter="false">
 							<Table id="speseCommessa" width="auto" class="sapUiResponsiveMargin" growing="true" growingScrollToLoad="true"
 								backgroundDesign="Translucent">
 								<columns>
@@ -77,11 +83,8 @@
 									</Column>
 									<Column id="col4" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
 										<Text text="Modifica / Elimina spesa" id="nameC4"/>
-											<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
+										<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
 									</Column>
-									
-							
-								
 								</columns>
 								<items>
 									<ColumnListItem>
@@ -98,14 +101,12 @@
 											<sap.ui.layout:HorizontalLayout>
 												<sap.ui.layout:content>
 													<Button id="btnM" icon="sap-icon://edit" tooltip="Modifica" press="onExpenseModify"></Button>
-														<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
-											        <Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
-												
+													<Button id="btnS" type="Accept" icon="sap-icon://save" tooltip="Salva" press="onExpenseCancelOrSave" enabled="false"></Button>
+													<Button id="btnD" type="Reject" icon="sap-icon://delete" tooltip="Elimina" press="onExpenseCancelOrSave"></Button>
 												</sap.ui.layout:content>
 											</sap.ui.layout:HorizontalLayout>
 										</cells>
 									</ColumnListItem>
-								
 								</items>
 							</Table>
 							<smartTable:layoutData>
@@ -126,7 +127,6 @@
 										<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
 											<Text text="Importo (EUR) / Distanza (KM)"/>
 										</Column>
-											
 									</columns>
 									<items>
 										<ColumnListItem>
@@ -223,8 +223,7 @@
 			<Button id="EliminaSel" text="Elimina Commessa" press="handleDeleteComm" type="Reject"/>
 			<!-- Fare Check su ore !-->
 			<Button id="Modifica" text="Modifica Commessa" press="openMessageDialog" type="Emphasized"/>
-			<Button id="Indietro" text="Indietro" press="closeDialogSel" />
-	
+			<Button id="Indietro" text="Indietro" press="closeDialogSel"/>
 		</buttons>
 	</Dialog>
 </core:FragmentDefinition>
