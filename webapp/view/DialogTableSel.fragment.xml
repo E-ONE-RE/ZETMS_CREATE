@@ -1,14 +1,14 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-	<TableSelectDialog id="tableCommEx" noDataText="Nessuna commessa trovata" title="Seleziona commessa" search="handleSearch" confirm="handleClose"
-		>
+	<TableSelectDialog id="tableCommEx" noDataText="Nessuna commessa trovata" title="Seleziona commessa" search="handleSearch"
+		confirm="handleClose">
 		<columns>
-			<Column id="comm_column_Descrorder" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+			<Column id="comm_column_Descrorder" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
 				<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 			</Column>
-			<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+			<Column id="comm_column_Descr" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
 				<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
 			</Column>
-			<Column id="comm_column_Office" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+			<Column id="comm_column_Office" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
 				<Label text="Sede" id="comm_label_Office"/>
 			</Column>
 		</columns>
