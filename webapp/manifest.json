@@ -39,7 +39,11 @@
 			"tablet": true,
 			"phone": true
 		},
-		"supportedThemes": ["sap_hcb", "sap_bluecrystal", "sap_belize"]
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_bluecrystal",
+			"sap_belize"
+		]
 	},
 	"sap.ui5": {
 		"rootView": {
@@ -104,13 +108,15 @@
 					"target": "notFound"
 				}
 			},
-			"routes": [{
-				"name": "view1",
-				"pattern": "",
-				"greedy": false,
-				"target": "view1",
-				"view": "View1"
-			}],
+			"routes": [
+				{
+					"name": "view1",
+					"pattern": "",
+					"greedy": false,
+					"target": "view1",
+					"view": "View1"
+				}
+			],
 			"targets": {
 				"view1": {
 					"viewName": "View1",
@@ -120,13 +126,15 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/sap/zleave_c_2_4/webapp",
+		"uri": "/sap/bc/ui5_ui5/sap/zetms_new/webapp",
 		"_version": "1.1.0"
 	}
 }
