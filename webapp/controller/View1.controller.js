@@ -384,7 +384,7 @@ sap.ui.define([
 					handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
-				this.getView.byId("SPESE_CONTENTS").getBinding("items").filter();
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
 				this.count = undefined;
 				//	this._clearModel();
 			},
