@@ -218,17 +218,17 @@ sap.ui.define([
 			handleViewSettingsDialogButtonPressed: function(oEvent) {
 				var that = this;
 				this.sButtonKey = oEvent.getSource().getId();
-				if (!that._oDialog) {
-					that._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
+				if (!that._oDialogSettings) {
+					that._oDialogSettings = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
-					this.getView().addDependent(that._oDialog);
+					this.getView().addDependent(that._oDialogSettings);
 					/*	if (sap.ui.Device.system.phone) {
 							that._oDialog.setStretch(true);
 						}*/
 				}
 				// toggle compact style
-				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialog);
-				that._oDialog.open();
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialogSettings);
+				that._oDialogSettings.open();
 			},
 
 			onBeforeRendering: function() {
@@ -499,9 +499,9 @@ sap.ui.define([
 
 				//	var that = this;
 
-				if (!this._oDialog) {
+				if (!this._oDialogSelComm) {
 
-					this._oDialog = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
+					this._oDialogSelComm = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
 				}
 
 				// Multi-select if required
@@ -512,7 +512,7 @@ sap.ui.define([
 				//	var bRemember = !!oEvent.getSource().data("remember");
 				//	this._oDialog.setRememberSelections(bRemember);
 
-				this.getView().addDependent(this._oDialog);
+				this.getView().addDependent(this._oDialogSelComm);
 				var oModel = this.getView().getModel();
 
 				var oTableCommEx = sap.ui.getCore().byId("tableCommEx"); //tabella per commesse già inserite
@@ -563,7 +563,7 @@ sap.ui.define([
 
 				// toggle compact style
 				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
-				this._oDialog.open();
+				this._oDialogSelComm.open();
 			},
 
 			// funzione search non implementata al momento
