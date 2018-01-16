@@ -6,7 +6,7 @@
 		</html:style>
 		<FlexBox alignItems="End" justifyContent="End">
 			<items>
-				<Button id="help1" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
+				<Button id="help2" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
 					tooltip="Clicca per informazioni sull'uso del Timesheet"></Button>
 			</items>
 		</FlexBox>

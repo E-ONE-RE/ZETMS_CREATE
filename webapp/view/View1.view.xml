@@ -19,7 +19,7 @@ displayBlock="true">
 	<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
 		
 		<headerContent>
-				<Button id="help1"
+				<Button id="help0"
 				text="Help"
 				press="handleResponsivePopoverPress"  type="Emphasized" icon="sap-icon://message-information" tooltip="Clicca per informazioni sull'uso del Timesheet">
 			   
