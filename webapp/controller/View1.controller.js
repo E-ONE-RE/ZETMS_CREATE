@@ -1519,7 +1519,7 @@ sap.ui.define([
 
 					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogDelete", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
-					this.getView().addDependent(that.Dialog);
+					this.getView().addDependent(that.DialogSel);
 					if (sap.ui.Device.system.phone) {
 						that.Dialog.setStretch(true);
 					}
