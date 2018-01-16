@@ -106,10 +106,7 @@ sap.ui.define([
 		},
 		
 
-				handleRemoveSelection: function(oEvent) {
-				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-				//	this._clearModel();
-			},
+		
 
 			/*_clearModel: function() {
 			var oData = {selectedDates:[]};

@@ -268,16 +268,16 @@ sap.ui.define([
 				var oTableCommBinding = oTableComm.getBinding("items");
 				var oTableExpBinding = oTableExp.getBinding("items");
 				//var oTreeTableBinding = oTreeTable.getBinding("rows");
-		         	var iSelCount = oEvent.getSource().getSelectedDates().length;
+		         	//var iSelCount = oEvent.getSource().getSelectedDates().length;
 		    
 				if (oEvent.getSource().getSelectedDates()[0] != undefined) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
 					
-					if (iSelCount == 1 && (this.count == undefined || this.count == 0) ) {
+					if (this.count == undefined) {
 						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
 						oTableExpBinding.aAllKeys = oTableExpBinding.aKeys;
-					}else{
-						this.count = 1;
 					}
+				    this.count = 1;
+					
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 					//MP: Client side filtering. Per il momento non applicato alla treeTable
 					sDate = formatter.formatCalDate(this.selectedDate.toString());
@@ -288,10 +288,10 @@ sap.ui.define([
 					oTableExpBinding.filter(oFilter);
 					//oTreeTableBinding.filter(oTreeFilter);
 				} else {
-					oTableCommBinding.filter();
-					oTableExpBinding.filter();
+					//oTableCommBinding.filter();
+					//oTableExpBinding.filter();
 					//oTreeTableBinding.filter();
-					this.count = 0;
+					this.count = undefined;
 				}
 
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
@@ -379,6 +379,14 @@ sap.ui.define([
 						}
 					}
 				}
+			},
+			
+					handleRemoveSelection: function(oEvent) {
+				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
+				this.getView.byId("SPESE_CONTENTS").getBinding("items").filter();
+				this.count = undefined;
+				//	this._clearModel();
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
@@ -1451,6 +1459,27 @@ sap.ui.define([
 						expand: 'ToChildExpNodes'
 					}
 				});
+				var sOrderJob = oDialog.getBindingContext().getProperty("Orderjob");
+				var oButtonDel = sap.ui.getCore().byId("EliminaSel");
+			    var oButtonMod = sap.ui.getCore().byId("Modifica");
+				// MP: se permesso, ferie, ROL o recupero non si può cancellare o modificare
+				if(sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B"){
+				 jQuery.sap.require("sap.m.MessageBox");
+  sap.m.MessageBox.show(
+      "I permessi, le ferie e le ore ROL inserite dall'apposita applicazione Fiori non possono essere cancellate e/o modificate.", {
+          icon: sap.m.MessageBox.Icon.INFORMATION,
+          title: "Informazioni",
+          actions: [sap.m.MessageBox.Action.OK],
+          onClose: function(oAction) { }
+      }
+    );
+					oButtonDel.setVisible(false);
+					oButtonMod.setVisible(false);
+				}else{
+					oButtonDel.setVisible(true);
+					oButtonMod.setVisible(true);
+				}
+				
 
 				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined) {
 					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");

@@ -69,7 +69,7 @@ displayBlock="true">
 													<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
 														<items>
 															<sap.ui.layout:VerticalLayout width="100%">
-																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
+																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="true" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
 									
 
 
