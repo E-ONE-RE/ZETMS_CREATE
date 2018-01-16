@@ -264,17 +264,19 @@ sap.ui.define([
 				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
 				var oTableExp = this.getView().byId("SPESE_CONTENTS");
 				//var oTreeTable =  this.getView().byId("TREETABLE_CONTENTS");
-
+               
 				var oTableCommBinding = oTableComm.getBinding("items");
 				var oTableExpBinding = oTableExp.getBinding("items");
 				//var oTreeTableBinding = oTreeTable.getBinding("rows");
-
+		         	var iSelCount = oEvent.getSource().getSelectedDates().length;
+		    
 				if (oEvent.getSource().getSelectedDates()[0] != undefined) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
-					var iSelCount;
-					iSelCount++;
-					if (iSelCount == 1) {
+					
+					if (iSelCount == 1 && (this.count == undefined || this.count == 0) ) {
 						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
 						oTableExpBinding.aAllKeys = oTableExpBinding.aKeys;
+					}else{
+						this.count = 1;
 					}
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 					//MP: Client side filtering. Per il momento non applicato alla treeTable
@@ -289,6 +291,7 @@ sap.ui.define([
 					oTableCommBinding.filter();
 					oTableExpBinding.filter();
 					//oTreeTableBinding.filter();
+					this.count = 0;
 				}
 
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
@@ -370,7 +373,8 @@ sap.ui.define([
 
 							oCal.removeAllSelectedDates();
 							oButton.setEnabled(false);
-
+                           	oTableCommBinding.filter(); // per ripristinare la condizione di partenza
+				         	oTableExpBinding.filter();
 							return;
 						}
 					}
