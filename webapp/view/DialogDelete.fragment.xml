@@ -64,7 +64,7 @@
 				<sap.ui.layout:VerticalLayout>
 					<sap.ui.layout:content>
 						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false"
-							showVariantManagement="false" useExportToExcel="false" useTablePersonalisation="false" header="Modifica Spese inserite" showRowCount="true"
+							showVariantManagement="false" useExportToExcel="false" useTablePersonalisation="false" header="Spese inserite" showRowCount="true"
 							enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding" enableCustomFilter="false">
 							<Table id="speseCommessa" width="auto" class="sapUiResponsiveMargin" growing="true" growingScrollToLoad="true"
 								backgroundDesign="Translucent">

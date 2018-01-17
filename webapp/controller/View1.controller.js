@@ -158,8 +158,93 @@ sap.ui.define([
 					this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
 
 					this.getView().addDependent(this._oPopoverHelp);
+
+				}
+				var oVbox = sap.ui.getCore().byId("Vbox");
+				oVbox.destroyItems();
+				var sId = oEvent.getSource().getParent().getParent().getId();
+				var oHTML;
+				switch (sId) {
+					case "dialog":
+							oHTML = new sap.ui.core.HTML({
+							content: '<strong>Inseriremento commessa ed eventuali spese</strong>' +
+								'<ul>' +
+								'<li>Per il giorno selezionato, è possibile selezionare una nuova<br> commessa dall&apos; apposito albero oppure' +
+								'inserire una commessa<br> già esistente selezionandola dalla finestra presentata al click del <br> tasto "Seleziona una commessa esistente". ' +
+								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori)'+
+								'ed aver <br> selezionato eventuali spese, premere il tasto "Conferma" per inserire la commessa.<br>' +
+								'</li>' +
+								'</ul>',
+							sanitizeContent: true
+						});
+
+						break;
+					case "dialogDelComm":
+                        	oHTML = new sap.ui.core.HTML({
+							content: '<strong>Modificare o eliminare una commessa</strong>' +
+								'<ul>' +
+								'<li>Per la commessa selezionata, è possibile modificare <br> l&apos; importo e la descrizione ' +
+								'modificando i valori degli <br>appositi campi di input. Inoltre, è possibile inserire<br> eventuali spese '+
+								'espandendo la relativa sezione e <br> selezionando le spese che si intende aggiungere. <br>' +
+								'Una volta terminata l&apos; elaborazione, premere sul <br>tasto "Modifica commessa"'+
+								' per apportare le modifiche.</li>' +
+								'</ul>' +
+								'<ul>' +
+								'<li>Per eliminare la commessa, cliccare sul tasto "Elimina commessa"</li>'+
+								'</ul>'+
+								'<strong>Modificare o eliminare le singole spese</strong>' +
+								'<ul>' +
+								'<li>In questa finestra è possibile eliminare o modificare singolarmente <br>'+
+								'le spese associate alla commessa (tabella "Spese Inserite") tramite <br>'+
+								'gli appositi bottoni presenti in tabella.</li>'+
+								'</ul>',
+							sanitizeContent: true
+						});
+						break;
+					case "dialogSpese":
+						oHTML = new sap.ui.core.HTML({
+							content: '<strong>Modificare o eliminare una spesa</strong>' +
+								'<ul>' +
+								'<li>Per la spesa selezionata, è possibile modificare <br> l&apos; importo e la descrizione ' +
+								'modificando i valori degli <br>appositi campi di input. Una volta terminata l&apos; elaborazione,  <br>' +
+								'premere sul tasto "Modifica spesa" per apportare le modifiche.</li>' +
+								'</ul>' +
+								'<ul>' +
+								'<li>Per eliminare la spesa, cliccare sul tasto "Elimina spesa"</li>'+
+								'</ul>',
+							sanitizeContent: true
+						});
+
+						break;
+
+					default:
+						oHTML = new sap.ui.core.HTML({
+							content: '<strong>Come inserire una nuova commessa e relative spese</strong>' +
+								'<ul>' +
+								'<li>Selezionare il giorno dal calendario.</li>' +
+								'<li>Cliccare sul pulsante crea.</li>' +
+								'</ul>' +
+								'<strong>Come modificare una commessa e relative spese</strong>' +
+								'<ul>' +
+								'<li>Selezionare la commmessa da modificare dalla lista delle commesse.</li>' +
+								'</ul>' +
+								'<strong>Come modificare una spesa</strong>' +
+								'<ul>' +
+								'<li>Selezionare la spesa da modificare dalla lista delle spese.</li>' +
+								'</ul>' +
+								'<strong>Come visualizzare i report</strong>' +
+								'<ul>' +
+								'<li>Cliccare sul tab "Report" e selezionare il documento da visualizzare</li>' +
+								'</ul>' +
+								'<strong>Come modificare ordinamento e raggruppamento delle liste</strong>' +
+								'<ul>' +
+								'<li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliere il settaggio desiderato.</li>' +
+								'</ul>',
+							sanitizeContent: true
+						});
 				}
 
+				oVbox.addItem(oHTML);
 				this._oPopoverHelp.openBy(oEvent.getSource());
 			},
 
@@ -264,20 +349,20 @@ sap.ui.define([
 				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
 				var oTableExp = this.getView().byId("SPESE_CONTENTS");
 				//var oTreeTable =  this.getView().byId("TREETABLE_CONTENTS");
-               
+
 				var oTableCommBinding = oTableComm.getBinding("items");
 				var oTableExpBinding = oTableExp.getBinding("items");
 				//var oTreeTableBinding = oTreeTable.getBinding("rows");
-		         	//var iSelCount = oEvent.getSource().getSelectedDates().length;
-		    
+				//var iSelCount = oEvent.getSource().getSelectedDates().length;
+
 				if (oEvent.getSource().getSelectedDates()[0] != undefined) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
-					
+
 					if (this.count == undefined) {
 						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
 						oTableExpBinding.aAllKeys = oTableExpBinding.aKeys;
 					}
-				    this.count = 1;
-					
+					this.count = 1;
+
 					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
 					//MP: Client side filtering. Per il momento non applicato alla treeTable
 					sDate = formatter.formatCalDate(this.selectedDate.toString());
@@ -373,15 +458,15 @@ sap.ui.define([
 
 							oCal.removeAllSelectedDates();
 							oButton.setEnabled(false);
-                           	oTableCommBinding.filter(); // per ripristinare la condizione di partenza
-				         	oTableExpBinding.filter();
+							oTableCommBinding.filter(); // per ripristinare la condizione di partenza
+							oTableExpBinding.filter();
 							return;
 						}
 					}
 				}
 			},
-			
-					handleRemoveSelection: function(oEvent) {
+
+			handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
@@ -1461,25 +1546,24 @@ sap.ui.define([
 				});
 				var sOrderJob = oDialog.getBindingContext().getProperty("Orderjob");
 				var oButtonDel = sap.ui.getCore().byId("EliminaSel");
-			    var oButtonMod = sap.ui.getCore().byId("Modifica");
+				var oButtonMod = sap.ui.getCore().byId("Modifica");
 				// MP: se permesso, ferie, ROL o recupero non si può cancellare o modificare
-				if(sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B"){
-				 jQuery.sap.require("sap.m.MessageBox");
-  sap.m.MessageBox.show(
-      "I permessi, le ferie e le ore ROL inserite dall'apposita applicazione Fiori non possono essere cancellate e/o modificate.", {
-          icon: sap.m.MessageBox.Icon.INFORMATION,
-          title: "Informazioni",
-          actions: [sap.m.MessageBox.Action.OK],
-          onClose: function(oAction) { }
-      }
-    );
+				if (sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B") {
+					jQuery.sap.require("sap.m.MessageBox");
+					sap.m.MessageBox.show(
+						"I permessi, le ferie e le ore ROL inserite dall'apposita applicazione Fiori non possono essere cancellate e/o modificate.", {
+							icon: sap.m.MessageBox.Icon.INFORMATION,
+							title: "Informazioni",
+							actions: [sap.m.MessageBox.Action.OK],
+							onClose: function(oAction) {}
+						}
+					);
 					oButtonDel.setVisible(false);
 					oButtonMod.setVisible(false);
-				}else{
+				} else {
 					oButtonDel.setVisible(true);
 					oButtonMod.setVisible(true);
 				}
-				
 
 				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined) {
 					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
