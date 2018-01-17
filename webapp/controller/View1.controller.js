@@ -169,10 +169,10 @@ sap.ui.define([
 							oHTML = new sap.ui.core.HTML({
 							content: '<strong>Inseriremento commessa ed eventuali spese</strong>' +
 								'<ul>' +
-								'<li>Per il giorno selezionato, è possibile selezionare una nuova<br> commessa dall&apos; apposito albero oppure' +
+								'<li>Per il giorno selezionato, è possibile selezionare una nuova<br> commessa dall&apos; apposito albero oppure ' +
 								'inserire una commessa<br> già esistente selezionandola dalla finestra presentata al click del <br> tasto "Seleziona una commessa esistente". ' +
-								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori)'+
-								'ed aver <br> selezionato eventuali spese, premere il tasto "Conferma" per inserire la commessa.<br>' +
+								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
+								'ed <br> aver selezionato eventuali spese, premere il tasto "Conferma" per<br> inserire la commessa.' +
 								'</li>' +
 								'</ul>',
 							sanitizeContent: true
