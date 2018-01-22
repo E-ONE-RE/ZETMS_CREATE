@@ -476,6 +476,7 @@ sap.ui.define([
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
 			openDialog: function(oEvent) {
+			
 				var that = this;
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
@@ -489,7 +490,7 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
-
+               	sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
 				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
 				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 			},
@@ -500,6 +501,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("commessa").setValueState("None");
 				//sap.ui.getCore().byId("sedi").setEnabled(false);
 				sap.ui.getCore().byId("sedi").unbindItems();
+				sap.ui.getCore().byId("sedi").setValueState("None");
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("ore").setValueState("None");
 				sap.ui.getCore().byId("descrizione").setValue("");
@@ -596,6 +598,8 @@ sap.ui.define([
 
 					this._oDialogSelComm = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
 				}
+				
+			
 
 				// Multi-select if required
 				//var bMultiSelect = !!oEvent.getSource().data("multi");
@@ -672,6 +676,10 @@ sap.ui.define([
 				var oInput = sap.ui.getCore().byId("commessa");
 				var oSede = sap.ui.getCore().byId("sedi");
 				var oDescr = sap.ui.getCore().byId("descrizione");
+				
+			
+				oSede.setForceSelection(true);
+				
 				if (aContexts && aContexts.length) {
 
 					oInput.setValue(aContexts.map(function(oContext) {
@@ -748,8 +756,21 @@ sap.ui.define([
 							path: "/results",
 							template: oTemplate
 						});
-
+                         	oSelect.setForceSelection(false);
+                         	oSelect.setSelectedKey("");
 					});
+			},
+			
+			handleSelectChange: function(oEvent){
+		    var oSelect = oEvent.getSource();
+			var oSelectedKey = oSelect.getSelectedKey();
+			
+			if(oSelectedKey != ""){		
+				oSelect.setValueStateText("");
+				oSelect.setValueState("None");
+		
+			}
+				
 			},
 
 			onExpenseSelect: function(oEvent) {
@@ -830,14 +851,16 @@ sap.ui.define([
 				var aControls = [];
 				var aParam = [];
 				var oInput;
+				var sValue;
 				var that = this;
 
 				this.buttonEvent = oEvent.getSource().getId();
 
 				if (this.buttonEvent !== "Modificaa") {
-					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"));
+					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"), sap.ui.getCore().byId("sedi"));
 				} else {
 					aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
+					aParam.push("dummy"); //MP: controllo sulla sede non viene eseguito; creo una Entry dummy.
 					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
 					for (var k = 0; k < aControls.length; k++) {
 						oInput = aControls[k];
@@ -853,24 +876,32 @@ sap.ui.define([
 				if (this.buttonEvent !== "Modificaa") {
 					for (var i = 0; i < aControls.length; i++) {
 						oInput = aControls[i];
-						if (oInput.getValue() === "" || oInput.getValueState() == "Error") {
+							if(oInput.getId()=="sedi"){//caso sap.m.select (sedi)
+							sValue = oInput.getSelectedKey();
+						}else{//caso sap.m.Input
+							sValue = oInput.getValue();
+						}
+						if (sValue === "" || oInput.getValueState() == "Error") {
 							oInput.setValueState("Error");
 							oInput.setValueStateText("il campo non è valorizzato oppure il valore è errato.");
 						} else {
-							aParam.push(oInput.getValue());
+							aParam.push(sValue);
 						}
 					}
 				}
+				
+				
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
 
 				var aDate = [];
 				var oExpenseTable;
+				
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
-				if (aParam.length === 3) {
+				if (aParam.length === 4) {
 					this.getView().byId("btn1").setEnabled(false);
 					if (this.buttonEvent === "Modificaa") {
 						sOffice = sap.ui.getCore().byId("sedeSel").getText();
