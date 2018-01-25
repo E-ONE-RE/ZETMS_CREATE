@@ -169,10 +169,14 @@ sap.ui.define([
 							oHTML = new sap.ui.core.HTML({
 							content: '<strong>Inseriremento commessa ed eventuali spese</strong>' +
 								'<ul>' +
-								'<li>Per il giorno selezionato, è possibile selezionare una nuova<br> commessa dall&apos; apposito albero oppure ' +
-								'inserire una commessa<br> già esistente selezionandola dalla finestra presentata al click del <br> tasto "Seleziona una commessa esistente". ' +
-								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
-								'ed <br> aver selezionato eventuali spese, premere il tasto "Conferma" per<br> inserire la commessa.' +
+								'<li>Seleziona una commessa già utilizzata nel mese: in questo caso la sede non protrà essere modificata ' +
+								'e le modifiche al campo descrizione saranno riportate nei giorni per i quali la commessa è gia stata utilizzata. ' + 
+								'</li>' +
+								'<li>Seleziona una nuova commessa: in questo caso verrà aggiunta una nuova commessa dove si potrà selezionare la sede ed aggiungere una nuova descrizione. ' +
+								'</li>' +
+							  
+								'<li>Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
+								'ed aver selezionato eventuali spese, premere il tasto "Conferma" per salvare la commessa.' +
 								'</li>' +
 								'</ul>',
 							sanitizeContent: true
@@ -183,20 +187,22 @@ sap.ui.define([
                         	oHTML = new sap.ui.core.HTML({
 							content: '<strong>Modificare o eliminare una commessa</strong>' +
 								'<ul>' +
-								'<li>Per la commessa selezionata, è possibile modificare <br> l&apos; importo e la descrizione ' +
-								'modificando i valori degli <br>appositi campi di input. Inoltre, è possibile inserire<br> eventuali spese '+
-								'espandendo la relativa sezione e <br> selezionando le spese che si intende aggiungere. <br>' +
-								'Una volta terminata l&apos; elaborazione, premere sul <br>tasto "Modifica commessa"'+
+								'<li>Per la commessa selezionata, è possibile: ' +
+								' <br> - Modificare ore e descrizione' +
+								' <br> - Inserire eventuali nuove spese espandendo la relativa sezione ' +
+								 
+								'<br>Una volta terminati gli inserimenti, premere sul tasto "Modifica commessa"'+
 								' per apportare le modifiche.</li>' +
 								'</ul>' +
 								'<ul>' +
-								'<li>Per eliminare la commessa, cliccare sul tasto "Elimina commessa"</li>'+
+								'<li>Per eliminare la commessa e le relative spese associate, cliccare sul tasto "Elimina commessa"</li>'+
 								'</ul>'+
-								'<strong>Modificare o eliminare le singole spese</strong>' +
+								'<strong>Modificare o eliminare le singole spese già presenti</strong>' +
 								'<ul>' +
-								'<li>In questa finestra è possibile eliminare o modificare singolarmente <br>'+
-								'le spese associate alla commessa (tabella "Spese Inserite") tramite <br>'+
-								'gli appositi bottoni presenti in tabella.</li>'+
+								'<li>Dalla tabella "Spese Inserite" è possibile eliminare o modificare/salvare singolarmente '+
+								'le spese associate alla commessa. In questo caso i bottoni da utilizzare sono quelli posti ' +
+								' alla destra delle singole righe e non quelli posti in fondo alla pagina. Dopo aver modificato ' +
+								' e salvato una singola spesa si può tornare nella pagina principale cliccando sul tasto "Indietro".</li>'+
 								'</ul>',
 							sanitizeContent: true
 						});
@@ -221,8 +227,14 @@ sap.ui.define([
 						oHTML = new sap.ui.core.HTML({
 							content: '<strong>Come inserire una nuova commessa e relative spese</strong>' +
 								'<ul>' +
-								'<li>Selezionare il giorno dal calendario.</li>' +
+								'<li>Selezionare il giorno o più giorni dal calendario.</li>' +
 								'<li>Cliccare sul pulsante crea.</li>' +
+								'</ul>' +
+								'<strong>Come copiare un giorno e le relative commesse su altri giorni/o.</strong>' +
+								'<ul>' +
+								'<li>Selezionare il giorno da copiare dal calendario e cliccare sul tasto "Copia", selezionare poi ' +
+								' dalla popup i giorni su cui copiare. Verranno copiate solo le commesse (no spese).</li>' +
+								
 								'</ul>' +
 								'<strong>Come modificare una commessa e relative spese</strong>' +
 								'<ul>' +
@@ -239,7 +251,11 @@ sap.ui.define([
 								'<strong>Come modificare ordinamento e raggruppamento delle liste</strong>' +
 								'<ul>' +
 								'<li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliere il settaggio desiderato.</li>' +
-								'</ul>',
+								'</ul>' +
+								'<strong>Come filtrare le lista per singolo giorno</strong>' +
+		                        '<ul>' +
+		                        '<li> Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
+                                 '</ul>' ,
 							sanitizeContent: true
 						});
 				}
@@ -376,7 +392,12 @@ sap.ui.define([
 					//oTableCommBinding.filter();
 					//oTableExpBinding.filter();
 					//oTreeTableBinding.filter();
-					this.count = undefined;
+				
+				//(SE)	
+				this.handleRemoveSelection();
+				//
+				
+			
 				}
 
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
@@ -400,7 +421,7 @@ sap.ui.define([
 								oSpecialDate = oCal.getSpecialDates()[k];
 								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 									flag = 1;
-									if (oSpecialDate.getProperty("type") == "Type07") {
+									if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
 										oButton.setEnabled(false);
 									} else {
 										oButton.setEnabled(true);
@@ -421,7 +442,7 @@ sap.ui.define([
 							oSpecialDate = oCal.getSpecialDates()[i];
 							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 								flag = 1;
-								if (oSpecialDate.getProperty("type") == "Type07") {
+								if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
 									oButton.setEnabled(false);
 								} else {
 									oButton.setEnabled(true);
@@ -436,7 +457,7 @@ sap.ui.define([
 				}
 
 				//CHECK GIORNI NON LAVORATIVI///////////////////////////////
-				var aSelectedDates = oCal.getSelectedDates();
+			/*	var aSelectedDates = oCal.getSelectedDates();
 				if (aSelectedDates.length > 0) {
 
 					for (var i = 0; i < aSelectedDates.length; i++) {
@@ -463,13 +484,14 @@ sap.ui.define([
 							return;
 						}
 					}
-				}
+				}*/
 			},
 
 			handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").filter();
 				this.count = undefined;
 				//	this._clearModel();
 			},
@@ -489,9 +511,35 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
-
-				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
-				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
+				
+				/////// giorni multipli
+				    var aDatesList = [];
+					var oDate;
+							var oDateTxt = "";
+							var oComma = "";
+				 var aSelectedDates = this.cale.getSelectedDates();
+				
+					if (aSelectedDates.length > 0) {
+								for (var i = 0; i < aSelectedDates.length; i++) {
+									oDate = aSelectedDates[i].getStartDate();
+									oDate = formatter.formatCalDate(oDate.toString());
+							//		oDate = this.oFormatYyyymmdd.format(oDate);
+							//		oDate = formatter.formatDate(oDate);
+							//		oDate = formatter.formatDate(oDate);
+									//oDataSel.selectedDates.push({Date:oDate});
+										if (oDateTxt !== "") {
+										oComma = ", ";
+										}
+									aDatesList.push(oDate);
+									oDateTxt = oDateTxt + oComma + oDate;
+								  }
+								}	
+            //////// giorni multipli
+               this.DateTxt = 	oDateTxt;
+               this.DatesList = aDatesList;
+			//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
+			//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
+		    	that.Dialog.setTitle("Inserire dettaglio per il giorno " + 	this.DateTxt);
 			},
 
 			closeDialog: function() {
@@ -629,17 +677,32 @@ sap.ui.define([
 						})
 					]
 				});
+              
+              
 
-				var sDate = this.formattedDate;
-				var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
-				var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
+				var startDate = this.cale.getStartDate();
+				var startMonth = this.oFormatMonth.format(startDate);
+				if (startMonth.length === 1) {
+
+					startMonth = "0" + startMonth;
+				}
+
+				var startYear = this.oFormatYear.format(startDate);
+				
+				
+			//	var sDate = this.formattedDate;
+			////	var	sDate = this.DatesList[0];
+			//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
+			//	var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
+				
+				
 				var fMonth = new sap.ui.model.odata.Filter('Calmonth', [{
 					operator: "EQ",
-					value1: sMonth
+					value1: startMonth
 				}]);
 				var fYear = new sap.ui.model.odata.Filter('Calyear', [{
 					operator: "EQ",
-					value1: sYear
+					value1: startYear
 				}]);
 				var fFlag = new sap.ui.model.odata.Filter('Parentid', [{
 					operator: "EQ",
@@ -872,6 +935,14 @@ sap.ui.define([
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 3) {
 					this.getView().byId("btn1").setEnabled(false);
+					
+				///(SE) start giorni multipli
+			
+                    var datesListLenght = this.DatesList.length;
+					for (var y = 0; y < this.DatesList.length; y++) {
+						aDate = this.DatesList[y];
+				///
+				
 					if (this.buttonEvent === "Modificaa") {
 						sOffice = sap.ui.getCore().byId("sedeSel").getText();
 						sOre = sap.ui.getCore().byId("oreSel").getValue();
@@ -891,7 +962,8 @@ sap.ui.define([
 						sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
 						sOre = sap.ui.getCore().byId("ore").getValue();
 						sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
-						aDate = this.formattedDate.split("/");
+					//	aDate = this.formattedDate.split("/");
+					    aDate = aDate.split("/");
 						sDay = aDate[0];
 						sMonth = aDate[1];
 						sYear = aDate[2];
@@ -902,7 +974,7 @@ sap.ui.define([
 
 					//var oView = this.getView();
 					var oModel = this.getView().getModel();
-
+                  //oModel.setUseBatch(false);
 					var oUrlParams = {
 						Tmskey: sTimesheetKey,
 						Orderjob: sCommessaId,
@@ -964,56 +1036,126 @@ sap.ui.define([
 					//	} else {
 					//	this._clearModel();
 					//	}
-
+                    
+                    
+                 //    var oReqInsert = this._reqInsert(oUrlParams, y);     
 					//jQuery.sap.require("sap.ui.commons.MessageBox");
+				//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+				
+		     	//	oModel.setUseBatch(true);
+				//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {changeSetId: y}, {
+				
+			       if (this.DatesList.length > 1) {
+						
+						
 					oModel.create('/ListaCommesseGroupSet', oUrlParams, {
 						method: "POST",
+						changeSetId: y,
+						error: fnE
+					
+					});
+					
+					}	else {
+							oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+						method: "POST",
+						
 						success: fnS,
 
 						error: fnE
 					});
+					
+					}
+					
+					
+				  } // fine loop giorni multipli
+					
 
-					//}
-					//}
+				} else {
+					this.getView().byId("btn1").setEnabled(true);
+					//jQuery.sap.require("sap.m.MessageBox");
+					sap.m.MessageBox.show(
+						"Errore: controllare gli inserimenti", {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Errore",
+							actions: [sap.m.MessageBox.Action.CLOSE]
+						});
 
+				}
+				
+			
+			
+			 if (this.DatesList.length > 1) {
+			 	
+			 	
+			 		var msg;
+									if (that.buttonEvent !== "Modificaa") {
+										msg = "Commesse create con successo";
+									} else {
+										msg = "Commesse modificate con successo";
+									}
+									sap.m.MessageToast.show(msg, {
+										duration: 5000,
+										autoClose: true,
+										closeOnBrowserNavigation: false
+		
+									});
+
+									if (that.buttonEvent !== "Modificaa") {
+										that._onBindingChange();
+										that.closeDialog();
+									} else {
+										that._onBindingChange();
+										that.DialogSel.close();
+										sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+										sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+										that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+										that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+										that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+		
+									}
+			 }   
+			 	
+			 	
 					function fnS(oData, response) {
 						//	console.log(oData);
 						//	console.log(response);
 
 						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
 						//	if (oData.Type == "S") {
-						if (response.statusCode == "201") {
+						if (response.statusCode === "201") {
+                          
+                        
+									//	var msg = "Success: "+oData.Message+", "+sTypeAction;
+									//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+									var msg;
+									if (that.buttonEvent !== "Modificaa") {
+										msg = "Commessa creata con successo";
+									} else {
+										msg = "Commessa modificata con successo";
+									}
+									sap.m.MessageToast.show(msg, {
+										duration: 5000,
+										autoClose: true,
+										closeOnBrowserNavigation: false
+		
+									});
 
-							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
-							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
-							var msg;
-							if (that.buttonEvent !== "Modificaa") {
-								msg = "Commessa creata con successo";
+									if (that.buttonEvent !== "Modificaa") {
+										that._onBindingChange();
+										that.closeDialog();
+									} else {
+										that._onBindingChange();
+										that.DialogSel.close();
+										sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+										sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+										that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+										that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+										that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+		
+									}
+                        
+
 							} else {
-								msg = "Commessa modificata con successo";
-							}
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
-
-							});
-
-							if (that.buttonEvent !== "Modificaa") {
-								that._onBindingChange();
-								that.closeDialog();
-							} else {
-								that._onBindingChange();
-								that.DialogSel.close();
-								sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
-								sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-								that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-								that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-								that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-
-							}
-
-						} else {
 
 							//jQuery.sap.require("sap.m.MessageBox");
 							sap.m.MessageBox.show(
@@ -1033,21 +1175,29 @@ sap.ui.define([
 
 						alert("Error in read: " + oError.message + "\n" + oError.responseText);
 					}
-
-				} else {
-					this.getView().byId("btn1").setEnabled(true);
-					//jQuery.sap.require("sap.m.MessageBox");
-					sap.m.MessageBox.show(
-						"Errore: controllare gli inserimenti", {
-							icon: sap.m.MessageBox.Icon.WARNING,
-							title: "Errore",
-							actions: [sap.m.MessageBox.Action.CLOSE]
-						});
-
-				}
+				
+				
+				
+			
 
 			},
 
+
+            /*_reqInsert: function(oUrlParams, y) {
+	         var oModel = this.getView().getModel();
+             //     oModel.setUseBatch(true);
+           
+		    
+					oModel.create('/ListaCommesseGroupSet', oUrlParams, {changeSetId: y}, {
+						method: "POST",
+						success: fnS,
+
+						error: fnE
+					});
+					
+					
+             },	
+             */
 			//MP: metodi per la gestione della modifica e cancellazione di righe del timesheet
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
@@ -1575,6 +1725,12 @@ sap.ui.define([
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
 				oDialog.setTitle("Dettaglio commessa " + sDate);
+				
+				//(SE)
+				var aDatesList = [];
+				aDatesList.push(sDate);
+				this.DatesList = aDatesList;
+				//
 
 				var aCommesseItems = this.getView().byId("COMMESSE_CONTENTS").getBinding("items");
 				var aSpeseItems = this.getView().byId("SPESE_CONTENTS").getBinding("items");
@@ -1835,7 +1991,10 @@ sap.ui.define([
 			},
 
 			_onBindingChange: function() {
-
+     //(SE
+	           this.showBusyIndicator();
+	           var that = this;
+	//(SE           
 				var oView = this.getView();
 				var oModel = this.getView().getModel();
 				sap.ui.getCore().setModel(oModel);
@@ -2103,8 +2262,15 @@ sap.ui.define([
 
 							wrapping: false
 						}),
+						
+							new sap.m.Text({
+						
+							text: "{Tmskey}"
+			
+						}),
 
 						new sap.m.ObjectIdentifier({
+						
 							title: "{Descrorder}",
 							text: "{Office}",
 							//         id : "Comm_cellDescrorder",
@@ -2225,6 +2391,12 @@ sap.ui.define([
 							wrapping: false
 						}),
 
+
+					    new sap.m.Text({
+						
+							text: "{Tmskey}"
+			
+						}),
 						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
 							text: "{Office}",
@@ -2386,7 +2558,8 @@ sap.ui.define([
 				//////////////////////////////
 
 				//////////////////////////////
-
+                
+                
 				var sRead = "/CalendarSet";
 
 				oModel.read(sRead, {
@@ -2443,7 +2616,7 @@ sap.ui.define([
 								//    startDate: oFormatYYyyymmdd.parse(res)
 								//    }));
 
-								if (oData.results[i].Ore >= 8.0) {
+								if (oData.results[i].Ore === "8.0") {
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
@@ -2462,14 +2635,14 @@ sap.ui.define([
 									}));
 								}
 
-								/*	if (oData.results[i].Ore === 0.0) {
+									if (oData.results[i].Ore > 8.0) {
 	
 										oCal1.addSpecialDate(new DateTypeRange({
 											startDate: oFormatYYyyymmdd.parse(res),
-											type: "Type09",
+											type: "Type01",
 											tooltip: "Ore: " + oData.results[i].Ore 
 										}));
-									}*/
+									}
 
 								// }	
 
@@ -2482,23 +2655,23 @@ sap.ui.define([
 							}
 
 							oLeg1.addItem(new CalendarLegendItem({
-								text: "Completo",
+								text: "8 ore",
 								id: "leg1",
 								type: "Type07"
 
 							}));
 
 							oLeg1.addItem(new CalendarLegendItem({
-								text: "Incompleto",
+								text: "Meno di 8 ore",
 								id: "leg2",
 								type: "Type03"
 							}));
 
-							/*	oLeg1.addItem(new CalendarLegendItem({
-									text: "Da inserire",
+								oLeg1.addItem(new CalendarLegendItem({
+									text: "Più di 8 ore",
 									id: "leg3",
-									type: "Type09"
-								}));*/
+									type: "Type01"
+								}));
 
 						}
 
@@ -2514,7 +2687,12 @@ sap.ui.define([
 							});
 
 					}
-
+             
+            //(SE) busy indicator per pagina intera
+             		that.hideBusyIndicator();
+             		
+            //(SE) busy indicator per singolo elemento
+            //oView.byId("LRS1_BUSY_CALENDAR").setBusy(false);
 				} // END FUNCTION SUCCESS
 
 				function fnReadE(oError) {
@@ -2522,9 +2700,71 @@ sap.ui.define([
 
 					alert("Error in read: " + oError.message);
 				}
+				
+				
 
 			},
 
+				hideBusyIndicator : function() {
+						sap.ui.core.BusyIndicator.hide();
+					},
+		
+			//	showBusyIndicator : function (iDuration, iDelay) {
+					showBusyIndicator : function () {
+							sap.ui.core.BusyIndicator.show();
+				
+						/*	if (iDuration && iDuration > 0) {
+								if (this._sTimeoutId) {
+									jQuery.sap.clearDelayedCall(this._sTimeoutId);
+									this._sTimeoutId = null;
+								}
+				
+								this._sTimeoutId = jQuery.sap.delayedCall(iDuration, this, function() {
+									this.hideBusyIndicator();
+								});
+							}*/
+						},
+		
+		       	onPullToRefresh: function() {
+		       		
+		       		
+		       	this._onBindingChange();
+				
+
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+				
+				/*	var msg = "Updated";
+					sap.m.MessageToast.show(msg, {
+						duration: 1500, // default
+						animationTimingFunction: "ease", // default
+						animationDuration: 1000, // default
+						closeOnBrowserNavigation: true // default
+					});*/
+					
+		           this.getView().byId("pullToRefresh").hide();
+				},
+				
+			onClickRefresh: function() {
+				
+			this._onBindingChange();
+				
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+				
+			/*var msg = "Updated";
+			sap.m.MessageToast.show(msg, {
+				duration: 1500, // default
+				animationTimingFunction: "ease", // default
+				animationDuration: 1000, // default
+				closeOnBrowserNavigation: true // default
+			});
+*/
+		},
+		
+		
 			/////////////////////////////////////////////////////////////////////  
 
 			onHistoryPress: function(oEvent) {

@@ -152,7 +152,7 @@ sap.ui.define([
 			//	this.timeFrom = this.byId("LRS4_DAT_STARTTIME");
 			//	this.timeTo = this.byId("LRS4_DAT_ENDTIME");
 				this.oreTot = this.byId("LRS4_DAT_ORETOT");
-				this.legend = this.byId("LRS4_LEGEND");
+			//	this.legend = this.byId("LRS4_LEGEND");
 			//	this.remainingVacation = this.byId("LRS4_TXT_REMAINING_DAYS");
 			//	this.bookedVacation = this.byId("LRS4_TXT_BOOKED_DAYS");
 				this.note = this.byId("LRS4_TXA_NOTE");
