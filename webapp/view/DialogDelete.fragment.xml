@@ -97,10 +97,10 @@
 											<Input value="{path: 'Exptype', formatter: '.formatter.formatExpType'}" editable="false"/>
 										</cells>
 										<cells>
-											<Input id="descrSpesa" value="{Descr}" editable="false"/>
+											<Input id="descrSpesa" value="{= ${Descr}}" editable="false"/>
 										</cells>
 										<cells>
-											<Input id="ImpOrKm" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
+											<Input id="ImpOrKm" type="Number" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}" editable="false"/>
 										</cells>
 										<cells>
 											<sap.ui.layout:HorizontalLayout>

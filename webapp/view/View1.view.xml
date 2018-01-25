@@ -546,9 +546,14 @@ displayBlock="true">
 							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
 						  
 						  </Button>
-					<!--	</contentLeft>
-			  	</Bar>-->
-			</Toolbar>
+			  </Toolbar>
+
+						  	<Button id="copyBtn" type="Emphasized" text="Copia" press="openCalendar" icon="sap-icon://copy" tooltip="Copia il giorno selezionato" enabled="false">
+						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+						  </Button>
+			 
+					</OverflowToolbar>
+
 				</footer>
 
 			</Page>
