@@ -531,14 +531,15 @@ sap.ui.define([
 				var sDay;
 				var startMonth = this.oFormatMonth.format(startDate);
 				var oUrlCopyParams;
+				var iControl = 0; // variabile di controllo per la visualizzazione del messaggio di successo
 				
 				if (startMonth.length === 1) {
 					startMonth = "0" + startMonth;
 				}
 			
 				var startYear = this.oFormatYear.format(startDate);
-				var startDay = oCal.getSelectedDates()[0].getStartDate().getDate();
-				if(startDay.toString().length == 1){
+				var startDay = oCal.getSelectedDates()[0].getStartDate().getDate().toString();
+				if(startDay.length == 1){
 					startDay = "0" + startDay;
 				}
 				
@@ -582,11 +583,11 @@ sap.ui.define([
 					//	console.log(oData);
 					//	console.log(response);
 					// controllo che la funzione è andata a buon fine 
-					if (response.statusCode == "200") { //Se lettura delle commesse in un giorno va a buon fine allora vado a copiare le commesse nel giorno selezionato
+					if (response.statusCode == "200") { //Se lettura delle commesse in un giorno va a buon fine allora vado a copiare le commesse nei giorni selezionati
 						for(var i = 0 ; i<aSelectedDates.length; i++){
 							oStartDate = aSelectedDates[i].getStartDate();
-							sDay = oStartDate.getDate();
-							if (sDay.toString().length == 1){
+							sDay = oStartDate.getDate().toString();
+							if (sDay.length == 1){
 								sDay = "0" + sDay;
 							}
 							
@@ -608,6 +609,8 @@ sap.ui.define([
 						Ore: oData.results[j].Ore
 					};
 					
+					    
+					
 						oUrlCopyParams.FromCommToExp = [];
 					    oModel.setUseBatch(false);
 						oModel.create('/ListaCommesseGroupSet', oUrlCopyParams, {
@@ -624,9 +627,10 @@ sap.ui.define([
 						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
 						//	if (oData.Type == "S") {
 						if (response.statusCode == "201") {
+							
+							   iControl ++; 
 
-							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
-							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+							if(iControl == aSelectedDates.length){
 							var msg;
 						
 								msg = "Giorno copiato  con successo";
@@ -640,6 +644,8 @@ sap.ui.define([
 							
 								that._onBindingChange();
 								that._onBindingCalendar();
+								iControl = 0;
+							}
 
 						} else {
 
@@ -656,7 +662,7 @@ sap.ui.define([
 
 					} // END FUNCTION SUCCESS
 
-					function fnE(oError) {
+					function fnE(oError, oData) {
 						//	console.log(oError);
 
 						alert("Error in read: " + oError.message + "\n" + oError.responseText);
@@ -2037,7 +2043,6 @@ sap.ui.define([
 			handleCalendarChange: function(oEvent) {
 
 				this._onBindingChange();
-
 			},
 
 			handleCopyCalChange: function(oEvent) {
