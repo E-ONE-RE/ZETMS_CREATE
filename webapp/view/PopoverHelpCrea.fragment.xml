@@ -45,7 +45,13 @@
 		<html:ul>
 		<html:li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliare il settaggio desiderato.</html:li>
 		</html:ul>
-	
+		
+		<html:strong>Come filtrare le lista per singolo giorno</html:strong>
+		<html:ul>
+		<html:li>Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nele liste in basso.</html:li>
+		</html:ul>
+		
+		
 	</VBox>
 		</content>
 		</ResponsivePopover>

@@ -19,13 +19,22 @@ displayBlock="true">
 	<Page id="V1" title="{i18n>title}" class="sapUiResponsiveContentPadding">
 		
 		<headerContent>
+			
+			 <Button icon="sap-icon://synchronize" press="onClickRefresh" type="Emphasized" tooltip="{i18n>LR_V1S_REFRESH_BTN}"/>
+
+
 				<Button id="help0"
 				text="Help"
 				press="handleResponsivePopoverPress"  type="Emphasized" icon="sap-icon://message-information" tooltip="Clicca per informazioni sull'uso del Timesheet">
 			   
 			 </Button>
  </headerContent>
+ 
+ <PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onPullToRefresh"/>
+			
 		<content>
+			
+			
 			<!--<Button id="displayNotFoundBtn" text="{i18n>DisplayNotFound}" press="onDisplayNotFound" class="sapUiTinyMarginEnd"/>
 		-->
 			<sap.ui.layout:Grid width="auto" defaultIndent="L4 M3" defaultSpan="L4 M6 S12" id="LRS4_FLX_TOP">
@@ -66,14 +75,20 @@ displayBlock="true">
 										<sap.ui.layout.form:fields>
 											<sap.ui.layout:Grid id="LR_CALENDAR" defaultSpan="L12 M12 S12" width="100%" hSpacing="0">
 												<sap.ui.layout:content>
+														
+															
 													<VBox width="100%" direction="Column" id="__vbox0_CALENDAR" alignItems="Center" alignContent="Center" justifyContent="Center">
 														<items>
+															
 															<sap.ui.layout:VerticalLayout width="100%">
-																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="true" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
-									
-
-
 																
+															<!--<BusyIndicator id="LRS1_BUSY_CALENDAR" 
+															class="sapUiSmallMarginBottom" />-->
+															
+														
+															
+																<sap.ui.unified:Calendar id="LRS4_DAT_CALENDAR" class="sapUiResponsiveMargin" select="handleCalendarSelect" startDateChange="handleCalendarChange" intervalSelection="false" singleSelection="false" legend="legend1" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
+										
 																<!--	<sap.me:CalendarLegend id="LRS4_LEGEND" class="s4LEGEND" legendWidth="18em">
 																		<sap.me:layoutData>
 																			<sap.ui.layout:ResponsiveFlowLayoutData id="LRS4_LYO_LEGEND" minWidth="30" weight="15"/>
@@ -246,9 +261,15 @@ displayBlock="true">
 									<Label text="{/#ListaCommesseGroupSet/Giorno/@sap:label}" id="comm_label_Giorno"/>
 								</Column>
 								
-								<Column id="comm_column_Descrorder" width="auto"  visible="true">
+								<Column id="comm_column_Descrorder" width="auto"  minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="ID Comm." id="comm_label_Tmskey"/>
+								</Column>
+								
+								<Column id="comm_column_Tmskey" width="auto"  visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 								</Column>
+								
+								
 								
 								<Column id="comm_column_Descr" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descr/@sap:label}" id="comm_label_Descr"/>
@@ -370,6 +391,10 @@ displayBlock="true">
 									<Label text="{/#ListaSpeseGroupSet/Giorno/@sap:label}" id="exp_label_Giorno"/>
 								</Column>
 								
+									<Column id="exp_column_Tmskey" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="ID Comm." id="exp_label_Tmskey"/>
+								</Column>
+								
 								<Column id="exp_column_Descrorder" width="auto" visible="true">
 									<Label text="{/#ListaSpeseGroupSet/Descrorder/@sap:label}" id="exp_label_Descrorder"/>
 								</Column>
@@ -424,6 +449,14 @@ displayBlock="true">
 										<ObjectIdentifier title="{Weekday} {Giorno}" />
 									</t:template>
 								</t:Column>
+								
+								<t:Column label="ID Comm.">
+									<t:template>
+										<Text text="{Tmskey}" />
+										
+									</t:template>
+								</t:Column>
+								
 								<t:Column label="Commessa">
 									<t:template>
 										<Text text="{Descrorder}" wrapping="false"/>
@@ -504,17 +537,23 @@ displayBlock="true">
 		
 		
 				<footer>
-					<OverflowToolbar id="footerToolbar">
-	    
-				<ToolbarSpacer/>
+					
+	    	<Toolbar>
+			
+				<!--<Bar>
+				    <contentLeft>-->
+				    <ToolbarSpacer/>
 							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
-						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+						  
 						  </Button>
+			  </Toolbar>
+
 						  	<Button id="copyBtn" type="Emphasized" text="Copia" press="openCalendar" icon="sap-icon://copy" tooltip="Copia il giorno selezionato" enabled="false">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
 						  </Button>
 			 
 					</OverflowToolbar>
+
 				</footer>
 
 			</Page>
