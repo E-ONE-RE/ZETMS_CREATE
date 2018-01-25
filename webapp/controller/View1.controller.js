@@ -166,12 +166,12 @@ sap.ui.define([
 				var oHTML;
 				switch (sId) {
 					case "dialog":
-							oHTML = new sap.ui.core.HTML({
+						oHTML = new sap.ui.core.HTML({
 							content: '<strong>Inseriremento commessa ed eventuali spese</strong>' +
 								'<ul>' +
 								'<li>Per il giorno selezionato, è possibile selezionare una nuova<br> commessa dall&apos; apposito albero oppure ' +
 								'inserire una commessa<br> già esistente selezionandola dalla finestra presentata al click del <br> tasto "Seleziona una commessa esistente". ' +
-								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
+								'Dopo aver completato <br> tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) ' +
 								'ed <br> aver selezionato eventuali spese, premere il tasto "Conferma" per<br> inserire la commessa.' +
 								'</li>' +
 								'</ul>',
@@ -180,23 +180,23 @@ sap.ui.define([
 
 						break;
 					case "dialogDelComm":
-                        	oHTML = new sap.ui.core.HTML({
+						oHTML = new sap.ui.core.HTML({
 							content: '<strong>Modificare o eliminare una commessa</strong>' +
 								'<ul>' +
 								'<li>Per la commessa selezionata, è possibile modificare <br> l&apos; importo e la descrizione ' +
-								'modificando i valori degli <br>appositi campi di input. Inoltre, è possibile inserire<br> eventuali spese '+
+								'modificando i valori degli <br>appositi campi di input. Inoltre, è possibile inserire<br> eventuali spese ' +
 								'espandendo la relativa sezione e <br> selezionando le spese che si intende aggiungere. <br>' +
-								'Una volta terminata l&apos; elaborazione, premere sul <br>tasto "Modifica commessa"'+
+								'Una volta terminata l&apos; elaborazione, premere sul <br>tasto "Modifica commessa"' +
 								' per apportare le modifiche.</li>' +
 								'</ul>' +
 								'<ul>' +
-								'<li>Per eliminare la commessa, cliccare sul tasto "Elimina commessa"</li>'+
-								'</ul>'+
+								'<li>Per eliminare la commessa, cliccare sul tasto "Elimina commessa"</li>' +
+								'</ul>' +
 								'<strong>Modificare o eliminare le singole spese</strong>' +
 								'<ul>' +
-								'<li>In questa finestra è possibile eliminare o modificare singolarmente <br>'+
-								'le spese associate alla commessa (tabella "Spese Inserite") tramite <br>'+
-								'gli appositi bottoni presenti in tabella.</li>'+
+								'<li>In questa finestra è possibile eliminare o modificare singolarmente <br>' +
+								'le spese associate alla commessa (tabella "Spese Inserite") tramite <br>' +
+								'gli appositi bottoni presenti in tabella.</li>' +
 								'</ul>',
 							sanitizeContent: true
 						});
@@ -210,7 +210,7 @@ sap.ui.define([
 								'premere sul tasto "Modifica spesa" per apportare le modifiche.</li>' +
 								'</ul>' +
 								'<ul>' +
-								'<li>Per eliminare la spesa, cliccare sul tasto "Elimina spesa"</li>'+
+								'<li>Per eliminare la spesa, cliccare sul tasto "Elimina spesa"</li>' +
 								'</ul>',
 							sanitizeContent: true
 						});
@@ -341,7 +341,7 @@ sap.ui.define([
 
 			},
 
-			//MP: lasciate ogni speranza o voi che entrate 
+			//MP: logica per la selezione del calendario
 			handleCalendarSelect: function(oEvent) {
 
 				var sDate, sDayFilter, oFilter, oTreeFilter;
@@ -382,16 +382,20 @@ sap.ui.define([
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
 				// e si possono ancora inserire delle ore (meno di 8 ore inserite per un giorno)
 				var oButton = this.getView().byId("btn1");
+				var oCopyButton = this.getView().byId("copyBtn");
 				var oCal = oEvent.getSource();
 				var oSelectedDate;
 				var sSelectedDate;
 				var aSpecialDates;
 				var oSpecialDate;
+				var bFind = false;
 				var flag = 0; //flag per controllare la logica
 				aSpecialDates = oCal.getSpecialDates(); //date che hanno già inserimenti
 				if (oButton.getEnabled() == true) {
+				
 					if (oCal.getSelectedDates().length == 0) {
 						oButton.setEnabled(false);
+						oCopyButton.setEnabled(false);
 					} else {
 						oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
 						sSelectedDate = oSelectedDate.toString();
@@ -400,11 +404,19 @@ sap.ui.define([
 								oSpecialDate = oCal.getSpecialDates()[k];
 								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 									flag = 1;
+									bFind =true;
+									oCopyButton.setEnabled(true);
 									if (oSpecialDate.getProperty("type") == "Type07") {
 										oButton.setEnabled(false);
-									} else {
-										oButton.setEnabled(true);
-									}
+									} else if(oSpecialDate.getProperty("type") == "Type03") {
+									oButton.setEnabled(true);
+								}else{
+									oCopyButton.setEnabled(false);
+								}
+								}
+								
+								if(bFind == false){
+									oCopyButton.setEnabled(false);
 								}
 							}
 						}
@@ -421,13 +433,21 @@ sap.ui.define([
 							oSpecialDate = oCal.getSpecialDates()[i];
 							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 								flag = 1;
+								bFind = true;
+								oCopyButton.setEnabled(true);
 								if (oSpecialDate.getProperty("type") == "Type07") {
 									oButton.setEnabled(false);
-								} else {
+								} else if(oSpecialDate.getProperty("type") == "Type03") {
 									oButton.setEnabled(true);
+								}else{
+									oCopyButton.setEnabled(false);
 								}
 								//Controllare meglio la logica per il bottone
-							}
+							}	
+							
+							if(bFind == false){
+									oCopyButton.setEnabled(false);
+								}
 						}
 						if (flag == 0 && sSelectedDate != undefined) {
 							oButton.setEnabled(true);
@@ -464,6 +484,11 @@ sap.ui.define([
 						}
 					}
 				}
+
+			},
+
+			handleCopyCalendarSelect: function(oEvent) {
+                
 			},
 
 			handleRemoveSelection: function(oEvent) {
@@ -471,12 +496,215 @@ sap.ui.define([
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
 				this.count = undefined;
+				this.byId("btn1").setEnabled(false);
+				this.byId("copyBtn").setEnabled(false);
 				//	this._clearModel();
+			},
+
+			openCalendar: function(oEvent) {
+
+				var that = this;
+				if (!this._oPopoverCopy) {
+					this._oPopoverCopy = sap.ui.xmlfragment("ZETMS_CREATE.view.CopyOfDayPopover", this, "ZETMS_CREATE.controller.View1");
+					this.getView().addDependent(this._oPopoverCopy);
+				}
+
+				this._oPopoverCopy.openBy(oEvent.getSource());
+
+				this._onBindingCalendar();
+			},
+
+			closePopover: function(oEvent) {
+
+				this._oPopoverCopy.close();
+
+			},
+			
+			handleDayCopy: function(oEvent){
+				
+				var that = this;
+				var oCal = this.getView().byId("LRS4_DAT_CALENDAR");
+				var startDate = oCal.getStartDate();
+				var oCopyCal = sap.ui.getCore().byId("CALE_ID");
+				var aSelectedDates = oCopyCal.getSelectedDates();
+				var oStartDate;
+				var sDay;
+				var startMonth = this.oFormatMonth.format(startDate);
+				var oUrlCopyParams;
+				
+				if (startMonth.length === 1) {
+					startMonth = "0" + startMonth;
+				}
+			
+				var startYear = this.oFormatYear.format(startDate);
+				var startDay = oCal.getSelectedDates()[0].getStartDate().getDate();
+				if(startDay.toString().length == 1){
+					startDay = "0" + startDay;
+				}
+				
+				//Lettura delle commesse nel giorno selezionato
+				
+				var oModel = this.getView().getModel();
+				var sRead = "/ListaCommesseGroupSet";
+				oModel.read(sRead, {
+					//filters: oFilter,
+
+					filters: [new sap.ui.model.Filter({
+
+						filters: [new sap.ui.model.Filter({
+							path: "Calmonth",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startMonth
+
+						}),	new sap.ui.model.Filter({
+							path: "Giorno",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startDay
+
+						}), 
+						new sap.ui.model.Filter({
+							path: "Calyear",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startYear
+						})],
+
+					
+						and: true
+
+					})],
+
+					success: fnReadS,
+
+					error: fnReadE
+				});
+				
+					function fnReadS(oData, response) {
+					//	console.log(oData);
+					//	console.log(response);
+					// controllo che la funzione è andata a buon fine 
+					if (response.statusCode == "200") { //Se lettura delle commesse in un giorno va a buon fine allora vado a copiare le commesse nel giorno selezionato
+						for(var i = 0 ; i<aSelectedDates.length; i++){
+							oStartDate = aSelectedDates[i].getStartDate();
+							sDay = oStartDate.getDate();
+							if (sDay.toString().length == 1){
+								sDay = "0" + sDay;
+							}
+							
+					for (var j = 0; j<oData.results.length; j++){
+						
+						if(oData.results[j].Orderjob != "EON16A" && 
+						   oData.results[j].Orderjob != "EON16B" && 
+					       oData.results[j].Orderjob != "EON166"){
+					       	
+                        oUrlCopyParams = {
+						Tmskey: oData.results[j].Tmskey,
+						Orderjob: oData.results[j].Orderjob,
+						Descr: oData.results[j].Descrorder,
+						Office: oData.results[j].Office,
+						Tipo: "commessa",
+						Calmonth: startMonth,
+						Calyear: startYear,
+						Giorno: sDay,
+						Ore: oData.results[j].Ore
+					};
+					
+						oUrlCopyParams.FromCommToExp = [];
+					    oModel.setUseBatch(false);
+						oModel.create('/ListaCommesseGroupSet', oUrlCopyParams, {
+						method: "POST",
+						success: fnS,
+
+						error: fnE
+					});
+					
+							function fnS(oData, response) {
+						//	console.log(oData);
+						//	console.log(response);
+
+						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
+						//	if (oData.Type == "S") {
+						if (response.statusCode == "201") {
+
+							//	var msg = "Success: "+oData.Message+", "+sTypeAction;
+							//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+							var msg;
+						
+								msg = "Giorno copiato  con successo";
+							
+							sap.m.MessageToast.show(msg, {
+								duration: 5000,
+								autoClose: true,
+								closeOnBrowserNavigation: false
+
+							});
+							
+								that._onBindingChange();
+								that._onBindingCalendar();
+
+						} else {
+
+							//jQuery.sap.require("sap.m.MessageBox");
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+
+						}
+
+					} // END FUNCTION SUCCESS
+
+					function fnE(oError) {
+						//	console.log(oError);
+
+						alert("Error in read: " + oError.message + "\n" + oError.responseText);
+					}
+					
+					
+					
+					       }else{
+					       	
+					       		sap.m.MessageBox.show(
+								'Attenzione: nel giorno selezionato sono contenuti degli inserimenti  di tipo "ferie" '
+								+'e/o "permesso". Le commesse di questo tipo non verranno copiate ', {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Impossibile copiare",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+					       }
+					}
+					
+
+}
+
+					}else{
+							//jQuery.sap.require("sap.m.MessageBox");
+							sap.m.MessageBox.show(
+								"Error: " + oData.Message, {
+									icon: sap.m.MessageBox.Icon.WARNING,
+									title: "Error",
+									actions: [sap.m.MessageBox.Action.CLOSE]
+
+								});
+					}
+
+				} // END FUNCTION SUCCESS
+
+				function fnReadE(oError) {
+					//	console.log(oError);
+
+					alert("Error in read: " + oError.message);
+				}
+
+				
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
 			openDialog: function(oEvent) {
-			
+
 				var that = this;
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
@@ -490,7 +718,7 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
-               	sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
+				sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
 				this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
 				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 			},
@@ -598,8 +826,6 @@ sap.ui.define([
 
 					this._oDialogSelComm = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
 				}
-				
-			
 
 				// Multi-select if required
 				//var bMultiSelect = !!oEvent.getSource().data("multi");
@@ -676,10 +902,9 @@ sap.ui.define([
 				var oInput = sap.ui.getCore().byId("commessa");
 				var oSede = sap.ui.getCore().byId("sedi");
 				var oDescr = sap.ui.getCore().byId("descrizione");
-				
-			
+
 				oSede.setForceSelection(true);
-				
+
 				if (aContexts && aContexts.length) {
 
 					oInput.setValue(aContexts.map(function(oContext) {
@@ -756,21 +981,21 @@ sap.ui.define([
 							path: "/results",
 							template: oTemplate
 						});
-                         	oSelect.setForceSelection(false);
-                         	oSelect.setSelectedKey("");
+						oSelect.setForceSelection(false);
+						oSelect.setSelectedKey("");
 					});
 			},
-			
-			handleSelectChange: function(oEvent){
-		    var oSelect = oEvent.getSource();
-			var oSelectedKey = oSelect.getSelectedKey();
-			
-			if(oSelectedKey != ""){		
-				oSelect.setValueStateText("");
-				oSelect.setValueState("None");
-		
-			}
-				
+
+			handleSelectChange: function(oEvent) {
+				var oSelect = oEvent.getSource();
+				var oSelectedKey = oSelect.getSelectedKey();
+
+				if (oSelectedKey != "") {
+					oSelect.setValueStateText("");
+					oSelect.setValueState("None");
+
+				}
+
 			},
 
 			onExpenseSelect: function(oEvent) {
@@ -857,7 +1082,8 @@ sap.ui.define([
 				this.buttonEvent = oEvent.getSource().getId();
 
 				if (this.buttonEvent !== "Modificaa") {
-					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"), sap.ui.getCore().byId("sedi"));
+					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"), sap.ui.getCore()
+						.byId("sedi"));
 				} else {
 					aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
 					aParam.push("dummy"); //MP: controllo sulla sede non viene eseguito; creo una Entry dummy.
@@ -876,9 +1102,9 @@ sap.ui.define([
 				if (this.buttonEvent !== "Modificaa") {
 					for (var i = 0; i < aControls.length; i++) {
 						oInput = aControls[i];
-							if(oInput.getId()=="sedi"){//caso sap.m.select (sedi)
+						if (oInput.getId() == "sedi") { //caso sap.m.select (sedi)
 							sValue = oInput.getSelectedKey();
-						}else{//caso sap.m.Input
+						} else { //caso sap.m.Input
 							sValue = oInput.getValue();
 						}
 						if (sValue === "" || oInput.getValueState() == "Error") {
@@ -889,15 +1115,13 @@ sap.ui.define([
 						}
 					}
 				}
-				
-				
+
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
 
 				var aDate = [];
 				var oExpenseTable;
-				
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
@@ -1083,6 +1307,24 @@ sap.ui.define([
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
 			onExpenseModify: function(oEvent) {
+				var oDescrizione = sap.ui.getCore().byId("descrSpesa");
+				var oImpOrKm = sap.ui.getCore().byId("ImpOrKm");
+				var oExpenseTable = sap.ui.getCore().byId("speseCommessa");
+
+				// Per disabilitare e abilitare i bottoni di eliminazione e modifica commessa
+				var oDeleteButton = sap.ui.getCore().byId("EliminaSel");
+				var oModifyButton = sap.ui.getCore().byId("Modifica");
+				if (oDeleteButton.getEnabled() == true && oModifyButton.getEnabled() == true) {
+					oDeleteButton.setEnabled(false);
+					oModifyButton.setEnabled(false);
+				} else {
+					oDeleteButton.setEnabled(true);
+					oModifyButton.setEnabled(true);
+					oExpenseTable.getBinding("items").refresh(true);
+					oExpenseTable.getBinding("items").resume();
+				}
+				//
+
 				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
 				var oInput, oModel;
 				var oSaveButton = aCells[3].getAggregation("content")[1];
@@ -1098,6 +1340,7 @@ sap.ui.define([
 						oSaveButton.setEnabled(false);
 					}
 				}
+
 			},
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
@@ -1128,6 +1371,12 @@ sap.ui.define([
 			},
 
 			onExpenseCancelOrSave: function(oEvent) {
+
+				// Per disabilitare e abilitare i bottoni di eliminazione e modifica commessa
+				var oDeleteButton = sap.ui.getCore().byId("EliminaSel");
+				var oModifyButton = sap.ui.getCore().byId("Modifica");
+				//
+
 				var oModel = sap.ui.getCore().getModel();
 				var oEntry = {};
 				var oContext = oEvent.getSource().getBindingContext();
@@ -1201,6 +1450,8 @@ sap.ui.define([
 							}
 
 							oSaveButton.setEnabled(false);
+							oDeleteButton.setEnabled(true);
+							oModifyButton.setEnabled(true);
 							var oInput;
 
 							for (var i = 1; i < 3; i++) {
@@ -1789,6 +2040,12 @@ sap.ui.define([
 
 			},
 
+			handleCopyCalChange: function(oEvent) {
+
+				this._onBindingCalendar();
+
+			},
+
 			// evento button per apertura pdf odc (SE) per apertura diretta
 			onOpenDoc: function(oEvent) {
 				//var OData = new sap.ui.mode.odata.ODataModel(); 
@@ -1862,6 +2119,228 @@ sap.ui.define([
 						}*/
 
 				});
+
+			},
+
+			_onBindingCalendar: function() {
+				var oView = this.getView();
+				var oModel = this.getView().getModel();
+				sap.ui.getCore().setModel(oModel);
+
+				var oCal2 = sap.ui.getCore().byId("CALE_ID");
+
+				//ripulisco i campi		
+				oCal2.removeAllSelectedDates();
+				oCal2.removeAllSpecialDates();
+				oCal2.removeAllDisabledDates();
+
+				var startDate = oCal2.getStartDate();
+				var startMonth = this.oFormatMonth.format(startDate);
+				if (startMonth.length === 1) {
+
+					startMonth = "0" + startMonth;
+				}
+
+				var startYear = this.oFormatYear.format(startDate);
+
+				//imposto la data minima selezionabile dietro di un anno
+				var nowP = new Date();
+
+				var nowF = new Date();
+				nowP.setDate(nowP.getDate() - 365);
+				oCal2.setMinDate(nowP);
+
+				//imposto la data massima selezionabile avanti di un anno
+
+				nowF.setDate(nowF.getDate() + 365);
+				oCal2.setMaxDate(nowF);
+
+				var nowForYear = new Date();
+				var oYear = this.oFormatYear.format(nowForYear);
+				var oYearN = Number(oYear);
+				var oDay = nowForYear.getDate();
+				var oDayN = Number(oDay);
+
+				var oYear2 = oYearN + 1;
+
+				// disabilito giorni festivi 
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0101")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0101")
+				}));
+
+				///// befana
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0106")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0106")
+
+				}));
+
+				///// 25 aprile
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0425")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0425")
+				}));
+
+				///// primo maggio
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0501")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0501")
+				}));
+
+				///// 2 giugno
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0602")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0602")
+				}));
+
+				///// ferragosto
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "0815")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "0815")
+				}));
+
+				///// tutti i santi
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1101")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1101")
+				}));
+
+				///// immacolata
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1208")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1208")
+				}));
+
+				////// natale
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1225")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1225")
+				}));
+
+				////// santo stefano
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYearN + "1226")
+				}));
+
+				oCal2.addDisabledDate(new DateTypeRange({
+					startDate: this.oFormatYear.parse(oYear2 + "1226")
+				}));
+
+				var sRead = "/CalendarSet";
+
+				oModel.read(sRead, {
+					//filters: oFilter,
+
+					filters: [new sap.ui.model.Filter({
+
+						filters: [new sap.ui.model.Filter({
+							path: "Calmonth",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startMonth
+
+						}), new sap.ui.model.Filter({
+							path: "Calyear",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: startYear
+						})],
+
+						and: true
+
+					})],
+
+					success: fnReadS,
+
+					error: fnReadE
+				});
+
+				function fnReadS(oData, response) {
+					//	console.log(oData);
+					//	console.log(response);
+
+					// controllo che la funzione è andata a buon fine 
+					if (response.statusCode == "200") {
+						////////////////////////////////				
+
+						var oFormatYYyyymmdd = sap.ui.core.format.DateFormat.getInstance({
+							pattern: "yyyyMMdd",
+							calendarType: sap.ui.core.CalendarType.Gregorian
+						});
+
+						var oRefDate = new Date();
+
+						var oDateRange;
+
+						if (oData.results.length > 0) {
+							for (var i = 0; i < oData.results.length; i++) {
+								//escludo richieste rifiutate
+								//if (oData.results[i].ZreqStatus === 'A' || oData.results[i].ZreqStatus === 'I') {
+								//						var res = oData.results[i].Zdate.substring(8);
+								var res = oData.results[i].Data;
+
+								// disabilito giorni che contengono già una richiesta   
+								//    oCal1.addDisabledDate(new DateTypeRange({   
+								//    startDate: oFormatYYyyymmdd.parse(res)
+								//    }));
+
+								if (oData.results[i].Ore > 0.0) {
+
+									oCal2.addDisabledDate(new DateTypeRange({
+										startDate: oFormatYYyyymmdd.parse(res),
+										tooltip: "Giorno non selezionabile"
+
+									}));
+								}
+
+							}
+						}
+					} else {
+
+						//jQuery.sap.require("sap.m.MessageBox");
+						sap.m.MessageBox.show(
+							"Error: Nessun record recuperato", {
+								icon: sap.m.MessageBox.Icon.WARNING,
+								title: "Error",
+								actions: [sap.m.MessageBox.Action.CLOSE]
+
+							});
+
+					}
+
+				} // END FUNCTION SUCCESS
+
+				function fnReadE(oError) {
+					//	console.log(oError);
+
+					alert("Error in read: " + oError.message);
+				}
 
 			},
 
