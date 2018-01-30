@@ -907,6 +907,9 @@ sap.ui.define([
 				sap.ui.getCore().byId("descrizione").setValueState("None");
 				sap.ui.getCore().byId("tabellaSpese").removeSelections();
 				sap.ui.getCore().byId("panelSpese").setExpanded(false);
+				sap.ui.getCore().byId("multidaySel").setVisible(false);
+				sap.ui.getCore().byId("multidaySel").setEnabled(false);
+				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
 				//this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
