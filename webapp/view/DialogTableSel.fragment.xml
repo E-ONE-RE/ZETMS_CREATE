@@ -6,6 +6,16 @@ xmlns:html="http://www.w3.org/1999/xhtml">
 	<TableSelectDialog id="tableCommEx" noDataText="Nessuna commessa trovata" title="Seleziona commessa" search="handleSearch"
 		confirm="handleClose">
 		<columns>
+			
+			<Column id="comm_column_Id_comm" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
+				<Label text="ID Comm." id="comm_label_Id_comm"/>
+			</Column>
+			
+			<Column id="comm_column_Orderjob" width="auto"  minScreenWidth="phone"  demandPopin="false" visible="true">
+				<Label text="Orderjob" id="comm_label_Orderjob"/>
+			</Column>
+			
+			
 			<Column id="comm_column_Descrorder" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
 				<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 			</Column>

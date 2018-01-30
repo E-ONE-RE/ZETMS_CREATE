@@ -26,26 +26,64 @@
 								</Toolbar>
 							</f:toolbar>
 							<f:formElements>
-								<f:FormElement label="Commessa esistente">
+								<!--<f:FormElement label="Commessa esistente">
 									<f:fields>
 										<Hbox>
 											<Button text="Seleziona una commessa già utilizzata nel mese" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
-												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom"></Button>
+												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
+												
+											</Button>
+											
+												
 										</Hbox>
 									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Nuova commessa">
+								</f:FormElement>-->
+								
+							
+								<!--<f:FormElement label="Nuova commessa">
 									<f:fields>
 										<Hbox>
-											<Button text="Seleziona una nuova commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+										<	<Button text="Seleziona una nuova commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="showPopoverCommessa" enabled="true"></Button>
 										</Hbox>
-										<!--<Input id="commessaEx" required="false" enabled="false"/>-->
+									<Input id="commessaEx" required="false" enabled="false"/
 									</f:fields>
+								</f:FormElement>-->
+								<f:FormElement label="Seleziona Commessa">
+									<f:fields>
+										<Hbox>
+										<Button text="Già utilizzata" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
+												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
+												
+											</Button>
+											
+												<Button text="Nuova" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												press="showPopoverCommessa" enabled="true"></Button>
+										</Hbox>	
+										
+									</f:fields>
+								</f:FormElement>
+									<f:FormElement id = "label_multidaySel" label="Commessa Multi day" visible ="false" >
+											
+									<Hbox>
+								<!--	<CheckBox id="multidaySel" text="" visible ="false" selected="true" enabled="false" tooltip="Se attivo la commessa sarà condivisa"
+									select="handleCBoxMultiDay"/>-->
+									
+									<Switch id="multidaySel" state="true" customTextOn="Si" customTextOff="No" change="handleCBoxMultiDay">
+										<layoutData>
+											<FlexItemData growFactor="1" />
+										</layoutData>
+									</Switch>
+									<Button id="btnMultiday" icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
+				
+									</Hbox>
 								</f:FormElement>
 								<f:FormElement label="Commessa">
 									<f:fields>
+									
+									
 										<Input id="commessa" required="true" editable="false"/>
+										
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement id="sediList" label="Sede">
@@ -65,6 +103,7 @@
 											tooltip="Inserisci la descrizione dell'attività."/>
 									</f:fields>
 								</f:FormElement>
+									
 							</f:formElements>
 							<f:formElements>
 								<f:FormElement>

@@ -264,6 +264,7 @@ displayBlock="true">
 									<Label text="ID Comm." id="comm_label_Tmskey"/>
 								</Column>
 								
+								
 								<Column id="comm_column_Tmskey" width="auto"  visible="true">
 									<Label text="{/#ListaCommesseGroupSet/Descrorder/@sap:label}" id="comm_label_Descrorder"/>
 								</Column>
@@ -541,14 +542,16 @@ displayBlock="true">
 			
 				<!--<Bar>
 				    <contentLeft>-->
-				    <ToolbarSpacer/>
-							<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
-						  
-						  </Button>
-			  
-
-						  	<Button id="copyBtn" type="Emphasized" text="Copia" press="openCalendar" icon="sap-icon://copy" tooltip="Copia il giorno selezionato" enabled="false">
+				    	  	<Button id="copyBtn" type="Emphasized" text="Copia" press="openCalendar" icon="sap-icon://copy" tooltip="Copia il giorno selezionato" enabled="false">
 						  <layoutData><OverflowToolbarLayoutData moveToOverflow="false"/></layoutData>
+						  </Button>
+						
+			  <ToolbarSpacer/>
+
+					
+						  
+						  	<Button id="btn1" type="Accept" text="Crea" press="openDialog" icon="sap-icon://create-entry-time" tooltip="Crea nuovo inserimento nel timesheet" enabled="false">
+						  
 						  </Button>
 			 
 				</Toolbar>	
