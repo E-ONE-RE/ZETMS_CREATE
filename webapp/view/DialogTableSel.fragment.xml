@@ -1,4 +1,8 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+<core:FragmentDefinition xmlns="sap.m" 
+xmlns:core="sap.ui.core"
+xmlns:html="http://www.w3.org/1999/xhtml">
+
+
 	<TableSelectDialog id="tableCommEx" noDataText="Nessuna commessa trovata" title="Seleziona commessa" search="handleSearch"
 		confirm="handleClose">
 		<columns>
