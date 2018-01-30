@@ -44,7 +44,7 @@
 								</f:FormElement>
 								<f:FormElement label="Valore">
 									<f:fields>
-										<Input liveChange="onLiveChange" required="true" id="ValueSelSpese" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}"/>
+										<Input liveChange="onLiveChange" type="Number" required="true" id="ValueSelSpese" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione Spesa">
