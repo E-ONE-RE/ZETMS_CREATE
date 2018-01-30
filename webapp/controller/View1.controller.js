@@ -43,21 +43,7 @@ sap.ui.define([
 			_oDialog: null,
 
 			onInit: function() {
-				//SE			ZETMS_CREATE.utils.DataManager.init(this.oDataModel, this.resourceBundle);
-				//	ZETMS_CREATE.utils.Formatters.init(this.resourceBundle);
-				//	ZETMS_CREATE.utils.CalendarTools.init(this.resourceBundle);
-				//	this.oRouter.attachRouteMatched(this._handleRouteMatched, this);
-				//	sap.ca.scfld.md.controller.BaseFullscreenController.prototype.onInit.call(this);
-				//this.oApplication = this.oApplicationFacade.oApplicationImplementation;
-				//this.resourceBundle = this.oApplicationFacade.getResourceBundle();
-				//this.oDataModel = this.oApplicationFacade.getODataModel();
-				//ZETMS_CREATE.utils.DataManager.init(this.oDataModel, this.resourceBundle);
-				//		ZETMS_CREATE.utils.Formatters.init(this.resourceBundle);
-				//ZETMS_CREATE.utils.CalendarTools.init(this.resourceBundle);
-				//this.oDataModel = ZETMS_CREATE.utils.DataManager.getBaseODataModel();
-
-				//this.oRouter.attachRouteMatched(this._handleRouteMatched, this);
-				//this._buildHeaderFooter();
+				
 				this._initCntrls();
 				// sap.ui.getCore().getEventBus().subscribe("ZETMS_CREATE.LeaveCollection", "refresh", this._onLeaveCollRefresh, this);
 
@@ -81,12 +67,8 @@ sap.ui.define([
 					calendarType: sap.ui.core.CalendarType.Gregorian
 				});
 
-				//		this.oModel = new JSONModel({selectedDates:[]});
-				//		this.getView().setModel(this.oModel);
-
-				//  	var oModel = this.getView().getModel();
-				//	this.getView().setModel(oModel);
-
+			
+                // funzioni per raggruppamento liste
 				this.mGroupFunctions = {
 					Giorno: function(oContext) {
 						var sName = oContext.getProperty("Giorno");
@@ -118,14 +100,16 @@ sap.ui.define([
 				oRouter.getRoute("view1").attachMatched(this._onRouteMatched, this);
 
 			},
-
+            
+            //NON USATA
 			getGroupHeader: function(oGroup) {
 				return new GroupHeaderListItem({
 					title: oGroup.key,
 					upperCase: false
 				});
 			},
-
+            
+            // funzioni per treetable
 			onCollapseAll: function() {
 				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
 				//	var oTreeTable = sap.ui.getCore().byId("treeTable");
@@ -152,7 +136,40 @@ sap.ui.define([
 				}
 
 			},
+            
+            
+             // gestione tasto HELP
+			handleResponsivePopoverMultydayPress: function(oEvent) {
+				if (!this._PopoverHelpMulti) {
+					this._PopoverHelpMulti = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelpMulti", this, "ZETMS_CREATE.controller.View1");
 
+					this.getView().addDependent(this._PopoverHelpMulti);
+
+				}
+				var oVboxM = sap.ui.getCore().byId("VboxM");
+				oVboxM.destroyItems();
+				var sId = oEvent.getSource().getParent().getParent().getId();
+				var oHTML;
+			
+						oHTML = new sap.ui.core.HTML({
+							content: '<strong>Inserimento commessa multi day</strong>' +
+								'<ul>' +
+
+								'<li>Nel caso di scelta commessa da quelle già utilizzate nel mese è possibile condividere la stessa commessa per' +
+								' più giorni. Questo significa che la sede non può essere modificata e che la descrizione sarà condivisa per tutti i giorni'+
+								' associati. Scegliendo <strong>"SI"</strong> se si modifica la descrizone di una commessa multi day la modifica sarà riportata su tutti i giorni associati. </li>' +
+								' <li>Selezionare <strong>"NO"</strong> se invece si vuole inserire una commessa indipendente per poter scegliere sede ed inserire una descrizione dedicata al singolo giorno.' +
+								'</li>' +
+								'</ul>',
+							sanitizeContent: true
+						});
+
+
+				oVboxM.addItem(oHTML);
+				this._PopoverHelpMulti.openBy(oEvent.getSource());
+			},
+			
+            // gestione tasto HELP
 			handleResponsivePopoverPress: function(oEvent) {
 				if (!this._oPopoverHelp) {
 					this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
@@ -167,17 +184,22 @@ sap.ui.define([
 				switch (sId) {
 					case "dialog":
 						oHTML = new sap.ui.core.HTML({
-							content: '<strong>Inseriremento commessa ed eventuali spese</strong>' +
+							content: '<strong>Inserimento commessa ed eventuali spese</strong>' +
 								'<ul>' +
 
-								'<li>Seleziona una commessa già utilizzata nel mese: in questo caso la sede non protrà essere modificata ' +
-								'e le modifiche al campo descrizione saranno riportate nei giorni per i quali la commessa è gia stata utilizzata. ' + 
+								'<li><strong>Seleziona una commessa già utilizzata nel mese:</strong> in questo caso si potrà scegliere ' +
+								' tra una commessa multi day (condivisa per più giorni) o una commessa per singolo giorno. ' +
+								'Nel primo caso la sede non protrà essere modificata e le modifiche al campo descrizione saranno riportate ' + 
+								'anche nei giorni per i quali la commessa è gia stata utilizzata. ' + 
+								'Nel secondo caso invece si potrà selezionare la sede ed inserire una descrizione dedicata al singolo giorno. ' +
 								'</li>' +
-								'<li>Seleziona una nuova commessa: in questo caso verrà aggiunta una nuova commessa dove si potrà selezionare la sede ed aggiungere una nuova descrizione. ' +
+								'<li><strong>Seleziona una nuova commessa:</strong> in questo caso potrà essere selezionata una nuova commessa ' +
+								' tra tutte quelle a disposizione indipendentemente dal fatto che sia già stata utilizzata nel mese, ' +
+								'si potrà selezionare la sede ed aggiungere una nuova descrizione. ' +
 								'</li>' +
 							  
 								'<li>Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
-								'ed aver selezionato eventuali spese, premere il tasto "Conferma" per salvare la commessa.' +
+								'ed aver selezionato eventuali spese, premere il tasto <strong>"Conferma"</strong> per salvare la commessa.' +
 
 								'</li>' +
 								'</ul>',
@@ -237,16 +259,19 @@ sap.ui.define([
 								'<strong>Come copiare un giorno e le relative commesse su altri giorni/o.</strong>' +
 								'<ul>' +
 								'<li>Selezionare il giorno da copiare dal calendario e cliccare sul tasto "Copia", selezionare poi ' +
-								' dalla popup i giorni su cui copiare. Verranno copiate solo le commesse (no spese).</li>' +
+								'dalla popup i giorni su cui copiare. E&rsquo; possibile copiare anche su un mese successivo a quello di partenza, ' +
+								'ma non su più mesi contemporaneamente. ' +
+								'Es. Si può copiare il 15 maggio sul 20 maggio, oppure sul 20 giugno ma non contemporaneamente sul 20 maggio e sul 20 giugno. ' +
+								'In ogni caso verranno copiate solo le commesse (no spese).</li>' +
 								
 								'</ul>' +
-								'<strong>Come modificare una commessa e relative spese</strong>' +
+								'<strong>Come modificare/eliminare una commessa e relative spese</strong>' +
 								'<ul>' +
-								'<li>Selezionare la commmessa da modificare dalla lista delle commesse.</li>' +
+								'<li>Selezionare la commmessa da modificare/eliminare dalla lista delle commesse.</li>' +
 								'</ul>' +
-								'<strong>Come modificare una spesa</strong>' +
+								'<strong>Come modificare/eliminare una spesa</strong>' +
 								'<ul>' +
-								'<li>Selezionare la spesa da modificare dalla lista delle spese.</li>' +
+								'<li>Selezionare la spesa da modificare/eliminare dalla lista delle spese.</li>' +
 								'</ul>' +
 								'<strong>Come visualizzare i report</strong>' +
 								'<ul>' +
@@ -256,9 +281,9 @@ sap.ui.define([
 								'<ul>' +
 								'<li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliere il settaggio desiderato.</li>' +
 								'</ul>' +
-								'<strong>Come filtrare le lista per singolo giorno</strong>' +
+								'<strong>Come filtrare le lista per singoli giorni </strong>' +
 		                        '<ul>' +
-		                        '<li> Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
+		                        '<li> Selezionare un giorno o più giorni dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
                                  '</ul>' ,
 							sanitizeContent: true
 						});
@@ -267,7 +292,9 @@ sap.ui.define([
 				oVbox.addItem(oHTML);
 				this._oPopoverHelp.openBy(oEvent.getSource());
 			},
-
+            
+            
+            // chiude help
 			handleCloseButton: function(oEvent) {
 				this._oPopoverHelp.close();
 			},
@@ -567,7 +594,7 @@ sap.ui.define([
 				var oUrlCopyParams;
 				var iControl = 0; // variabile di controllo per la visualizzazione del messaggio di successo
 				
-				if (startMonth.length === 1) {
+				if (startMonth.length == 1) {
 					startMonth = "0" + startMonth;
 				}
 			
@@ -788,7 +815,7 @@ sap.ui.define([
 			//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
 			//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
 		    	that.Dialog.setTitle("Inserire dettaglio per il giorno " + 	this.DateTxt);
-
+                //sap.ui.getCore().byId("dettaglio").setText("Inserire dettaglio per il giorno " + this.DateTxt);
 				sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
 
 			},
@@ -885,6 +912,11 @@ sap.ui.define([
 				} else {
 					oTree.removeSelections();
 				}
+				
+					//disabilito checkbox per selezione commessa multi day
+			sap.ui.getCore().byId("multidaySel").setVisible(false);
+			sap.ui.getCore().byId("multidaySel").setEnabled(false);
+			sap.ui.getCore().byId("label_multidaySel").setVisible(false);
 
 			},
 
@@ -914,7 +946,17 @@ sap.ui.define([
 
 				var oTemplate = new sap.m.ColumnListItem({
 					cells: [
-
+                        new sap.m.Text({
+							text: "{Tmskey}",
+							wrapping: false
+						}),
+						
+						 new sap.m.Text({
+							text: "{Orderjob}",
+							wrapping: false
+						
+						}),
+						
 						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
 							wrapping: false
@@ -981,12 +1023,37 @@ sap.ui.define([
 				var oBinding = oEvent.getSource().getBinding("items");
 				oBinding.filter([oFilter]);
 			},
-
+            
+            
+            handleCBoxMultiDay: function(oEvent) {
+            	
+         // var chk = sap.ui.getCore().byId("multidaySel").getSelected();
+               var chk = sap.ui.getCore().byId("multidaySel").getState();
+	           if 	( !chk ) {
+	            	this.sTimesheetKey = undefined;
+					sap.ui.getCore().byId("ore").setValue("");
+					sap.ui.getCore().byId("descrizione").setValue("");
+	
+						this.sCommessaId = this.sOrderjob;
+						sap.ui.getCore().byId("sedi").setEnabled(true);
+						
+						//sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
+						sap.ui.getCore().byId("commessa").setValueState("None");
+					
+						////// le sedi sono diverse dipendentemente dal cliente
+						this.callSediSet(this.sCommessaId);
+						
+					//	sap.ui.getCore().byId("multidaySel").setEditable(false);
+						sap.ui.getCore().byId("multidaySel").setEnabled(false);
+	           }
+            },
+            
 			handleClose: function(oEvent) {
 				var aContexts = oEvent.getParameter("selectedContexts");
 				var oInput = sap.ui.getCore().byId("commessa");
 				var oSede = sap.ui.getCore().byId("sedi");
 				var oDescr = sap.ui.getCore().byId("descrizione");
+				
 
 				oSede.setForceSelection(true);
 
@@ -1029,8 +1096,20 @@ sap.ui.define([
 					this.sTimesheetKey = aContexts.map(function(oContext) {
 						return oContext.getObject().Tmskey;
 					})[0];
+					
+					this.sOrderjob = aContexts.map(function(oContext) {
+						return oContext.getObject().Orderjob;
+					})[0];
 				}
 				oEvent.getSource().getBinding("items").filter([]);
+				
+			//abilito checkbox per selezione commessa multi day
+			sap.ui.getCore().byId("multidaySel").setVisible(true);
+			sap.ui.getCore().byId("multidaySel").setEnabled(true);
+		//	sap.ui.getCore().byId("multidaySel").setSelected(true);
+			sap.ui.getCore().byId("multidaySel").setState(true);
+		//	sap.ui.getCore().byId("multidaySel").setEditable(true);
+			sap.ui.getCore().byId("label_multidaySel").setVisible(true);
 			},
 
 			callSediSet: function(sCommessa) {
@@ -1220,7 +1299,7 @@ sap.ui.define([
 						aDate = this.DatesList[y];
 				///
 				
-					if (this.buttonEvent === "Modificaa") {
+					if (this.buttonEvent == "Modificaa") {
 						sOffice = sap.ui.getCore().byId("sedeSel").getText();
 						sOre = sap.ui.getCore().byId("oreSel").getValue();
 						sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
@@ -1399,7 +1478,7 @@ sap.ui.define([
 
 						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
 						//	if (oData.Type == "S") {
-						if (response.statusCode === "201") {
+						if (response.statusCode == "201") {
                           
                         
 									//	var msg = "Success: "+oData.Message+", "+sTypeAction;
@@ -1587,7 +1666,7 @@ sap.ui.define([
 							oEntry.Expkey = oContext.getProperty("Expkey");
 							oEntry.Exptype = oContext.getProperty("Exptype");
 
-							if (EventType === "Reject") { // MP: sono in cancellazione
+							if (EventType == "Reject") { // MP: sono in cancellazione
 
 								//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
 								oEntry.Deletionflag = "X";
@@ -1728,7 +1807,7 @@ sap.ui.define([
 
 								//	var oItem = oEvent.getSource().getParent();
 
-								if (EventType === "Reject") { // MP: sono in cancellazione
+								if (EventType == "Reject") { // MP: sono in cancellazione
 
 									//	if(oEvent.getSource().getId().indexOf("btnD") != -1){ // MP: sono in cancellazione
 									oEntry.Deletionflag = "X";
@@ -2028,7 +2107,8 @@ sap.ui.define([
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
-				oDialog.setTitle("Dettaglio commessa " + sDate);
+				var sID = oDialog.getBindingContext().getProperty("Tmskey");
+				oDialog.setTitle("ID Commessa: " + sID + " - " + "Giorno: " + sDate );
 				
 				//(SE)
 				var aDatesList = [];
@@ -2130,7 +2210,9 @@ sap.ui.define([
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				//this.sValue = oDialog.getBindingContext().getProperty("Importo");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
-				oDialog.setTitle("Dettaglio spesa " + sDate);
+				var sID = oDialog.getBindingContext().getProperty("Tmskey");
+				oDialog.setTitle("ID Commessa: " + sID + " - " + "Giorno: " + sDate );
+			//	oDialog.setTitle("Dettaglio spesa " + sDate);
 			},
 
 			openDialogSpese: function(oEvent) {
@@ -2239,7 +2321,7 @@ sap.ui.define([
 				var sButtonEvent = sButtonId.substring(sButtonId.indexOf("---V1--"));
 
 				var sPrinttype = "";
-				if (sButtonEvent === "---V1--btnTms") {
+				if (sButtonEvent == "---V1--btnTms") {
 					sPrinttype = "T";
 				} else {
 					sPrinttype = "E";
@@ -3147,7 +3229,7 @@ sap.ui.define([
 								//    startDate: oFormatYYyyymmdd.parse(res)
 								//    }));
 
-								if (oData.results[i].Ore === "8.0") {
+								if (oData.results[i].Ore == 8.0) {
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
