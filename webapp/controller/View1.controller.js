@@ -171,12 +171,12 @@ sap.ui.define([
 								'<ul>' +
 
 								'<li>Seleziona una commessa già utilizzata nel mese: in questo caso la sede non protrà essere modificata ' +
-								'e le modifiche al campo descrizione saranno riportate nei giorni per i quali la commessa è gia stata utilizzata. ' + 
+								'e le modifiche al campo descrizione saranno riportate nei giorni per i quali la commessa è gia stata utilizzata. ' +
 								'</li>' +
 								'<li>Seleziona una nuova commessa: in questo caso verrà aggiunta una nuova commessa dove si potrà selezionare la sede ed aggiungere una nuova descrizione. ' +
 								'</li>' +
-							  
-								'<li>Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
+
+								'<li>Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) ' +
 								'ed aver selezionato eventuali spese, premere il tasto "Conferma" per salvare la commessa.' +
 
 								'</li>' +
@@ -193,19 +193,19 @@ sap.ui.define([
 								'<li>Per la commessa selezionata, è possibile: ' +
 								' <br> - Modificare ore e descrizione' +
 								' <br> - Inserire eventuali nuove spese espandendo la relativa sezione ' +
-								 
-								'<br>Una volta terminati gli inserimenti, premere sul tasto "Modifica commessa"'+
+
+								'<br>Una volta terminati gli inserimenti, premere sul tasto "Modifica commessa"' +
 								' per apportare le modifiche.</li>' +
 								'</ul>' +
 								'<ul>' +
-								'<li>Per eliminare la commessa e le relative spese associate, cliccare sul tasto "Elimina commessa"</li>'+
-								'</ul>'+
+								'<li>Per eliminare la commessa e le relative spese associate, cliccare sul tasto "Elimina commessa"</li>' +
+								'</ul>' +
 								'<strong>Modificare o eliminare le singole spese già presenti</strong>' +
 								'<ul>' +
-								'<li>Dalla tabella "Spese Inserite" è possibile eliminare o modificare/salvare singolarmente '+
+								'<li>Dalla tabella "Spese Inserite" è possibile eliminare o modificare/salvare singolarmente ' +
 								'le spese associate alla commessa. In questo caso i bottoni da utilizzare sono quelli posti ' +
 								' alla destra delle singole righe e non quelli posti in fondo alla pagina. Dopo aver modificato ' +
-								' e salvato una singola spesa si può tornare nella pagina principale cliccando sul tasto "Indietro".</li>'+
+								' e salvato una singola spesa si può tornare nella pagina principale cliccando sul tasto "Indietro".</li>' +
 
 								'</ul>',
 							sanitizeContent: true
@@ -238,7 +238,7 @@ sap.ui.define([
 								'<ul>' +
 								'<li>Selezionare il giorno da copiare dal calendario e cliccare sul tasto "Copia", selezionare poi ' +
 								' dalla popup i giorni su cui copiare. Verranno copiate solo le commesse (no spese).</li>' +
-								
+
 								'</ul>' +
 								'<strong>Come modificare una commessa e relative spese</strong>' +
 								'<ul>' +
@@ -257,9 +257,9 @@ sap.ui.define([
 								'<li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliere il settaggio desiderato.</li>' +
 								'</ul>' +
 								'<strong>Come filtrare le lista per singolo giorno</strong>' +
-		                        '<ul>' +
-		                        '<li> Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
-                                 '</ul>' ,
+								'<ul>' +
+								'<li> Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
+								'</ul>',
 							sanitizeContent: true
 						});
 				}
@@ -374,8 +374,10 @@ sap.ui.define([
 				var oTableExpBinding = oTableExp.getBinding("items");
 				//var oTreeTableBinding = oTreeTable.getBinding("rows");
 				//var iSelCount = oEvent.getSource().getSelectedDates().length;
-
-				if (oEvent.getSource().getSelectedDates()[0] != undefined) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
+				var oSelectedDate;
+				var aFilters = [];
+				var aSelectedDates = oEvent.getSource().getSelectedDates();
+				if (aSelectedDates.length > 0) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
 
 					if (this.count == undefined) {
 						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
@@ -383,25 +385,28 @@ sap.ui.define([
 					}
 					this.count = 1;
 
-					this.selectedDate = oEvent.getSource().getSelectedDates()[0].getStartDate();
-					//MP: Client side filtering. Per il momento non applicato alla treeTable
-					sDate = formatter.formatCalDate(this.selectedDate.toString());
-					sDayFilter = sDate.substring(0, sDate.indexOf("/"));
-					oFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
-					//oTreeFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.Contains, sDayFilter);
-					oTableCommBinding.filter(oFilter);
-					oTableExpBinding.filter(oFilter);
+					for (var i = 0; i < aSelectedDates.length; i++) {
+
+						oSelectedDate = oEvent.getSource().getSelectedDates()[i].getStartDate();
+						//MP: Client side filtering. Per il momento non applicato alla treeTable
+						sDate = formatter.formatCalDate(oSelectedDate.toString());
+						sDayFilter = sDate.substring(0, sDate.indexOf("/"));
+						oFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
+						aFilters.push(oFilter);
+						//oTreeFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
+					}
+					oTableCommBinding.filter(aFilters);
+					oTableExpBinding.filter(aFilters);
 					//oTreeTableBinding.filter(oTreeFilter);
 				} else {
 					//oTableCommBinding.filter();
 					//oTableExpBinding.filter();
 					//oTreeTableBinding.filter();
-				
-				//(SE)	
-				this.handleRemoveSelection();
-				//
-				
-			
+
+					//(SE)	
+					this.handleRemoveSelection();
+					//
+
 				}
 
 				//MP: il frammento di codice seguente dovrebbe essere utilizzato per abilitare il bottone solo quando si seleziona una data
@@ -414,114 +419,130 @@ sap.ui.define([
 				var aSpecialDates;
 				var oSpecialDate;
 				var bFind = false;
+				var count = 0;
 				var flag = 0; //flag per controllare la logica
 				aSpecialDates = oCal.getSpecialDates(); //date che hanno già inserimenti
 				if (oButton.getEnabled() == true) {
-				
 					if (oCal.getSelectedDates().length == 0) {
 						oButton.setEnabled(false);
 						oCopyButton.setEnabled(false);
 					} else {
-						oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
-						sSelectedDate = oSelectedDate.toString();
-						for (var j = 0; j < oCal.getSelectedDates().length; j++) {
-							for (var k = 0; k < aSpecialDates.length; k++) {
-								oSpecialDate = oCal.getSpecialDates()[k];
-								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
-									flag = 1;
+						for (var z = 0; z < oCal.getSelectedDates().length; z++) {
+							oSelectedDate = oCal.getSelectedDates()[z].getStartDate();
+							sSelectedDate = oSelectedDate.toString();
+							for (var j = 0; j < oCal.getSelectedDates().length; j++) {
+								for (var k = 0; k < aSpecialDates.length; k++) {
+									oSpecialDate = oCal.getSpecialDates()[k];
+									if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+										flag = 1;
+										bFind = true;
+										oCopyButton.setEnabled(true);
+										if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
+											oButton.setEnabled(false);
+											count++;
+										} else if (oSpecialDate.getProperty("type") == "Type03") {
+											oButton.setEnabled(true);
+										} else {
+											oCopyButton.setEnabled(false);
+										}
+									}
 
-									bFind =true;
-									oCopyButton.setEnabled(true);
-									if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
-
+									if (bFind == false) {
+										oCopyButton.setEnabled(false);
+									}
+									if (count > 0) {
 										oButton.setEnabled(false);
-									} else if(oSpecialDate.getProperty("type") == "Type03") {
-									oButton.setEnabled(true);
-								}else{
-									oCopyButton.setEnabled(false);
-								}
-								}
-								
-								if(bFind == false){
-									oCopyButton.setEnabled(false);
+									}
+
 								}
 							}
 						}
+						if (bFind == true && oCal.getSelectedDates().length > 1) {
+							oCopyButton.setEnabled(false);
+						}
 					}
 				} else {
-					if (oCal.getSelectedDates().length > 0) {
-						oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
-						sSelectedDate = oSelectedDate.toString();
-					}
-					if (oCal.getSpecialDates().length == 0) {
-						oButton.setEnabled(true);
+
+					if (oCal.getSelectedDates().length == 0) {
+						oButton.setEnabled(false);
+						oCopyButton.setEnabled(false);
 					} else {
-						for (var i = 0; i < aSpecialDates.length; i++) {
-							oSpecialDate = oCal.getSpecialDates()[i];
-							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
-								flag = 1;
+						for (var z = 0; z < oCal.getSelectedDates().length; z++) {
+							oSelectedDate = oCal.getSelectedDates()[z].getStartDate();
+							sSelectedDate = oSelectedDate.toString();
+							for (var i = 0; i < aSpecialDates.length; i++) {
+								oSpecialDate = oCal.getSpecialDates()[i];
+								if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+									flag = 1;
 
-								bFind = true;
-								oCopyButton.setEnabled(true);
-								if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
+									bFind = true;
+									oCopyButton.setEnabled(true);
+									if (oSpecialDate.getProperty("type") == "Type07" || oSpecialDate.getProperty("type") == "Type01") {
+										count++;
+										oButton.setEnabled(false);
+									} else if (oSpecialDate.getProperty("type") == "Type03") {
+										oButton.setEnabled(true);
+									} else {
+										oCopyButton.setEnabled(false);
+									}
+									//Controllare meglio la logica per il bottone
+								}
 
-									oButton.setEnabled(false);
-								} else if(oSpecialDate.getProperty("type") == "Type03") {
-									oButton.setEnabled(true);
-								}else{
+								if (bFind == false) {
 									oCopyButton.setEnabled(false);
 								}
-								//Controllare meglio la logica per il bottone
-							}	
-							
-							if(bFind == false){
-									oCopyButton.setEnabled(false);
-								}
+							}
+							if (flag == 0 && sSelectedDate != undefined) {
+								oButton.setEnabled(true);
+							}
 						}
-						if (flag == 0 && sSelectedDate != undefined) {
-							oButton.setEnabled(true);
-						}
+					}
+
+					if (bFind == true && oCal.getSelectedDates().length > 1) {
+						oCopyButton.setEnabled(false);
+					}
+
+					if (count > 0) {
+						oButton.setEnabled(false);
 					}
 				}
 
 				//CHECK GIORNI NON LAVORATIVI///////////////////////////////
-			/*	var aSelectedDates = oCal.getSelectedDates();
-				if (aSelectedDates.length > 0) {
+				/*	var aSelectedDates = oCal.getSelectedDates();
+					if (aSelectedDates.length > 0) {
 
-					for (var i = 0; i < aSelectedDates.length; i++) {
+						for (var i = 0; i < aSelectedDates.length; i++) {
 
-						var oDate = aSelectedDates[i].getStartDate();
+							var oDate = aSelectedDates[i].getStartDate();
 
-						var oDayOfWeek = this.oFormatDaysShort.format(oDate);
+							var oDayOfWeek = this.oFormatDaysShort.format(oDate);
 
-						if (oDayOfWeek === "sab" || oDayOfWeek === "sat" || oDayOfWeek === "dom" || oDayOfWeek === "sun") {
-							//if(oDate === sap.ui.unified.CalendarDayType.NonWorking) {
-							//jQuery.sap.require("sap.m.MessageBox");
-							sap.m.MessageBox.show(
-								"Attenzione: Non è possibile selezionare giorni non lavorativi, rimuovere la selezione, " + oDate, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
+							if (oDayOfWeek === "sab" || oDayOfWeek === "sat" || oDayOfWeek === "dom" || oDayOfWeek === "sun") {
+								//if(oDate === sap.ui.unified.CalendarDayType.NonWorking) {
+								//jQuery.sap.require("sap.m.MessageBox");
+								sap.m.MessageBox.show(
+									"Attenzione: Non è possibile selezionare giorni non lavorativi, rimuovere la selezione, " + oDate, {
+										icon: sap.m.MessageBox.Icon.WARNING,
+										title: "Error",
+										actions: [sap.m.MessageBox.Action.CLOSE]
 
-								});
+									});
 
-							oCal.removeAllSelectedDates();
-							oButton.setEnabled(false);
-							oTableCommBinding.filter(); // per ripristinare la condizione di partenza
-							oTableExpBinding.filter();
-							return;
+								oCal.removeAllSelectedDates();
+								oButton.setEnabled(false);
+								oTableCommBinding.filter(); // per ripristinare la condizione di partenza
+								oTableExpBinding.filter();
+								return;
+							}
 						}
-					}
 
-				}*/
-
-				
+					}*/
 
 			},
 
 			handleCopyCalendarSelect: function(oEvent) {
-                
-
+				var oCal = oEvent.getSource();
+				this.aSelectedDates = oCal.getSelectedDates();
 			},
 
 			handleRemoveSelection: function(oEvent) {
@@ -536,7 +557,7 @@ sap.ui.define([
 			},
 
 			openCalendar: function(oEvent) {
-
+                var sDay, sMonth, sYear;
 				var that = this;
 				if (!this._oPopoverCopy) {
 					this._oPopoverCopy = sap.ui.xmlfragment("ZETMS_CREATE.view.CopyOfDayPopover", this, "ZETMS_CREATE.controller.View1");
@@ -545,7 +566,30 @@ sap.ui.define([
 
 				this._oPopoverCopy.openBy(oEvent.getSource());
 
+				var oCal = sap.ui.getCore().byId("CALE_ID");
+
+				oCal.displayDate(this.startDate);
 				this._onBindingCalendar();
+				
+				var oOriginalCal = this.getView().byId("LRS4_DAT_CALENDAR");
+				var oSelectedDate = oOriginalCal.getSelectedDates()[0].getStartDate();
+				
+				sDay = oSelectedDate.getDate().toString();
+				sMonth = (oSelectedDate.getMonth() + 1).toString();
+				sYear = oSelectedDate.getFullYear().toString();
+				
+				if(sDay.length == 1){
+					sDay = "0" + sDay;
+				}
+				
+				if(sMonth.length == 1){
+					sMonth = "0" + sMonth;
+				}
+				
+				var sTitle = sDay + "/" + sMonth + "/" + sYear;
+				
+				this._oPopoverCopy.setTitle("Copia commesse del " + sTitle);
+ 
 			},
 
 			closePopover: function(oEvent) {
@@ -553,32 +597,36 @@ sap.ui.define([
 				this._oPopoverCopy.close();
 
 			},
-			
-			handleDayCopy: function(oEvent){
-				
+
+			handleDayCopy: function(oEvent) {
+
 				var that = this;
 				var oCal = this.getView().byId("LRS4_DAT_CALENDAR");
 				var startDate = oCal.getStartDate();
 				var oCopyCal = sap.ui.getCore().byId("CALE_ID");
-				var aSelectedDates = oCopyCal.getSelectedDates();
+				var aSelectedDates = this.aSelectedDates;
+				var sSelectedMonth;
+				var sSelectedYear;
 				var oStartDate;
 				var sDay;
 				var startMonth = this.oFormatMonth.format(startDate);
 				var oUrlCopyParams;
 				var iControl = 0; // variabile di controllo per la visualizzazione del messaggio di successo
-				
+				var bFlag = false; // variabile di controllo per la gestione dell'alert per le commesse di tipo "PERMESSO", "FERIE" o "ROL"
+				var sTimesheetKey; // per gestire la copia su mesi diveri da quello corrente
+
 				if (startMonth.length === 1) {
 					startMonth = "0" + startMonth;
 				}
-			
+
 				var startYear = this.oFormatYear.format(startDate);
 				var startDay = oCal.getSelectedDates()[0].getStartDate().getDate().toString();
-				if(startDay.length == 1){
+				if (startDay.length == 1) {
 					startDay = "0" + startDay;
 				}
-				
+
 				//Lettura delle commesse nel giorno selezionato
-				
+
 				var oModel = this.getView().getModel();
 				var sRead = "/ListaCommesseGroupSet";
 				oModel.read(sRead, {
@@ -587,23 +635,23 @@ sap.ui.define([
 					filters: [new sap.ui.model.Filter({
 
 						filters: [new sap.ui.model.Filter({
-							path: "Calmonth",
-							operator: sap.ui.model.FilterOperator.EQ,
-							value1: startMonth
+								path: "Calmonth",
+								operator: sap.ui.model.FilterOperator.EQ,
+								value1: startMonth
 
-						}),	new sap.ui.model.Filter({
-							path: "Giorno",
-							operator: sap.ui.model.FilterOperator.EQ,
-							value1: startDay
+							}), new sap.ui.model.Filter({
+								path: "Giorno",
+								operator: sap.ui.model.FilterOperator.EQ,
+								value1: startDay
 
-						}), 
-						new sap.ui.model.Filter({
-							path: "Calyear",
-							operator: sap.ui.model.FilterOperator.EQ,
-							value1: startYear
-						})],
+							}),
+							new sap.ui.model.Filter({
+								path: "Calyear",
+								operator: sap.ui.model.FilterOperator.EQ,
+								value1: startYear
+							})
+						],
 
-					
 						and: true
 
 					})],
@@ -612,123 +660,139 @@ sap.ui.define([
 
 					error: fnReadE
 				});
-				
-					function fnReadS(oData, response) {
+
+				function fnReadS(oData, response) {
 					//	console.log(oData);
 					//	console.log(response);
 					// controllo che la funzione è andata a buon fine 
 					if (response.statusCode == "200") { //Se lettura delle commesse in un giorno va a buon fine allora vado a copiare le commesse nei giorni selezionati
-						for(var i = 0 ; i<aSelectedDates.length; i++){
+						for (var i = 0; i < aSelectedDates.length; i++) {
 							oStartDate = aSelectedDates[i].getStartDate();
+							sSelectedMonth = that.oFormatMonth.format(oStartDate);
+							if (sSelectedMonth.length === 1) {
+								sSelectedMonth = "0" + sSelectedMonth;
+							}
+							sSelectedYear = that.oFormatYear.format(oStartDate);
 							sDay = oStartDate.getDate().toString();
-							if (sDay.length == 1){
+							if (sDay.length == 1) {
 								sDay = "0" + sDay;
 							}
-							
-					for (var j = 0; j<oData.results.length; j++){
-						
-						if(oData.results[j].Orderjob != "EON16A" && 
-						   oData.results[j].Orderjob != "EON16B" && 
-					       oData.results[j].Orderjob != "EON166"){
-					       	
-                        oUrlCopyParams = {
-						Tmskey: oData.results[j].Tmskey,
-						Orderjob: oData.results[j].Orderjob,
-						Descr: oData.results[j].Descrorder,
-						Office: oData.results[j].Office,
-						Tipo: "commessa",
-						Calmonth: startMonth,
-						Calyear: startYear,
-						Giorno: sDay,
-						Ore: oData.results[j].Ore
-					};
-					
-					    
-					
-						oUrlCopyParams.FromCommToExp = [];
-					    oModel.setUseBatch(false);
-						oModel.create('/ListaCommesseGroupSet', oUrlCopyParams, {
-						method: "POST",
-						success: fnS,
 
-						error: fnE
-					});
-					
-							function fnS(oData, response) {
-						//	console.log(oData);
-						//	console.log(response);
+							for (var j = 0; j < oData.results.length; j++) {
 
-						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
-						//	if (oData.Type == "S") {
-						if (response.statusCode == "201") {
-							
-							   iControl ++; 
+								if (oData.results[j].Orderjob == "EON16A" ||
+									oData.results[j].Orderjob == "EON16B" ||
+									oData.results[j].Orderjob == "EON166") {
 
-							if(iControl == aSelectedDates.length){
-							var msg;
-						
-								msg = "Giorno copiato  con successo";
-							
-							sap.m.MessageToast.show(msg, {
-								duration: 5000,
-								autoClose: true,
-								closeOnBrowserNavigation: false
+									if (!bFlag) {
+										sap.m.MessageBox.show(
+											'Attenzione: nel giorno selezionato sono contenuti degli inserimenti  di tipo "ferie", ' +
+											'"permesso" o "ROL". Le commesse di questo tipo non sono state copiate', {
+												icon: sap.m.MessageBox.Icon.WARNING,
+												title: "Messaggio di avvertimento",
+												actions: [sap.m.MessageBox.Action.CLOSE]
 
-							});
-							
-								that._onBindingChange();
-								that._onBindingCalendar();
-								iControl = 0;
+											});
+										bFlag = true;
+									}
+
+								}
+
+								if (oData.results[j].Orderjob != "EON16A" &&
+									oData.results[j].Orderjob != "EON16B" &&
+									oData.results[j].Orderjob != "EON166") {
+
+									if (sSelectedMonth == startMonth) {
+										sTimesheetKey = oData.results[j].Tmskey;
+									} else {
+										sTimesheetKey = undefined;
+									}
+
+									oUrlCopyParams = {
+										Tmskey: sTimesheetKey,
+										Orderjob: oData.results[j].Orderjob,
+										Descr: oData.results[j].Descr,
+										Office: oData.results[j].Office,
+										Tipo: "commessa",
+										Calmonth: sSelectedMonth,
+										Calyear: sSelectedYear,
+										Giorno: sDay,
+										Ore: oData.results[j].Ore
+									};
+
+									oUrlCopyParams.FromCommToExp = [];
+									oModel.setUseBatch(false);
+									oModel.create('/ListaCommesseGroupSet', oUrlCopyParams, {
+										method: "POST",
+										success: fnS,
+
+										error: fnE
+									});
+
+									function fnS(oData, response) {
+										//	console.log(oData);
+										//	console.log(response);
+
+										// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
+										//	if (oData.Type == "S") {
+										if (response.statusCode == "201") {
+
+											iControl++;
+
+											if (iControl == aSelectedDates.length) {
+												var msg;
+
+												msg = "Commesse copiate con successo";
+
+												sap.m.MessageToast.show(msg, {
+													duration: 5000,
+													autoClose: true,
+													closeOnBrowserNavigation: false
+
+												});
+
+												that._onBindingChange();
+												that._onBindingCalendar();
+												that.closePopover();
+												iControl = 0;
+											}
+
+										} else {
+
+											//jQuery.sap.require("sap.m.MessageBox");
+											sap.m.MessageBox.show(
+												"Error: " + oData.Message, {
+													icon: sap.m.MessageBox.Icon.WARNING,
+													title: "Error",
+													actions: [sap.m.MessageBox.Action.CLOSE]
+
+												});
+
+										}
+
+									} // END FUNCTION SUCCESS
+
+									function fnE(oError, oData) {
+										//	console.log(oError);
+
+										alert("Error in read: " + oError.message + "\n" + oError.responseText);
+									}
+
+								}
+
 							}
-
-						} else {
-
-							//jQuery.sap.require("sap.m.MessageBox");
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
-
-								});
 
 						}
 
-					} // END FUNCTION SUCCESS
+					} else {
+						//jQuery.sap.require("sap.m.MessageBox");
+						sap.m.MessageBox.show(
+							"Error: " + oData.Message, {
+								icon: sap.m.MessageBox.Icon.WARNING,
+								title: "Error",
+								actions: [sap.m.MessageBox.Action.CLOSE]
 
-					function fnE(oError, oData) {
-						//	console.log(oError);
-
-						alert("Error in read: " + oError.message + "\n" + oError.responseText);
-					}
-					
-					
-					
-					       }else{
-					       	
-					       		sap.m.MessageBox.show(
-								'Attenzione: nel giorno selezionato sono contenuti degli inserimenti  di tipo "ferie" '
-								+'e/o "permesso". Le commesse di questo tipo non verranno copiate ', {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Impossibile copiare",
-									actions: [sap.m.MessageBox.Action.CLOSE]
-
-								});
-					       }
-					}
-					
-
-}
-
-					}else{
-							//jQuery.sap.require("sap.m.MessageBox");
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
-
-								});
+							});
 					}
 
 				} // END FUNCTION SUCCESS
@@ -739,7 +803,6 @@ sap.ui.define([
 					alert("Error in read: " + oError.message);
 				}
 
-				
 			},
 
 			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
@@ -759,35 +822,34 @@ sap.ui.define([
 				}
 				that.Dialog.open();
 
-				
 				/////// giorni multipli
-				  var aDatesList = [];
-					var oDate;
-					var oDateTxt = "";
-					var oComma = "";
-				 var aSelectedDates = this.cale.getSelectedDates();
-				
-					if (aSelectedDates.length > 0) {
-								for (var i = 0; i < aSelectedDates.length; i++) {
-									oDate = aSelectedDates[i].getStartDate();
-									oDate = formatter.formatCalDate(oDate.toString());
-							//		oDate = this.oFormatYyyymmdd.format(oDate);
-							//		oDate = formatter.formatDate(oDate);
-							//		oDate = formatter.formatDate(oDate);
-									//oDataSel.selectedDates.push({Date:oDate});
-										if (oDateTxt !== "") {
-										oComma = ", ";
-										}
-									aDatesList.push(oDate);
-									oDateTxt = oDateTxt + oComma + oDate;
-								  }
-								}	
-            //////// giorni multipli
-               this.DateTxt = 	oDateTxt;
-               this.DatesList = aDatesList;
-			//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
-			//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
-		    	that.Dialog.setTitle("Inserire dettaglio per il giorno " + 	this.DateTxt);
+				var aDatesList = [];
+				var oDate;
+				var oDateTxt = "";
+				var oComma = "";
+				var aSelectedDates = this.cale.getSelectedDates();
+
+				if (aSelectedDates.length > 0) {
+					for (var i = 0; i < aSelectedDates.length; i++) {
+						oDate = aSelectedDates[i].getStartDate();
+						oDate = formatter.formatCalDate(oDate.toString());
+						//		oDate = this.oFormatYyyymmdd.format(oDate);
+						//		oDate = formatter.formatDate(oDate);
+						//		oDate = formatter.formatDate(oDate);
+						//oDataSel.selectedDates.push({Date:oDate});
+						if (oDateTxt !== "") {
+							oComma = ", ";
+						}
+						aDatesList.push(oDate);
+						oDateTxt = oDateTxt + oComma + oDate;
+					}
+				}
+				//////// giorni multipli
+				this.DateTxt = oDateTxt;
+				this.DatesList = aDatesList;
+				//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
+				//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
+				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.DateTxt);
 
 				sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
 
@@ -929,8 +991,6 @@ sap.ui.define([
 						})
 					]
 				});
-              
-              
 
 				var startDate = this.cale.getStartDate();
 				var startMonth = this.oFormatMonth.format(startDate);
@@ -940,14 +1000,12 @@ sap.ui.define([
 				}
 
 				var startYear = this.oFormatYear.format(startDate);
-				
-				
-			//	var sDate = this.formattedDate;
-			////	var	sDate = this.DatesList[0];
-			//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
-			//	var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
-				
-				
+
+				//	var sDate = this.formattedDate;
+				////	var	sDate = this.DatesList[0];
+				//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
+				//	var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
+
 				var fMonth = new sap.ui.model.odata.Filter('Calmonth', [{
 					operator: "EQ",
 					value1: startMonth
@@ -966,7 +1024,17 @@ sap.ui.define([
 					path: "/ListaCommesseGroupSet",
 
 					template: oTemplate,
-					filters: [fMonth, fYear, fFlag]
+					filters: [fMonth, fYear, fFlag],
+				});
+                
+                oTableCommEx._oSearchField.setVisible(false);
+				var oBindingEx = oTableCommEx.getBinding("items");
+
+				oBindingEx.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+					var oSource = oEvent.getSource();
+					oSource.bClientOperation = true;
+					oSource.sOperationMode = "Client"; //operationMode = Client
+
 				});
 
 				// toggle compact style
@@ -977,9 +1045,17 @@ sap.ui.define([
 			// funzione search non implementata al momento
 			handleSearch: function(oEvent) {
 				var sValue = oEvent.getParameter("value");
-				var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
 				var oBinding = oEvent.getSource().getBinding("items");
-				oBinding.filter([oFilter]);
+				oEvent.getSource().getBindingContext();
+				if (sValue != "") {
+					var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
+					if (oBinding.aAllKeys == null) {
+						oBinding.aAllKeys = oBinding.aKeys;
+					}
+					oBinding.filter(oFilter);
+				} else {
+					oBinding.filter();
+				}
 			},
 
 			handleClose: function(oEvent) {
@@ -1212,140 +1288,136 @@ sap.ui.define([
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 4) {
 					this.getView().byId("btn1").setEnabled(false);
-					
-				///(SE) start giorni multipli
-			
-          var datesListLenght = this.DatesList.length;
+
+					///(SE) start giorni multipli
+
+					var datesListLenght = this.DatesList.length;
 					for (var y = 0; y < this.DatesList.length; y++) {
 						aDate = this.DatesList[y];
-				///
-				
-					if (this.buttonEvent === "Modificaa") {
-						sOffice = sap.ui.getCore().byId("sedeSel").getText();
-						sOre = sap.ui.getCore().byId("oreSel").getValue();
-						sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
-						sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
-						sDay = this.sDay;
-						sMonth = this.sMonth;
-						sYear = this.sYear;
-						sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
-						sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
-						oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
-						this.sOraOriginale = sOre;
-						this.sDescrOriginale = sDescrizione;
-					} else {
-						sCommessaId = this.sCommessaId;
-						sTimesheetKey = this.sTimesheetKey;
-						sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
-						sOre = sap.ui.getCore().byId("ore").getValue();
-						sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
-					//	aDate = this.formattedDate.split("/");
-					    aDate = aDate.split("/");
-						sDay = aDate[0];
-						sMonth = aDate[1];
-						sYear = aDate[2];
-						sChilometri = sap.ui.getCore().byId("chilometri").getValue();
-						sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
-						oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
-					}
+						///
 
-					//var oView = this.getView();
-					var oModel = this.getView().getModel();
-                  //oModel.setUseBatch(false);
-					var oUrlParams = {
-						Tmskey: sTimesheetKey,
-						Orderjob: sCommessaId,
-						Descr: sDescrizione,
-						Office: sOffice,
-						Tipo: "commessa",
-						Calmonth: sMonth,
-						Calyear: sYear,
-						Giorno: sDay,
-						Ore: sOre
-					};
+						if (this.buttonEvent === "Modificaa") {
+							sOffice = sap.ui.getCore().byId("sedeSel").getText();
+							sOre = sap.ui.getCore().byId("oreSel").getValue();
+							sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
+							sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
+							sDay = this.sDay;
+							sMonth = this.sMonth;
+							sYear = this.sYear;
+							sChilometri = sap.ui.getCore().byId("chilometriSel").getValue();
+							sKmDesc = sap.ui.getCore().byId("descrizioneKmSel").getValue();
+							oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
+							this.sOraOriginale = sOre;
+							this.sDescrOriginale = sDescrizione;
+						} else {
+							sCommessaId = this.sCommessaId;
+							sTimesheetKey = this.sTimesheetKey;
+							sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
+							sOre = sap.ui.getCore().byId("ore").getValue();
+							sDescrizione = sap.ui.getCore().byId("descrizione").getValue();
+							//	aDate = this.formattedDate.split("/");
+							aDate = aDate.split("/");
+							sDay = aDate[0];
+							sMonth = aDate[1];
+							sYear = aDate[2];
+							sChilometri = sap.ui.getCore().byId("chilometri").getValue();
+							sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
+							oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+						}
 
-					oUrlParams.FromCommToExp = [];
-
-					// passo eventuale riga km
-					if (sChilometri > 0) {
-						oUrlParams.FromCommToExp.push({
-							Exptype: "00",
-							Expdescr: sKmDesc,
-							Km: sChilometri,
-							Tipo: "km",
+						//var oView = this.getView();
+						var oModel = this.getView().getModel();
+						//oModel.setUseBatch(false);
+						var oUrlParams = {
+							Tmskey: sTimesheetKey,
+							Orderjob: sCommessaId,
+							Descr: sDescrizione,
+							Office: sOffice,
+							Tipo: "commessa",
 							Calmonth: sMonth,
 							Calyear: sYear,
-							Giorno: sDay
-						});
-					}
+							Giorno: sDay,
+							Ore: sOre
+						};
 
-					// passo eventuale righe spese
+						oUrlParams.FromCommToExp = [];
 
-					var aItem = oExpenseTable.getAggregation("items");
-					var sExpType, sExpDesc, sExpImp;
-					for (var j = 1; j < aItem.length; j++) {
-						var oItem = aItem[j];
-						if (oItem.getSelected()) {
-							sExpType = oItem.getAggregation("cells")[0].getTitle().substring(0, 2);
-							sExpDesc = oItem.getAggregation("cells")[1].getValue();
-							sExpImp = oItem.getAggregation("cells")[2].getValue();
-
+						// passo eventuale riga km
+						if (sChilometri > 0) {
 							oUrlParams.FromCommToExp.push({
-								Exptype: sExpType,
-								Expdescr: sExpDesc,
-								Importo: sExpImp,
-								Tipo: "spesa",
+								Exptype: "00",
+								Expdescr: sKmDesc,
+								Km: sChilometri,
+								Tipo: "km",
 								Calmonth: sMonth,
 								Calyear: sYear,
 								Giorno: sDay
 							});
 						}
-					}
 
-					if (this.buttonEvent != "Modificaa") {
-						that.onExpenseSelect(undefined);
-					} else {
-						that.closeDialogSel(oEvent);
-					}
+						// passo eventuale righe spese
 
-					//		}
-					//	this.oModel.setData(oData);
-					//	} else {
-					//	this._clearModel();
-					//	}
-                    
-                    
-                 //    var oReqInsert = this._reqInsert(oUrlParams, y);     
-					//jQuery.sap.require("sap.ui.commons.MessageBox");
-				//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {
-				
-		     	//	oModel.setUseBatch(true);
-				//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {changeSetId: y}, {
-				
-			       if (this.DatesList.length > 1) {
-						
-						
-					oModel.create('/ListaCommesseGroupSet', oUrlParams, {
-						method: "POST",
-						changeSetId: y,
-						error: fnE
-					
-					});
-					
-					}	else {
+						var aItem = oExpenseTable.getAggregation("items");
+						var sExpType, sExpDesc, sExpImp;
+						for (var j = 1; j < aItem.length; j++) {
+							var oItem = aItem[j];
+							if (oItem.getSelected()) {
+								sExpType = oItem.getAggregation("cells")[0].getTitle().substring(0, 2);
+								sExpDesc = oItem.getAggregation("cells")[1].getValue();
+								sExpImp = oItem.getAggregation("cells")[2].getValue();
+
+								oUrlParams.FromCommToExp.push({
+									Exptype: sExpType,
+									Expdescr: sExpDesc,
+									Importo: sExpImp,
+									Tipo: "spesa",
+									Calmonth: sMonth,
+									Calyear: sYear,
+									Giorno: sDay
+								});
+							}
+						}
+
+						if (this.buttonEvent != "Modificaa") {
+							that.onExpenseSelect(undefined);
+						} else {
+							that.closeDialogSel(oEvent);
+						}
+
+						//		}
+						//	this.oModel.setData(oData);
+						//	} else {
+						//	this._clearModel();
+						//	}
+
+						//    var oReqInsert = this._reqInsert(oUrlParams, y);     
+						//jQuery.sap.require("sap.ui.commons.MessageBox");
+						//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+
+						//	oModel.setUseBatch(true);
+						//	oModel.create('/ListaCommesseGroupSet', oUrlParams, {changeSetId: y}, {
+
+						if (this.DatesList.length > 1) {
+
 							oModel.create('/ListaCommesseGroupSet', oUrlParams, {
-						method: "POST",
-						
-						success: fnS,
+								method: "POST",
+								changeSetId: y,
+								error: fnE
 
-						error: fnE
-					});
-					
-					}
-					
-					
-				  } // fine loop giorni multipli
-					
+							});
+
+						} else {
+							oModel.create('/ListaCommesseGroupSet', oUrlParams, {
+								method: "POST",
+
+								success: fnS,
+
+								error: fnE
+							});
+
+						}
+
+					} // fine loop giorni multipli
 
 				} else {
 					this.getView().byId("btn1").setEnabled(true);
@@ -1358,109 +1430,98 @@ sap.ui.define([
 						});
 
 				}
-				
-			
-			
-			 if (this.DatesList.length > 1) {
-			 	
-			 	
-			 		var msg;
-									if (that.buttonEvent !== "Modificaa") {
-										msg = "Commesse create con successo";
-									} else {
-										msg = "Commesse modificate con successo";
-									}
-									sap.m.MessageToast.show(msg, {
-										duration: 5000,
-										autoClose: true,
-										closeOnBrowserNavigation: false
-		
-									});
 
-									if (that.buttonEvent !== "Modificaa") {
-										that._onBindingChange();
-										that.closeDialog();
-									} else {
-										that._onBindingChange();
-										that.DialogSel.close();
-										sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
-										sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-										that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-										that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-										that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-		
-									}
-			 }   
-			 	
-			 	
-					function fnS(oData, response) {
-						//	console.log(oData);
-						//	console.log(response);
+				if (this.DatesList.length > 1) {
 
-						// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
-						//	if (oData.Type == "S") {
-						if (response.statusCode === "201") {
-                          
-                        
-									//	var msg = "Success: "+oData.Message+", "+sTypeAction;
-									//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
-									var msg;
-									if (that.buttonEvent !== "Modificaa") {
-										msg = "Commessa creata con successo";
-									} else {
-										msg = "Commessa modificata con successo";
-									}
-									sap.m.MessageToast.show(msg, {
-										duration: 5000,
-										autoClose: true,
-										closeOnBrowserNavigation: false
-		
-									});
+					var msg;
+					if (that.buttonEvent !== "Modificaa") {
+						msg = "Commesse create con successo";
+					} else {
+						msg = "Commesse modificate con successo";
+					}
+					sap.m.MessageToast.show(msg, {
+						duration: 5000,
+						autoClose: true,
+						closeOnBrowserNavigation: false
 
-									if (that.buttonEvent !== "Modificaa") {
-										that._onBindingChange();
-										that.closeDialog();
-									} else {
-										that._onBindingChange();
-										that.DialogSel.close();
-										sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
-										sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-										that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-										that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-										that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-		
-									}
-                        
+					});
 
-							} else {
+					if (that.buttonEvent !== "Modificaa") {
+						that._onBindingChange();
+						that.closeDialog();
+					} else {
+						that._onBindingChange();
+						that.DialogSel.close();
+						sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+						sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+						that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+						that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+						that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
 
-							//jQuery.sap.require("sap.m.MessageBox");
-							sap.m.MessageBox.show(
-								"Error: " + oData.Message, {
-									icon: sap.m.MessageBox.Icon.WARNING,
-									title: "Error",
-									actions: [sap.m.MessageBox.Action.CLOSE]
+					}
+				}
 
-								});
+				function fnS(oData, response) {
+					//	console.log(oData);
+					//	console.log(response);
+
+					// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
+					//	if (oData.Type == "S") {
+					if (response.statusCode === "201") {
+
+						//	var msg = "Success: "+oData.Message+", "+sTypeAction;
+						//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
+						var msg;
+						if (that.buttonEvent !== "Modificaa") {
+							msg = "Commessa creata con successo";
+						} else {
+							msg = "Commessa modificata con successo";
+						}
+						sap.m.MessageToast.show(msg, {
+							duration: 5000,
+							autoClose: true,
+							closeOnBrowserNavigation: false
+
+						});
+
+						if (that.buttonEvent !== "Modificaa") {
+							that._onBindingChange();
+							that.closeDialog();
+						} else {
+							that._onBindingChange();
+							that.DialogSel.close();
+							sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+							sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+							that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+							that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+							that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
 
 						}
 
-					} // END FUNCTION SUCCESS
+					} else {
 
-					function fnE(oError) {
-						//	console.log(oError);
+						//jQuery.sap.require("sap.m.MessageBox");
+						sap.m.MessageBox.show(
+							"Error: " + oData.Message, {
+								icon: sap.m.MessageBox.Icon.WARNING,
+								title: "Error",
+								actions: [sap.m.MessageBox.Action.CLOSE]
 
-						alert("Error in read: " + oError.message + "\n" + oError.responseText);
+							});
+
 					}
-				
-				
-				
-			
+
+				} // END FUNCTION SUCCESS
+
+				function fnE(oError) {
+					//	console.log(oError);
+
+					alert("Error in read: " + oError.message + "\n" + oError.responseText);
+				}
 
 			},
 
-
-            /*_reqInsert: function(oUrlParams, y) {
+			/*_reqInsert: function(oUrlParams, y) {
 	         var oModel = this.getView().getModel();
              //     oModel.setUseBatch(true);
            
@@ -2001,6 +2062,10 @@ sap.ui.define([
 				var sOrderJob = oDialog.getBindingContext().getProperty("Orderjob");
 				var oButtonDel = sap.ui.getCore().byId("EliminaSel");
 				var oButtonMod = sap.ui.getCore().byId("Modifica");
+				var oOreSel = sap.ui.getCore().byId("oreSel");
+				var oDescrSel = sap.ui.getCore().byId("descrizioneSel");
+				var oPanelSpese = sap.ui.getCore().byId("panelSpeseIns");
+				var oPanel = sap.ui.getCore().byId("panelSpeseSel");
 				// MP: se permesso, ferie, ROL o recupero non si può cancellare o modificare
 				if (sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B") {
 					jQuery.sap.require("sap.m.MessageBox");
@@ -2012,9 +2077,17 @@ sap.ui.define([
 							onClose: function(oAction) {}
 						}
 					);
+					oPanelSpese.setVisible(false);
+					oPanel.setVisible(false);
+					oOreSel.setEditable(false);
+					oDescrSel.setEditable(false);
 					oButtonDel.setVisible(false);
 					oButtonMod.setVisible(false);
 				} else {
+					oPanelSpese.setVisible(true); 
+					oPanel.setVisible(true);
+					oOreSel.setEditable(true);
+					oDescrSel.setEditable(true);
 					oButtonDel.setVisible(true);
 					oButtonMod.setVisible(true);
 				}
@@ -2029,7 +2102,7 @@ sap.ui.define([
 				this.sYear = oDialog.getBindingContext().getProperty("Calyear");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
 				oDialog.setTitle("Dettaglio commessa " + sDate);
-				
+
 				//(SE)
 				var aDatesList = [];
 				aDatesList.push(sDate);
@@ -2522,10 +2595,10 @@ sap.ui.define([
 			},
 
 			_onBindingChange: function() {
-     //(SE
-	           this.showBusyIndicator();
-	           var that = this;
-	//(SE           
+				//(SE
+				this.showBusyIndicator();
+				var that = this;
+				//(SE           
 				var oView = this.getView();
 				var oModel = this.getView().getModel();
 				sap.ui.getCore().setModel(oModel);
@@ -2542,6 +2615,7 @@ sap.ui.define([
 				var oCal1 = oView.byId("LRS4_DAT_CALENDAR");
 
 				var startDate = oCal1.getStartDate();
+				this.startDate = startDate;
 				var startMonth = this.oFormatMonth.format(startDate);
 				if (startMonth.length === 1) {
 
@@ -2752,13 +2826,13 @@ sap.ui.define([
 				});
 
 				// NON FUNZIONA
-				/*
+			
 				var oTreeTableBinding = oTableTree.getBinding("rows");
 			   oTreeTableBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
 					oSource.bClientOperation = true; 
 					oSource.sOperationMode = "Client"; //operationMode = Client
-				});*/
+				});
 
 				//////////////////////////////////////
 				//definisco tabella commessa
@@ -2793,15 +2867,15 @@ sap.ui.define([
 
 							wrapping: false
 						}),
-						
-							new sap.m.Text({
-						
+
+						new sap.m.Text({
+
 							text: "{Tmskey}"
-			
+
 						}),
 
 						new sap.m.ObjectIdentifier({
-						
+
 							title: "{Descrorder}",
 							text: "{Office}",
 							//         id : "Comm_cellDescrorder",
@@ -2922,11 +2996,10 @@ sap.ui.define([
 							wrapping: false
 						}),
 
+						new sap.m.Text({
 
-					    new sap.m.Text({
-						
 							text: "{Tmskey}"
-			
+
 						}),
 						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
@@ -3089,8 +3162,7 @@ sap.ui.define([
 				//////////////////////////////
 
 				//////////////////////////////
-                
-                
+
 				var sRead = "/CalendarSet";
 
 				oModel.read(sRead, {
@@ -3166,14 +3238,14 @@ sap.ui.define([
 									}));
 								}
 
-									if (oData.results[i].Ore > 8.0) {
-	
-										oCal1.addSpecialDate(new DateTypeRange({
-											startDate: oFormatYYyyymmdd.parse(res),
-											type: "Type01",
-											tooltip: "Ore: " + oData.results[i].Ore 
-										}));
-									}
+								if (oData.results[i].Ore > 8.0) {
+
+									oCal1.addSpecialDate(new DateTypeRange({
+										startDate: oFormatYYyyymmdd.parse(res),
+										type: "Type01",
+										tooltip: "Ore: " + oData.results[i].Ore
+									}));
+								}
 
 								// }	
 
@@ -3198,11 +3270,11 @@ sap.ui.define([
 								type: "Type03"
 							}));
 
-								oLeg1.addItem(new CalendarLegendItem({
-									text: "Più di 8 ore",
-									id: "leg3",
-									type: "Type01"
-								}));
+							oLeg1.addItem(new CalendarLegendItem({
+								text: "Più di 8 ore",
+								id: "leg3",
+								type: "Type01"
+							}));
 
 						}
 
@@ -3218,12 +3290,12 @@ sap.ui.define([
 							});
 
 					}
-             
-            //(SE) busy indicator per pagina intera
-             		that.hideBusyIndicator();
-             		
-            //(SE) busy indicator per singolo elemento
-            //oView.byId("LRS1_BUSY_CALENDAR").setBusy(false);
+
+					//(SE) busy indicator per pagina intera
+					that.hideBusyIndicator();
+
+					//(SE) busy indicator per singolo elemento
+					//oView.byId("LRS1_BUSY_CALENDAR").setBusy(false);
 				} // END FUNCTION SUCCESS
 
 				function fnReadE(oError) {
@@ -3231,20 +3303,18 @@ sap.ui.define([
 
 					alert("Error in read: " + oError.message);
 				}
-				
-				
 
 			},
 
-				hideBusyIndicator : function() {
-						sap.ui.core.BusyIndicator.hide();
-					},
-		
+			hideBusyIndicator: function() {
+				sap.ui.core.BusyIndicator.hide();
+			},
+
 			//	showBusyIndicator : function (iDuration, iDelay) {
-					showBusyIndicator : function () {
-							sap.ui.core.BusyIndicator.show();
-				
-						/*	if (iDuration && iDuration > 0) {
+			showBusyIndicator: function() {
+				sap.ui.core.BusyIndicator.show();
+
+				/*	if (iDuration && iDuration > 0) {
 								if (this._sTimeoutId) {
 									jQuery.sap.clearDelayedCall(this._sTimeoutId);
 									this._sTimeoutId = null;
@@ -3254,18 +3324,16 @@ sap.ui.define([
 									this.hideBusyIndicator();
 								});
 							}*/
-						},
-		
-		       	onPullToRefresh: function() {
-		       		
-		       		
-		       	this._onBindingChange();
-				
+			},
+
+			onPullToRefresh: function() {
+
+				this._onBindingChange();
 
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-				
+
 				/*	var msg = "Updated";
 					sap.m.MessageToast.show(msg, {
 						duration: 1500, // default
@@ -3273,19 +3341,19 @@ sap.ui.define([
 						animationDuration: 1000, // default
 						closeOnBrowserNavigation: true // default
 					});*/
-					
-		           this.getView().byId("pullToRefresh").hide();
-				},
-				
+
+				this.getView().byId("pullToRefresh").hide();
+			},
+
 			onClickRefresh: function() {
-				
-			this._onBindingChange();
-				
+
+				this._onBindingChange();
+
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
 				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-				
-			/*var msg = "Updated";
+
+				/*var msg = "Updated";
 			sap.m.MessageToast.show(msg, {
 				duration: 1500, // default
 				animationTimingFunction: "ease", // default
@@ -3293,9 +3361,8 @@ sap.ui.define([
 				closeOnBrowserNavigation: true // default
 			});
 */
-		},
-		
-		
+			},
+
 			/////////////////////////////////////////////////////////////////////  
 
 			onHistoryPress: function(oEvent) {
