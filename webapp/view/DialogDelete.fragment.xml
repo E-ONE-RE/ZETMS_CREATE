@@ -86,7 +86,7 @@
 										customData:p13nData='\{"leadingProperty":"Km", "columnKey":"Km"}'>
 										<Text text="Importo (EUR/KM)" id="nameC3"/>
 									</Column>
-									<Column id="col4" hAlign="Center" width="auto" minScreenWidth="phone" demandPopin="true" visible="true">
+									<Column id="col4" hAlign="Center" width="auto" minScreenWidth="tablet" demandPopin="true" visible="true">
 										<Text text="Modifica / Elimina spesa" id="nameC4"/>
 										<!--<Button text="Modifica / Elimina spesa" id="nameC4" press="handleDetailsPress"/>-->
 									</Column>
