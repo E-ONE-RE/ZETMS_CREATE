@@ -1,0 +1,70 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" id="FragSpese" xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog id="dialogSpese" stretch="true">
+		<html:style>
+			.sapMILILabel { font-size: 14px; !important }
+		</html:style>
+		<FlexBox alignItems="End" justifyContent="End">
+			<items>
+				<Button id="help1" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
+					tooltip="Clicca per informazioni sull'uso del Timesheet"></Button>
+			</items>
+		</FlexBox>
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<f:Form id="FormToolbarDelSpese" editable="true" ariaLabelledBy="Title1">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
+							emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
+					</f:layout>
+					<f:formContainers>
+						<f:FormContainer ariaLabelledBy="Title2">
+							<f:toolbar>
+								<Toolbar>
+									<Title id="dettaglioSpese" text="Dettaglio spesa selezionata" level="H5" titleStyle="H5"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</f:toolbar>
+							<f:formElements>
+								<f:FormElement label="Commessa">
+									<f:fields>
+										<Text id="commessaSelSpese" text="{Descrorder}"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Sede">
+									<f:fields>
+										<Text id="sedeSelSpese" text="{Office}"></Text>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Tipo">
+									<f:fields>
+										<Text id="TipoSelSpese" text="{Expdescr}"></Text>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Valore">
+									<f:fields>
+										<Input liveChange="onLiveChange" type="Number" required="true" id="ValueSelSpese" value="{= ${Exptype} === '00' ? ${Km} : ${Importo}}"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Descrizione Spesa">
+									<f:fields>
+										<TextArea id="descrizioneSelSpese" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione spesa." value="{Descr}"/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+				<!--	<f:FormElement label="Spese Inserite"> !-->
+				<!--	</f:FormElement> !-->
+			</VBox>
+		</content>
+		<buttons>
+			<Button id="EliminaSelSpese" text="Elimina Spesa" press="onSingleExpenseCancelOrSave" type="Reject"/>
+			<!-- Fare Check su ore !-->
+			<Button id="ModificaSpese" text="Modifica Spesa" press="onSingleExpenseCancelOrSave" type="Emphasized"/>
+			<Button id="IndietroExp" text="Indietro" press="navBackDialogSpese"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

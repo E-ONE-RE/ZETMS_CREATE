@@ -1,0 +1,58 @@
+<core:FragmentDefinition
+   xmlns="sap.m"
+   xmlns:l="sap.ui.layout"
+   xmlns:core="sap.ui.core"
+   	xmlns:mvc="sap.ui.core.mvc"
+   	xmlns:html="http://www.w3.org/1999/xhtml">
+	
+
+
+
+
+	
+		<ResponsivePopover
+
+		class="sapUiPopupWithPadding"
+		title="Help"
+		placement="Bottom"
+		verticalScrolling="true"
+		horizontalScrolling="false">
+		<content>
+		<VBox class="sapUiSmallMargin">
+
+		<html:strong>Come inserire una nuova commessa e relative spese</html:strong>
+		<html:ul>
+		<html:li>Selezionare il giorno dal calendario.</html:li>
+		<html:li>Cliccare sul pulsante crea.</html:li>
+		</html:ul>
+			    
+		<html:strong>Come modificare una commessa e relative spese</html:strong>
+		<html:ul>
+		<html:li>Selezionare la commmessa da modificare dalla lista delle commesse.</html:li>
+		</html:ul>
+		
+		<html:strong>Come modificare una spesa</html:strong>
+		<html:ul>
+		<html:li>Selezionare la commmessa da modificare dalla lista delle spese.</html:li>
+		</html:ul>
+		
+		<html:strong>Come visualizzare i report</html:strong>
+		<html:ul>
+		<html:li>Cliccare sul tab "Report" e selezionare il documento da visualizzare</html:li>
+		</html:ul>
+		
+		<html:strong>Come modificare ordinamento e raggrummpamento delle liste</html:strong>
+		<html:ul>
+		<html:li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliare il settaggio desiderato.</html:li>
+		</html:ul>
+		
+		<html:strong>Come filtrare le lista per singolo giorno</html:strong>
+		<html:ul>
+		<html:li>Selezionare un giorno dal calendario, se esistono commesse associate verranno visualizzate nele liste in basso.</html:li>
+		</html:ul>
+		
+		
+	</VBox>
+		</content>
+		</ResponsivePopover>
+	</core:FragmentDefinition>

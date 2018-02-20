@@ -1,0 +1,18 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:sap.ui.unified="sap.ui.unified" xmlns:sap.ui.layout="sap.ui.layout">
+	<ResponsivePopover id="popoverCalerndar" title="Commesse" class="sapUiContentPadding" placement="Top" verticalScrolling="true" horizontalScrolling="false">
+		<content>
+			<sap.ui.layout:VerticalLayout width="80%">
+				<sap.ui.unified:Calendar id="CALE_ID" class="sapUiResponsiveMargin" select="handleCopyCalendarSelect" startDateChange="handleCopyCalChange"
+					intervalSelection="false" singleSelection="false" tooltip="{i18n>LR_SELECT_DAYS}" width="100%"/>
+			</sap.ui.layout:VerticalLayout>
+
+	<Toolbar>
+			<ToolbarSpacer/>
+			<Button id="Confirm" type="Accept" text="Conferma" press="handleDayCopy"/>
+			<Button type="Reject" text="Chiudi" press="closePopover"/>
+		</Toolbar>
+		</content>
+	</ResponsivePopover>
+
+
+</core:FragmentDefinition>

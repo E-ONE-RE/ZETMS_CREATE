@@ -1,0 +1,170 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZTMS_NEW_SRV" xml:lang="it" sap:schema-version="1">
+            <EntityType Name="Commessa" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Imvalue"/>
+                </Key>
+                <Property Name="Json" Type="Edm.String" Nullable="false" MaxLength="40000" sap:unicode="false"/>
+                <Property Name="Imvalue" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false"/>
+            </EntityType>
+            <EntityType Name="Calendar" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Tmsuser"/>
+                    <PropertyRef Name="Calmonth"/>
+                    <PropertyRef Name="Calyear"/>
+                    <PropertyRef Name="Giorno"/>
+                </Key>
+                <Property Name="Tmsuser" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Utente" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Mese" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Anno" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Giorno" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Mese" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Ore" Type="Edm.Decimal" Nullable="false" Precision="3" Scale="1" sap:unicode="false" sap:label="Ore" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Data" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="Data" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="Sedi" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Commessa"/>
+                    <PropertyRef Name="Cliente"/>
+                    <PropertyRef Name="Office"/>
+                </Key>
+                <Property Name="Commessa" Type="Edm.String" Nullable="false" MaxLength="70" sap:unicode="false" sap:label="Codice commessa" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Cliente" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Cliente" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Office" Type="Edm.String" Nullable="false" MaxLength="35" sap:unicode="false" sap:label="Sede lavoro" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Descr" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Descrizione" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="Pdf" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Calyear"/>
+                    <PropertyRef Name="Calmonth"/>
+                    <PropertyRef Name="Extcall"/>
+                    <PropertyRef Name="Printtype"/>
+                </Key>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="Extcall" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="Printtype" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="Url" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+            </EntityType>
+            <EntityType Name="ListaSpeseGroup" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Tmskey"/>
+                    <PropertyRef Name="Expkey"/>
+                    <PropertyRef Name="Giorno"/>
+                </Key>
+                <Property Name="Tmskey" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="Chiave Timesheet" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Expkey" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="EXPKEY" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Exptype" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:label="EXPTYPE" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Expdescr" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="EXPDESCR" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Tmsuser" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Utente" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Orderjob" Type="Edm.String" Nullable="false" MaxLength="70" sap:unicode="false" sap:label="Codice commessa" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Descrorder" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Descr. Commessa" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Anno" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Mese" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Giorno" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="GIORNO" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Tipo" Type="Edm.String" Nullable="false" MaxLength="15" sap:unicode="false" sap:label="TIPO" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Ore" Type="Edm.Decimal" Nullable="false" Precision="3" Scale="1" sap:unicode="false" sap:label="Ore" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Importo" Type="Edm.Decimal" Nullable="false" Precision="15" Scale="2" sap:unicode="false" sap:label="Importo" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Km" Type="Edm.Decimal" Nullable="false" Precision="5" Scale="0" sap:unicode="false" sap:label="Km" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Data" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="DATA" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Descr" Type="Edm.String" Nullable="false" MaxLength="200" sap:unicode="false" sap:label="Descrizione" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Um" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="UM" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Office" Type="Edm.String" Nullable="false" MaxLength="35" sap:unicode="false" sap:label="Sede lavoro" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Parentid" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="PARENTID" sap:creatable="false" sap:updatable="false"/>
+                <NavigationProperty Name="FromExpToComm" Relationship="ZTMS_NEW_SRV.CommToExp" FromRole="ToRole_CommToExp" ToRole="FromRole_CommToExp"/>
+            </EntityType>
+            <EntityType Name="ListaCommesseGroup" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Tmskey"/>
+                    <PropertyRef Name="Giorno"/>
+                </Key>
+                <Property Name="Tmskey" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="Chiave Timesheet" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Expkey" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="EXPKEY" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Exptype" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:label="EXPTYPE" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Expdescr" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="EXPDESCR" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Tmsuser" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Utente" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Orderjob" Type="Edm.String" Nullable="false" MaxLength="70" sap:unicode="false" sap:label="Codice commessa" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Descrorder" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="Descr. Commessa" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Anno" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Mese" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Giorno" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="GIORNO" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Tipo" Type="Edm.String" Nullable="false" MaxLength="15" sap:unicode="false" sap:label="TIPO" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Ore" Type="Edm.Decimal" Nullable="false" Precision="3" Scale="1" sap:unicode="false" sap:label="Ore" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Importo" Type="Edm.Decimal" Nullable="false" Precision="15" Scale="2" sap:unicode="false" sap:label="Importo" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Km" Type="Edm.Decimal" Nullable="false" Precision="5" Scale="0" sap:unicode="false" sap:label="Km" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Data" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="DATA" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Descr" Type="Edm.String" Nullable="false" MaxLength="200" sap:unicode="false" sap:label="Descrizione" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Um" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:label="UM" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Office" Type="Edm.String" Nullable="false" MaxLength="35" sap:unicode="false" sap:label="Sede lavoro" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Parentid" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:label="PARENTID" sap:creatable="false" sap:updatable="false"/>
+                <NavigationProperty Name="ToChildExpNodes" Relationship="ZTMS_NEW_SRV.ParentNodeToExpNode" FromRole="FromRole_ParentNodeToExpNode" ToRole="ToRole_ParentNodeToExpNode"/>
+                <NavigationProperty Name="FromCommToExp" Relationship="ZTMS_NEW_SRV.CommToExp" FromRole="FromRole_CommToExp" ToRole="ToRole_CommToExp"/>
+            </EntityType>
+            <EntityType Name="TotaliMese" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Calyear"/>
+                    <PropertyRef Name="Calmonth"/>
+                </Key>
+                <Property Name="Tmsuser" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Utente" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calyear" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Anno" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Calmonth" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Mese" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Oretot" Type="Edm.Decimal" Nullable="false" Precision="5" Scale="1" sap:unicode="false" sap:label="Ore Tot" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Imptot" Type="Edm.Decimal" Nullable="false" Precision="16" Scale="3" sap:unicode="false" sap:label="IMPTOT" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Kmtot" Type="Edm.Decimal" Nullable="false" Precision="8" Scale="3" sap:unicode="false" sap:label="KMTOT" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <Association Name="CommToExp" sap:content-version="1">
+                <End Type="ZTMS_NEW_SRV.ListaCommesseGroup" Multiplicity="1" Role="FromRole_CommToExp"/>
+                <End Type="ZTMS_NEW_SRV.ListaSpeseGroup" Multiplicity="*" Role="ToRole_CommToExp"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_CommToExp">
+                        <PropertyRef Name="Giorno"/>
+                        <PropertyRef Name="Tmskey"/>
+                    </Principal>
+                    <Dependent Role="ToRole_CommToExp">
+                        <PropertyRef Name="Giorno"/>
+                        <PropertyRef Name="Tmskey"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="ParentNodeToExpNode" sap:content-version="1">
+                <End Type="ZTMS_NEW_SRV.ListaCommesseGroup" Multiplicity="1" Role="FromRole_ParentNodeToExpNode"/>
+                <End Type="ZTMS_NEW_SRV.ListaSpeseGroup" Multiplicity="*" Role="ToRole_ParentNodeToExpNode"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_ParentNodeToExpNode">
+                        <PropertyRef Name="Giorno"/>
+                        <PropertyRef Name="Tmskey"/>
+                    </Principal>
+                    <Dependent Role="ToRole_ParentNodeToExpNode">
+                        <PropertyRef Name="Giorno"/>
+                        <PropertyRef Name="Tmskey"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ZTMS_NEW_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="CommessaSet" EntityType="ZTMS_NEW_SRV.Commessa" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="CalendarSet" EntityType="ZTMS_NEW_SRV.Calendar" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="SediSet" EntityType="ZTMS_NEW_SRV.Sedi" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="PdfSet" EntityType="ZTMS_NEW_SRV.Pdf" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="ListaSpeseGroupSet" EntityType="ZTMS_NEW_SRV.ListaSpeseGroup" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="ListaCommesseGroupSet" EntityType="ZTMS_NEW_SRV.ListaCommesseGroup" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="TotaliMeseSet" EntityType="ZTMS_NEW_SRV.TotaliMese" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <AssociationSet Name="CommToExpSet" Association="ZTMS_NEW_SRV.CommToExp" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="ListaCommesseGroupSet" Role="FromRole_CommToExp"/>
+                    <End EntitySet="ListaSpeseGroupSet" Role="ToRole_CommToExp"/>
+                </AssociationSet>
+                <AssociationSet Name="ParentNodeToExpNodeSet" Association="ZTMS_NEW_SRV.ParentNodeToExpNode" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="ListaCommesseGroupSet" Role="FromRole_ParentNodeToExpNode"/>
+                    <End EntitySet="ListaSpeseGroupSet" Role="ToRole_ParentNodeToExpNode"/>
+                </AssociationSet>
+            </EntityContainer>
+            <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZTMS_NEW_SRV/$metadata"/>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZTMS_NEW_SRV/$metadata"/>
+                </Schema>
+            </edmx:DataServices>
+        </edmx:Edmx>

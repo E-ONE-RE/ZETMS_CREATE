@@ -1,0 +1,226 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:f="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout">
+	<Dialog id="dialog" title="Inserisci dettagli" stretch="true">
+		<html:style>
+			.sapMILILabel { font-size: 14px; !important }
+		</html:style>
+		<FlexBox alignItems="End" justifyContent="End">
+			<items>
+				<Button id="help2" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
+					tooltip="Clicca per informazioni sull'uso del Timesheet"></Button>
+			</items>
+		</FlexBox>
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<f:Form id="FormToolbar" editable="true" ariaLabelledBy="Title1">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
+							emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
+					</f:layout>
+					<f:formContainers>
+						<f:FormContainer ariaLabelledBy="Title2">
+							<f:toolbar>
+								<Toolbar>
+									<Title id="dettaglio" text="Dettaglio" level="H5" titleStyle="H5"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</f:toolbar>
+							<f:formElements>
+								<!--<f:FormElement label="Commessa esistente">
+									<f:fields>
+										<Hbox>
+											<Button text="Seleziona una commessa già utilizzata nel mese" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
+												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
+												
+											</Button>
+											
+												
+										</Hbox>
+									</f:fields>
+								</f:FormElement>-->
+								
+							
+								<!--<f:FormElement label="Nuova commessa">
+									<f:fields>
+										<Hbox>
+										<	<Button text="Seleziona una nuova commessa" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												press="showPopoverCommessa" enabled="true"></Button>
+										</Hbox>
+									<Input id="commessaEx" required="false" enabled="false"/
+									</f:fields>
+								</f:FormElement>-->
+								<f:FormElement label="Seleziona Commessa">
+									<f:fields>
+										<Hbox>
+										<Button text="Già utilizzata" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
+												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
+												
+											</Button>
+											
+												<Button text="Nuova" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												press="showPopoverCommessa" enabled="true"></Button>
+										</Hbox>	
+										
+									</f:fields>
+								</f:FormElement>
+									<f:FormElement id = "label_multidaySel" label="Commessa Multi day" visible ="false" >
+											
+									<Hbox>
+								<!--	<CheckBox id="multidaySel" text="" visible ="false" selected="true" enabled="false" tooltip="Se attivo la commessa sarà condivisa"
+									select="handleCBoxMultiDay"/>-->
+									
+									<Switch id="multidaySel" state="true" customTextOn="Si" customTextOff="No" change="handleCBoxMultiDay">
+										<layoutData>
+											<FlexItemData growFactor="1" />
+										</layoutData>
+									</Switch>
+									<Button id="btnMultiday" icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
+				
+									</Hbox>
+								</f:FormElement>
+								<f:FormElement label="Commessa">
+									<f:fields>
+									
+									
+										<Input id="commessa" required="true" editable="false"/>
+										
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement id="sediList" label="Sede">
+									<f:fields>
+										<Label required="true" visible="false"></Label>
+										<Select width="100%" id="sedi" change="handleSelectChange"></Select>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Ore">
+									<f:fields>
+										<Input id="ore" type="Number" width="4rem" required="true" liveChange="onLiveChange"></Input>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Descrizione">
+									<f:fields>
+										<TextArea liveChange="onLiveChange" required="true" id="descrizione" width="100%" height="3rem" wrapping="None" maxLength="200"
+											tooltip="Inserisci la descrizione dell'attività."/>
+									</f:fields>
+								</f:FormElement>
+									
+							</f:formElements>
+							<f:formElements>
+								<f:FormElement>
+									<f:fields>
+										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
+											<content>
+												<Table id="tabellaSpese" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
+													<columns>
+														<Column>
+															<Text text="Spesa"/>
+														</Column>
+														<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+															<Text text="Descrizione"/>
+														</Column>
+														<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+															<Text text="Importo (EUR) / Distanza (KM)"/>
+														</Column>
+													</columns>
+													<items>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="00 - Chilometri (KM)"/>
+																<TextArea id="descrizioneKm" enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input id="chilometri" tooltip="Chilometri" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="01 - Autostrada (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Autostrada" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="02 - Cena (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Cena" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="03 - Treno (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Treno" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="04 - Albergo (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Albergo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="05 - Taxi/BUS (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Taxi/BUS" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="06 - Aereo (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Aereo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="07 - Parcheggio (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Parcheggio" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="08 - Pranzo (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Pranzo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+														<ColumnListItem>
+															<cells>
+																<ObjectIdentifier title="09 - Altro (EUR)"/>
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																	placeholder="descrizione spesa (opzionale)"/>
+																<Input tooltip="Altro" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
+															</cells>
+														</ColumnListItem>
+													</items>
+												</Table>
+											</content>
+										</Panel>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button id="conferma" text="Conferma" press="openMessageDialog" type="Accept"/>
+			<!--Fare Check su ore !-->
+		</beginButton>
+		<endButton>
+			<Button text="Indietro" press="closeDialog" type="Reject"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
