@@ -342,6 +342,10 @@ sap.ui.define([
 					};*/
 					aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
 
+                   	if (oBinding.aAllKeys == null) {
+						oBinding.aAllKeys = oBinding.aKeys;
+					}
+
 					oBinding.sort(aSorters);
 				} else {
 					// apply sorter
@@ -350,6 +354,11 @@ sap.ui.define([
 					var bDescendingSort = mParams.sortDescending;
 					//    var bDescending = true;
 					aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
+					
+				    if (oBinding.aAllKeys == null) {
+						oBinding.aAllKeys = oBinding.aKeys;
+					}
+					
 					oBinding.sort(aSortersSort);
 				}
 
@@ -3055,7 +3064,12 @@ sap.ui.define([
 	             };
 	         };*/
 				aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
-
+                
+                	
+				    if (oBinding.aAllKeys == null) {
+						oBinding.aAllKeys = oBinding.aKeys;
+					}
+					
 				oBinding.sort(aSorters);
 
 				/////////////////////////////////////				 
