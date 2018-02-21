@@ -2527,6 +2527,8 @@ sap.ui.define([
 
 			},
 
+
+            // calendario per la copia
 			_onBindingCalendar: function() {
 				var oView = this.getView();
 				var oModel = this.getView().getModel();
@@ -2924,8 +2926,8 @@ sap.ui.define([
 				var sReadTot = "/TotaliMeseSet(Calyear='" + startYear + "',Calmonth='" + startMonth + "')";
 
 				oModel.read(sReadTot, {
-					success: fnReadStot,
-					error: fnReadEtot
+					success: fnReadStot
+				//	error: fnReadEtot
 				});
 
 				function fnReadStot(oData, response) {
@@ -2943,10 +2945,10 @@ sap.ui.define([
 
 				}
 
-				function fnReadEtot(oError) {
+		/*		function fnReadEtot(oError) {
 					//	console.log(oError);
 						alert("Error in read: " + oError.message);
-				}
+				}*/
 
 				////FINE TOTALI	
 
