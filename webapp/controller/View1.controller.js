@@ -1138,9 +1138,9 @@ sap.ui.define([
 	           if 	( !chk ) {
 	            	this.sTimesheetKey = undefined;
 					sap.ui.getCore().byId("ore").setValue("");
-					sap.ui.getCore().byId("descrizione").setValue("");
+				//	sap.ui.getCore().byId("descrizione").setValue("");
 	
-						this.sCommessaId = this.sOrderjob;
+					//	this.sCommessaId = this.sOrderjob;
 						sap.ui.getCore().byId("sedi").setEnabled(true);
 						
 						//sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
@@ -1152,6 +1152,11 @@ sap.ui.define([
 					//	sap.ui.getCore().byId("multidaySel").setEditable(false);
 						sap.ui.getCore().byId("multidaySel").setEnabled(false);
 	           }
+	         /*  else{
+	           
+	           sap.ui.getCore().byId("sedi").setValue(this.sSede);
+	           }*/
+	           
             },
             
 			handleClose: function(oEvent) {
@@ -1196,24 +1201,39 @@ sap.ui.define([
 					oSede.setValue(aContexts.map(function(oContext) {
 						return oContext.getObject().Office;
 					}));
+					
+					this.sSede = aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					})[0];
+					
 					oDescr.setValue(aContexts.map(function(oContext) {
 						return oContext.getObject().Descr;
 					}));
+					
+					
 					this.sTimesheetKey = aContexts.map(function(oContext) {
 						return oContext.getObject().Tmskey;
 					})[0];
 					
-					this.sOrderjob = aContexts.map(function(oContext) {
+					this.sCommessaId = aContexts.map(function(oContext) {
 						return oContext.getObject().Orderjob;
 					})[0];
 				}
 				oEvent.getSource().getBinding("items").filter([]);
 				
+			/*	 var chk = sap.ui.getCore().byId("multidaySel").getState();
+	           if 	( !chk ) {
+					sap.ui.getCore().byId("sedi").setEnabled(true);
+              
+						////// le sedi sono diverse dipendentemente dal cliente
+						this.callSediSet(this.sOrderjob);
+	           }*/
+	           
 			//abilito checkbox per selezione commessa multi day
 			sap.ui.getCore().byId("multidaySel").setVisible(true);
 			sap.ui.getCore().byId("multidaySel").setEnabled(true);
 		//	sap.ui.getCore().byId("multidaySel").setSelected(true);
-			sap.ui.getCore().byId("multidaySel").setState(false);
+			sap.ui.getCore().byId("multidaySel").setState(true);
 		//	sap.ui.getCore().byId("multidaySel").setEditable(true);
 			sap.ui.getCore().byId("label_multidaySel").setVisible(true);
 			},
