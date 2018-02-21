@@ -423,9 +423,11 @@ sap.ui.define([
 				//var iSelCount = oEvent.getSource().getSelectedDates().length;
 				var oSelectedDate;
 				var aFilters = [];
+				var sMonth, sSelectedMonth;
 				var aSelectedDates = oEvent.getSource().getSelectedDates();
+				var oDateOggi;
 				if (aSelectedDates.length > 0) { // If the number of selected days is greater than 1 the filtering logic should be reviewed
-
+               
 					if (this.count == undefined) {
 						oTableCommBinding.aAllKeys = oTableCommBinding.aKeys;
 						oTableExpBinding.aAllKeys = oTableExpBinding.aKeys;
@@ -433,10 +435,32 @@ sap.ui.define([
 					this.count = 1;
 
 					for (var i = 0; i < aSelectedDates.length; i++) {
-
+                        
+                        
+                        
 						oSelectedDate = oEvent.getSource().getSelectedDates()[i].getStartDate();
+						oDateOggi = oEvent.getSource().getStartDate();
 						//MP: Client side filtering. Per il momento non applicato alla treeTable
 						sDate = formatter.formatCalDate(oSelectedDate.toString());
+						sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.lastIndexOf("/"));
+					sSelectedMonth = this.oFormatMonth.format(oDateOggi);
+			       	if (sSelectedMonth.length === 1) {
+
+							sSelectedMonth = "0" + sSelectedMonth;
+				        }
+						if(sMonth != sSelectedMonth){
+							sap.m.MessageBox.show(
+         "Attenzione: Non è possibile selezionare date non appertenenti al mese corrente", {
+          icon: sap.m.MessageBox.Icon.WARNING,
+          title: "Error",
+          actions: [sap.m.MessageBox.Action.CLOSE]
+
+         });
+        
+        // oCalendar.removeSelectedDate(oDater);
+       
+							 oEvent.getSource().removeAllSelectedDates();
+						}
 						sDayFilter = sDate.substring(0, sDate.indexOf("/"));
 						oFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
 						aFilters.push(oFilter);
