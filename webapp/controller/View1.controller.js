@@ -1375,8 +1375,16 @@ sap.ui.define([
 						oInput = aControls[i];
 						if (oInput.getId() == "sedi") { //caso sap.m.select (sedi)
 							sValue = oInput.getSelectedKey();
+							if (sValue !== ""){
+								oInput.setValueState("None");  
+								oInput.setValueStateText("ok");
+							}
 						} else { //caso sap.m.Input
 							sValue = oInput.getValue();
+							if((oInput.getId() == "descrizione" || oInput.getId() == "commessa") && sValue !==""){
+								oInput.setValueState("None");  
+								oInput.setValueStateText("ok");
+							}
 						}
 						if (sValue === "" || oInput.getValueState() == "Error") {
 							oInput.setValueState("Error");
