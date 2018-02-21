@@ -1399,11 +1399,7 @@ sap.ui.define([
 				if (aParam.length === 4) {
 					this.getView().byId("btn1").setEnabled(false);
                 
-                // controllo se commessa multi-day è on o off
-                 var chk = sap.ui.getCore().byId("multidaySel").getState();
-                 if 	( !chk ) {
-	            	this.sTimesheetKey = undefined;
-                 }
+                
 					///(SE) start giorni multipli
 
 					var datesListLenght = this.DatesList.length;
@@ -1425,6 +1421,13 @@ sap.ui.define([
 							this.sOraOriginale = sOre;
 							this.sDescrOriginale = sDescrizione;
 						} else {
+							
+							// controllo se commessa multi-day è on o off
+			                 var chk = sap.ui.getCore().byId("multidaySel").getState();
+			                 if 	( !chk ) {
+				            	this.sTimesheetKey = undefined;
+                				}
+                 
 							sCommessaId = this.sCommessaId;
 							sTimesheetKey = this.sTimesheetKey;
 							sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
