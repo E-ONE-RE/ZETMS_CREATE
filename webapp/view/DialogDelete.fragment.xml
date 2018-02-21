@@ -44,7 +44,7 @@
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
-										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione attività." value="{Descr}"
+										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Inserire la descrizione dell'attività. Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la descrizione verrà modificata per tutti i giorni ad essa associati." value="{Descr}"
 											change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>

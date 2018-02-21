@@ -218,6 +218,7 @@ sap.ui.define([
 
 								'<li>Per la commessa selezionata, è possibile: ' +
 								' <br> - Modificare ore e descrizione' +
+								' <br> - Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la descrizione verrà modificata per tutti i giorni ad essa associati. ' +
 								' <br> - Inserire eventuali nuove spese espandendo la relativa sezione ' +
 
 								'<br>Una volta terminati gli inserimenti, premere sul tasto "Modifica commessa"' +
@@ -267,7 +268,9 @@ sap.ui.define([
 								'dalla popup i giorni su cui copiare. E&rsquo; possibile copiare anche su un mese successivo a quello di partenza, ' +
 								'ma non su più mesi contemporaneamente. ' +
 								'Es. Si può copiare il 15 maggio sul 20 maggio, oppure sul 20 giugno ma non contemporaneamente sul 20 maggio e sul 20 giugno. ' +
-								'In ogni caso verranno copiate solo le commesse (no spese).</li>' +
+								'In ogni caso verranno copiate solo le commesse (no spese) e la commessa sarà di tipo multi-day (la sede non potrà ' +
+								'essere modificata e la descrizione sarà condivisa per tutti i giorni associati. '  +
+								' </li>' +
 								
 
 								'</ul>' +
@@ -1207,7 +1210,7 @@ sap.ui.define([
 			sap.ui.getCore().byId("multidaySel").setVisible(true);
 			sap.ui.getCore().byId("multidaySel").setEnabled(true);
 		//	sap.ui.getCore().byId("multidaySel").setSelected(true);
-			sap.ui.getCore().byId("multidaySel").setState(true);
+			sap.ui.getCore().byId("multidaySel").setState(false);
 		//	sap.ui.getCore().byId("multidaySel").setEditable(true);
 			sap.ui.getCore().byId("label_multidaySel").setVisible(true);
 			},
@@ -1391,8 +1394,12 @@ sap.ui.define([
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 4) {
 					this.getView().byId("btn1").setEnabled(false);
-
-
+                
+                // controllo se commessa multi-day è on o off
+                 var chk = sap.ui.getCore().byId("multidaySel").getState();
+                 if 	( !chk ) {
+	            	this.sTimesheetKey = undefined;
+                 }
 					///(SE) start giorni multipli
 
 					var datesListLenght = this.DatesList.length;
@@ -1572,7 +1579,7 @@ sap.ui.define([
 
 					// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
 					//	if (oData.Type == "S") {
-					if (response.statusCode === "201") {
+					if (response.statusCode == "201") {
 
 						//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 						//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
