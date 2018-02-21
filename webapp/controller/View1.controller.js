@@ -392,15 +392,15 @@ sap.ui.define([
 				});
 
 				function fnReadS(oData, response) {
-					console.log(oData);
-					console.log(response);
+					//console.log(oData);
+					//console.log(response);
 
 					sJson = oData.results["0"].Json;
 
 				}
 
 				function fnReadE(oError) {
-					console.log(oError);
+					//console.log(oError);
 				}
 
 			},
@@ -848,6 +848,8 @@ sap.ui.define([
 
 					alert("Error in read: " + oError.message);
 				}
+				
+				this.count = undefined;
 
 			},
 
@@ -920,6 +922,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
 				//this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+				this.count = undefined;
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
 
@@ -1315,6 +1318,7 @@ sap.ui.define([
 						press: function() {
 							dialog.close();
 							that.onConfirmation(oEvent);
+							that.count = undefined;
 						}
 					}),
 					endButton: new sap.m.Button({
@@ -1839,6 +1843,7 @@ sap.ui.define([
 				});
 
 				dialog.open();
+				this.count = undefined;
 
 			},
 
@@ -1964,6 +1969,7 @@ sap.ui.define([
 					dialog.open();
 
 				}
+				this.count = undefined;
 
 			},
 
@@ -2032,6 +2038,7 @@ sap.ui.define([
 				});
 
 				dialog.open();
+			this.count = undefined;
 
 			},
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2900,7 +2907,7 @@ sap.ui.define([
 
 				function fnReadEtot(oError) {
 					//	console.log(oError);
-					//	alert("Error in read: " + oError.message);
+						alert("Error in read: " + oError.message);
 				}
 
 				////FINE TOTALI	
