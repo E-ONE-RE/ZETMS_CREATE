@@ -69,7 +69,7 @@
 								<!--	<CheckBox id="multidaySel" text="" visible ="false" selected="true" enabled="false" tooltip="Se attivo la commessa sarà condivisa"
 									select="handleCBoxMultiDay"/>-->
 									
-									<Switch id="multidaySel" state="false" customTextOn="Si" customTextOff="No" change="handleCBoxMultiDay">
+									<Switch id="multidaySel" state="true" customTextOn="Si" customTextOff="No" change="handleCBoxMultiDay">
 										<layoutData>
 											<FlexItemData growFactor="1" />
 										</layoutData>
