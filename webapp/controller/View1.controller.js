@@ -951,7 +951,8 @@ sap.ui.define([
 				sap.ui.getCore().byId("multidaySel").setVisible(false);
 				sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
-				//this.byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
+				
+				this.handleRemoveSelection();
 				this.count = undefined;
 				this.onExpenseSelect(undefined);
 				this.getView().removeDependent(this.Dialog);
