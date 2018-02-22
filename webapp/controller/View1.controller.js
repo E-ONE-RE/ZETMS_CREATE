@@ -450,17 +450,20 @@ sap.ui.define([
 				        }
 						if(sMonth != sSelectedMonth){
 							sap.m.MessageBox.show(
-         "Attenzione: Non è possibile selezionare date non appertenenti al mese corrente", {
-          icon: sap.m.MessageBox.Icon.WARNING,
-          title: "Error",
-          actions: [sap.m.MessageBox.Action.CLOSE]
+					         "Attenzione: Non è possibile selezionare date non appertenenti al mese corrente", {
+					          icon: sap.m.MessageBox.Icon.WARNING,
+					          title: "Error",
+					          actions: [sap.m.MessageBox.Action.CLOSE]
+					
+					         });
 
-         });
-        
-        // oCalendar.removeSelectedDate(oDater);
-       
-							 oEvent.getSource().removeAllSelectedDates();
+						//	 oEvent.getSource().removeAllSelectedDates();
+							 //(SE)	
+							this.handleRemoveSelection();
+							//
+							 return;
 						}
+						
 						sDayFilter = sDate.substring(0, sDate.indexOf("/"));
 						oFilter = new sap.ui.model.Filter("Giorno", sap.ui.model.FilterOperator.EQ, sDayFilter);
 						aFilters.push(oFilter);
