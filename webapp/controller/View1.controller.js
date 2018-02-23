@@ -2145,7 +2145,7 @@ sap.ui.define([
 							oSpecialDate = oCal.getSpecialDates()[i];
 							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
 								flag = 1;
-								if (oSpecialDate.getProperty("type") == "Type03") {
+								if (oSpecialDate.getProperty("type") == "Type03" && sNameOre != "oreSel") {
 									sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
 									sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
 									nInsertedHours = Number(sInsertedHours);
