@@ -89,7 +89,7 @@
 								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
 										<Label required="true" visible="false"></Label>
-										<Select width="100%" id="sedi" change="handleSelectChange"></Select>
+										<Select width="100%" id="sedi" change="handleSelectChangeSedi"></Select>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">
