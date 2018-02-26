@@ -127,9 +127,15 @@ sap.ui.define([
 					this._oDialog.destroy();
 				}
 
-				if (this._oPopover) {
-					this._oPopover.destroy();
+				if (this._oDialogSelCom) {
+					this._oDialogSelCom.destroy();
 				}
+				
+				
+				if (this._dialogSpese) {
+					this._dialogSpese.destroy();
+				}
+				
 
 				if (this._oPopover) {
 					this._oPopover.destroy();

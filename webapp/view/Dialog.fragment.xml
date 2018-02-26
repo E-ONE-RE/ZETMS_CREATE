@@ -57,7 +57,7 @@
 												
 											</Button>
 											
-												<Button text="Nuova" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												<Button text="Nuova" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="showPopoverCommessa" enabled="true"></Button>
 										</Hbox>	
 										
