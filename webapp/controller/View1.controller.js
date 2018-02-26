@@ -126,10 +126,26 @@ sap.ui.define([
 				if (this._oDialog) {
 					this._oDialog.destroy();
 				}
-
-				if (this._oPopover) {
-					this._oPopover.destroy();
+				
+				if (this._Dialog) {
+					this._Dialog.destroy();
 				}
+
+				if (this._DialogSel) {
+					this._DialogSel.destroy();
+				}
+
+
+
+				if (this._oDialogSelCom) {
+					this._oDialogSelCom.destroy();
+				}
+				
+				
+				if (this._dialogSpese) {
+					this._dialogSpese.destroy();
+				}
+				
 
 				if (this._oPopover) {
 					this._oPopover.destroy();
@@ -901,6 +917,7 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
+				this._Dialog = that.Dialog;
 
 				/////// giorni multipli
 

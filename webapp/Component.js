@@ -45,12 +45,14 @@ sap.ui.define([
 			 * @public
 			 * @override
 			 */
-		//	destroy : function () {
+			destroy : function () {
 		//		this.oListSelector.destroy();
 		//		this._oErrorHandler.destroy();
 		//		// call the base component's destroy function
-		//		UIComponent.prototype.destroy.apply(this, arguments);
-		//	},
+				UIComponent.prototype.destroy.apply(this, arguments);
+			},
+		
+
 			
 				/**
 			 * This method can be called to determine whether the sapUiSizeCompact or sapUiSizeCozy
