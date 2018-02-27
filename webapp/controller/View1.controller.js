@@ -1431,14 +1431,17 @@ sap.ui.define([
 				var that;
 				var sMessage = "";
 				
-				if(this.aGiorni.length > 1){
+			
+
+				var sButtonName = oEvent.getSource().getId() + "a";
+				if(sButtonName == "Modificaa"){
+					if(this.aGiorni.length > 1){
 					sMessage = "Ad eccezione del campo \"<strong>Ore</strong>\", le modifiche verranno applicate anche alle commesse inserite nei seguenti giorni: ";
 					for(var i = 0 ; i < this.aGiorni.length; i++){
 					sMessage +=   "<br/> <strong>" + this.aGiorni[i] + "</strong>" ;
 					}
 				}
-
-				var sButtonName = oEvent.getSource().getId() + "a";
+				}
 				that = this;
 				var dialog = new Dialog({
 					title: 'Attenzione',
