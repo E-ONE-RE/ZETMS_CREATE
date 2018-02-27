@@ -136,7 +136,7 @@ sap.ui.define([
 				}
 
 			},
-            
+		
             
              // gestione tasto HELP
 			handleResponsivePopoverMultydayPress: function(oEvent) {
@@ -965,7 +965,7 @@ sap.ui.define([
 
 			//MP: funzione che richiama il fragment contenente l'albero
 			showPopoverCommessa: function(oEvent) {
-
+                this.sIdButton = oEvent.getParameter("id");
 				var that = this;
 
 				if (!that._oPopover) {
@@ -1010,9 +1010,15 @@ sap.ui.define([
 
 			//MP: funzione richiamata alla selezione di una commessa
 			onCommessaSelect: function(oEvent) {
+				var sDesinenza = ""; //per differenziare. Se la commessa è stata scelta dal dialog di modifica aggiungo "del" all'id del controllo
+				if(this.sIdButton != "btnCommModify"){ //caso dialog di creazione nuova entry nel TMS a partire da una nuova commessa
 				this.sTimesheetKey = undefined;
 				sap.ui.getCore().byId("ore").setValue("");
 				sap.ui.getCore().byId("descrizione").setValue("");
+				}else{
+					sDesinenza = "Sel";
+				}
+			
 				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
 				var oTree = sap.ui.getCore().byId("Tree");
 				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
@@ -1020,10 +1026,10 @@ sap.ui.define([
 
 					var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");
 					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-") - 1);
-					sap.ui.getCore().byId("sedi").setEnabled(true);
+					sap.ui.getCore().byId("sedi" + sDesinenza).setEnabled(true);
 					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 2, sCommessa.length);
-					sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
-					sap.ui.getCore().byId("commessa").setValueState("None");
+					sap.ui.getCore().byId("commessa" + sDesinenza).setValue(this.sCommessaName);
+					sap.ui.getCore().byId("commessa" + sDesinenza).setValueState("None");
 					this._oPopover.close();
 					////// le sedi sono diverse dipendentemente dal cliente
 					this.callSediSet(this.sCommessaId);
@@ -1034,9 +1040,12 @@ sap.ui.define([
 				}
 				
 					//disabilito checkbox per selezione commessa multi day
+						if(this.sIdButton != "btnCommModify"){
 			sap.ui.getCore().byId("multidaySel").setVisible(false);
 			sap.ui.getCore().byId("multidaySel").setEnabled(false);
 			sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+						}
+			
 
 			},
 
@@ -1268,7 +1277,11 @@ sap.ui.define([
 
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
-
+				var sDesinenza = "";
+                if (this.sIdButton == "btnCommModify"){
+                	sDesinenza = "Sel";
+                }
+               
 				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
 
 				oModel._request({
@@ -1282,7 +1295,7 @@ sap.ui.define([
 						}
 					},
 					function(data, response) {
-						var oSelect = sap.ui.getCore().byId("sedi");
+						var oSelect = sap.ui.getCore().byId("sedi" + sDesinenza);
 						oSelect.destroyItems();
 						oSelect.removeAllItems();
 						aSediResult = data.results;
@@ -1353,6 +1366,14 @@ sap.ui.define([
 
 			openMessageDialog: function(oEvent) {
 				var that;
+				var sMessage = "";
+				
+				if(this.aGiorni.length > 1){
+					sMessage = "Ad eccezione del campo \"<strong>Ore</strong>\", le modifiche verranno applicate anche alle commesse inserite nei seguenti giorni: ";
+					for(var i = 0 ; i < this.aGiorni.length; i++){
+					sMessage +=   "<br/> <strong>" + this.aGiorni[i] + "</strong>" ;
+					}
+				}
 
 				var sButtonName = oEvent.getSource().getId() + "a";
 				that = this;
@@ -1360,8 +1381,8 @@ sap.ui.define([
 					title: 'Attenzione',
 					type: 'Message',
 					state: 'Warning',
-					content: new sap.m.Text({
-						text: "Sei sicuro di voler confermare l'azione?"
+					content: new sap.m.FormattedText({
+						htmlText: "Sei sicuro di voler confermare l'azione? <br/>" + sMessage
 					}),
 					beginButton: new sap.m.Button(sButtonName, {
 						text: 'Conferma',
@@ -1404,16 +1425,28 @@ sap.ui.define([
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"), sap.ui.getCore()
 						.byId("sedi"));
 				} else {
-					aParam.push(sap.ui.getCore().byId("commessaSelDel").getText());
-					aParam.push("dummy"); //MP: controllo sulla sede non viene eseguito; creo una Entry dummy.
-					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"));
+				
+					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"), sap.ui.getCore().byId("commessaSel"),sap.ui.getCore().byId("sediSel"));
 					for (var k = 0; k < aControls.length; k++) {
 						oInput = aControls[k];
+							if (oInput.getId() == "sediSel") { //caso sap.m.select (sedi)
+							sValue = oInput.getSelectedKey();
+							if (sValue !== ""){
+								oInput.setValueState("None");  
+								oInput.setValueStateText("ok");
+								aParam.push(sValue);
+							}else{
+								oInput.setValueState("Error");  
+								oInput.setValueStateText("Inserire un valore valido");	
+							}
+						}else{
+						
 						if (oInput.getValue() === "" || oInput.getValueState() == "Error") {
 							oInput.setValueState("Error");
 							oInput.setValueStateText("il campo non è valorizzato oppure il valore è errato.");
 						} else {
 							aParam.push(oInput.getValue());
+						}
 						}
 					}
 				}
@@ -1454,7 +1487,8 @@ sap.ui.define([
 				//altrimenti viene richiesto di inserire dei valori
 				if (aParam.length === 4) {
 					this.getView().byId("btn1").setEnabled(false);
-                
+					
+                    sCommessaId = this.sCommessaId;
                 
 					///(SE) start giorni multipli
 
@@ -1462,10 +1496,11 @@ sap.ui.define([
 					for (var y = 0; y < this.DatesList.length; y++) {
 						aDate = this.DatesList[y];
 						///
-
+                           var sCommessaOriginale;
 						if (this.buttonEvent === "Modificaa") {
-							sOffice = sap.ui.getCore().byId("sedeSel").getText();
+							sOffice = sap.ui.getCore().byId("sediSel").getSelectedKey();
 							sOre = sap.ui.getCore().byId("oreSel").getValue();
+							sCommessaOriginale = sap.ui.getCore().byId("commessaSel").getValue();
 							sDescrizione = sap.ui.getCore().byId("descrizioneSel").getValue();
 							sTimesheetKey = this._DialogSel.getBindingContext().getProperty("Tmskey");
 							sDay = this.sDay;
@@ -1476,6 +1511,8 @@ sap.ui.define([
 							oExpenseTable = sap.ui.getCore().byId("tabellaSpeseSel");
 							this.sOraOriginale = sOre;
 							this.sDescrOriginale = sDescrizione;
+							this.sCommessaOriginale = sCommessaOriginale;
+							this.sSedeOriginale = sOffice;
 						} else {
 							
 							// controllo se commessa multi-day è on o off
@@ -1484,7 +1521,6 @@ sap.ui.define([
 				            	this.sTimesheetKey = undefined;
                 				}
                  
-							sCommessaId = this.sCommessaId;
 							sTimesheetKey = this.sTimesheetKey;
 							sOffice = sap.ui.getCore().byId("sedi").getSelectedItem().getText();
 							sOre = sap.ui.getCore().byId("ore").getValue();
@@ -2216,7 +2252,12 @@ sap.ui.define([
 			},
 
 			handleCommessaSelection: function(oEvent) {
-				this.openDialogSel(oEvent);
+				var that = this;
+				// MP: mi salvo il valore della Tmskey per verificare se ci sono più commesse sulla stessa riga
+				if (oEvent.getId() == "itemPress") {
+				this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey; 
+				}
+			    this.openDialogSel(oEvent);	
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
 				var sSelItemPath;
 				oDialog.unbindElement();
@@ -2270,9 +2311,12 @@ sap.ui.define([
 					oButtonMod.setVisible(true);
 				}
 
-				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined) {
+				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined 
+				|| this.sCommessaOriginale == undefined || this.sSedeOriginale == undefined) {
 					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
 					this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
+					this.sCommessaOriginale = oDialog.getBindingContext().getProperty("Descrorder");
+					this.sSedeOriginale = oDialog.getBindingContext().getProperty("Office");
 				}
 
 				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
@@ -2307,11 +2351,14 @@ sap.ui.define([
 					oExpenseList.getBinding("items").refresh();
 
 				}
+				
 
 			},
+			
 
 			openDialogSel: function(oEvent) {
 				var that = this;
+				this.aGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
 
 				if (!that.DialogSel) {
 
@@ -2324,13 +2371,55 @@ sap.ui.define([
 				}
 				that.DialogSel.open();
 				this._DialogSel = that.DialogSel;
+				
+				// MP: logica per mostrare il messaggio nel caso in cui la commessa aperta si riferisca a più giorni.
+				var oTableCommesse = this.getView().byId("COMMESSE_CONTENTS");
+				var aItems = this.aItems;
+				var oItem, oBindingContext, oObject, sTmsKey, sCurrentTmsKey, sDay, sMonth, sYear;
+				sCurrentTmsKey = this.sCurrentTmsKey;
+				for (var i = 0; i < aItems.length; i++){
+					oItem = aItems[i];
+					oBindingContext = oItem.getBindingContext();
+					if(oBindingContext != null){ //non sono sulla riga di "testata" della commessa (riepilogo)
+				    oObject = oBindingContext.getObject();
+				    sTmsKey = oObject.Tmskey;
+				    sDay = oObject.Giorno;
+				    sMonth = oObject.Calmonth;
+				    sYear = oObject.Calyear;
+				    if(sDay.length == 1){
+				    	sDay = "0" + sDay;
+				    }
+				    if(sMonth.length == 1){
+				    	sMonth = "0" + sMonth; 
+				    }
+				   
+				    if(sTmsKey == sCurrentTmsKey){
+				     this.aGiorni.push(sDay + "/" + sMonth + "/" + sYear);
+				    }
+					}
+				}
+				var oSwitchMulti =  sap.ui.getCore().byId("multidaySelModify"); //MP: per segnalare con lo Switch MultiDay le commesse che si riferiscono a più giorni
+				if(this.aGiorni.length > 1){
+					        oSwitchMulti.setState(true);// se commessa si riferisce a più giorni, attivo lo Switch e mostro un dialog con un messaggio per notificare
+							sap.m.MessageBox.show(
+												"La commessa selezionata si riferisce a più giorni."+
+												 " Le eventuali modifiche verranno applicate a tutti i giorni.", {
+													icon: sap.m.MessageBox.Icon.WARNING,
+													title: "Attenzione",
+													actions: [sap.m.MessageBox.Action.CLOSE],
+												});
+				}else{
+					oSwitchMulti.setState(false);// se commessa inserita in un solo giorno, setto lo stato dello switch a "false"
+					}//End if//
 
 			},
 
 			closeDialogSel: function(oEvent) {
-				var oInputOre, oInputDescr;
+				var oInputOre, oInputDescr, oInputCommessa, oSelectSede;
 				oInputOre = sap.ui.getCore().byId("oreSel");
 				oInputDescr = sap.ui.getCore().byId("descrizioneSel");
+				oInputCommessa = sap.ui.getCore().byId("commessaSel");
+				oSelectSede = sap.ui.getCore().byId("sediSel");
 				this.DialogSel.close();
 				/////////////////////////////////////////////////////////////////////
 				// MP: per pulire i campi della tabella nel panel e chiudere il panel
@@ -2340,12 +2429,20 @@ sap.ui.define([
 				if (oEvent.getSource().getId() == "Indietro") {
 					oInputOre.setValue(this.sOraOriginale);
 					oInputDescr.setValue(this.sDescrOriginale);
+					oInputCommessa.setValue(this.sCommessaOriginale);
+					oSelectSede.setSelectedKey(this.sSedeOriginale);
+					oInputCommessa.setValueStateText("");
+					oInputCommessa.setValueState("None");
+					oSelectSede.setValueStateText("");
+					oSelectSede.setValueState("None");
 					oInputOre.setValueStateText("");
 					oInputOre.setValueState("None");
 					oInputDescr.setValueStateText("");
 					oInputDescr.setValueState("None");
 					this.sOraOriginale = undefined;
 					this.sDescrOriginale = undefined;
+					this.sCommessaOriginale = undefined;
+					this.sSedeOriginale = undefined;
 				}
 				this.onExpenseSelect(oEvent);
 				/////////////////////////////////////////////////////////////////////
@@ -2461,20 +2558,28 @@ sap.ui.define([
 					oIconTabFilterTree.setVisible(false);
 
 				}
+				
 
 			},
 
 			onUpdateFinished: function(oEvent) {
-
+            	//MP: tengo traccia di tutti gli Item nella Table; mi serve per la modifica di commesse che coinvolgono più giorni.
+				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
+				if(this.aItems == undefined){
+				this.aItems = oTableComm.getAggregation("items");
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			},
 
 			handleCalendarChange: function(oEvent) {
-
+				
+                this.aItems = undefined;
 				this._onBindingChange();
 			},
 
 			handleCopyCalChange: function(oEvent) {
-
+				
+              
 				this._onBindingCalendar();
 
 			},
@@ -3116,6 +3221,8 @@ sap.ui.define([
 				});
 
 				var oBinding = oTableComm.getBinding("items");
+				
+			
 
 				oBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
@@ -3449,20 +3556,17 @@ sap.ui.define([
 
 							oLeg1.addItem(new CalendarLegendItem({
 								text: "8 ore",
-								id: "leg1",
 								type: "Type07"
 
 							}));
 
 							oLeg1.addItem(new CalendarLegendItem({
 								text: "Meno di 8 ore",
-								id: "leg2",
 								type: "Type03"
 							}));
 
 							oLeg1.addItem(new CalendarLegendItem({
 								text: "Più di 8 ore",
-								id: "leg3",
 								type: "Type01"
 							}));
 

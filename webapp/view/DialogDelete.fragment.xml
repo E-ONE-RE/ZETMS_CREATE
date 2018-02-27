@@ -26,25 +26,57 @@
 									<ToolbarSpacer/>
 								</Toolbar>
 							</f:toolbar>
+							
+								<f:FormElement label="Seleziona Commessa">
+									<f:fields>
+										<Hbox>
+												<Button text="Seleziona nuova commessa" id="btnCommModify" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												press="showPopoverCommessa" enabled="true"></Button>
+										</Hbox>	
+										
+									</f:fields>
+								</f:FormElement>
+								
+								<f:FormElement id = "multi" label="Commessa Multi day" visible ="true" >
+											
+									<Hbox>
+									<Switch id="multidaySelModify" customTextOn="Si" customTextOff="No" enabled="false">
+										<layoutData>
+											<FlexItemData growFactor="1" />
+										</layoutData>
+									</Switch>
+									</Hbox>
+								</f:FormElement>
+								
+								
 							<f:formElements>
 								<f:FormElement label="Commessa">
 									<f:fields>
-										<Text id="commessaSelDel" text="{Descrorder}"/>
+										<Input id="commessaSel" required="true" editable="false" value="{Descrorder}"/>
+										<!-- <Text id="commessaSelDel" text="{Descrorder}"/> !-->
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Sede">
 									<f:fields>
+											<Label required="true" visible="false"></Label>
+										<Select width="100%" id="sediSel" forceSelection="true" change="handleSelectChange">
+											<items>
+												<core:Item text="{Office}" key="{Office}"></core:Item>
+											</items>
+										</Select>
+										<!--
 										<Text id="sedeSel" text="{Office}"></Text>
+										!-->
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">
 									<f:fields>
-										<Input id="oreSel" value="{Ore}" change="onLiveChange"/>
+										<Input id="oreSel" value="{Ore}" required="true" change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Descrizione">
 									<f:fields>
-										<TextArea id="descrizioneSel" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Inserire la descrizione dell'attività. Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la descrizione verrà modificata per tutti i giorni ad essa associati." value="{Descr}"
+										<TextArea id="descrizioneSel" required="true" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Inserire la descrizione dell'attività. Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la descrizione verrà modificata per tutti i giorni ad essa associati." value="{Descr}"
 											change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
