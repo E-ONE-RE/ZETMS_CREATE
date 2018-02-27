@@ -21,7 +21,7 @@
 						<f:FormContainer ariaLabelledBy="Title2">
 							<f:toolbar>
 								<Toolbar>
-									<Title id="dettaglio" text="Dettaglio" level="H5" titleStyle="H5"/>
+									<Title  text="Dettaglio" level="H5" titleStyle="H5"/>
 									<ToolbarSpacer/>
 								</Toolbar>
 							</f:toolbar>
@@ -52,12 +52,12 @@
 								<f:FormElement label="Seleziona Commessa">
 									<f:fields>
 										<Hbox>
-										<Button text="Già utilizzata" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
+										<Button text="Già utilizzata" type="Transparent" icon="sap-icon://clinical-order"
 												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
 												
 											</Button>
 											
-												<Button text="Nuova" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												<Button text="Nuova" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="showPopoverCommessa" enabled="true"></Button>
 										</Hbox>	
 										
@@ -74,7 +74,7 @@
 											<FlexItemData growFactor="1" />
 										</layoutData>
 									</Switch>
-									<Button id="btnMultiday" icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
+									<Button  icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
 				
 									</Hbox>
 								</f:FormElement>
@@ -89,7 +89,7 @@
 								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
 										<Label required="true" visible="false"></Label>
-										<Select width="100%" id="sedi" change="handleSelectChange"></Select>
+										<Select width="100%" id="sedi" change="handleSelectChangeSedi"></Select>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">

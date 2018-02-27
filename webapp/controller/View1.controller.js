@@ -126,10 +126,26 @@ sap.ui.define([
 				if (this._oDialog) {
 					this._oDialog.destroy();
 				}
-
-				if (this._oPopover) {
-					this._oPopover.destroy();
+				
+				if (this._Dialog) {
+					this._Dialog.destroy();
 				}
+
+				if (this._DialogSel) {
+					this._DialogSel.destroy();
+				}
+
+
+
+				if (this._oDialogSelCom) {
+					this._oDialogSelCom.destroy();
+				}
+				
+				
+				if (this._dialogSpese) {
+					this._dialogSpese.destroy();
+				}
+				
 
 				if (this._oPopover) {
 					this._oPopover.destroy();
@@ -159,6 +175,8 @@ sap.ui.define([
 								' più giorni. Questo significa che la sede non può essere modificata e che la descrizione sarà condivisa per tutti i giorni'+
 								' associati. Scegliendo <strong>"SI"</strong> se si modifica la descrizone di una commessa multi day la modifica sarà riportata su tutti i giorni associati. </li>' +
 								' <li>Selezionare <strong>"NO"</strong> se invece si vuole inserire una commessa indipendente per poter scegliere sede ed inserire una descrizione dedicata al singolo giorno.' +
+					
+								
 								'</li>' +
 								'</ul>',
 							sanitizeContent: true
@@ -450,7 +468,7 @@ sap.ui.define([
 				        }
 						if(sMonth != sSelectedMonth){
 							sap.m.MessageBox.show(
-					         "Attenzione: Non è possibile selezionare date non appertenenti al mese corrente", {
+					         "Attenzione: Non è possibile selezionare date non appartenenti al mese corrente", {
 					          icon: sap.m.MessageBox.Icon.WARNING,
 					          title: "Error",
 					          actions: [sap.m.MessageBox.Action.CLOSE]
@@ -899,6 +917,7 @@ sap.ui.define([
 					}
 				}
 				that.Dialog.open();
+				this._Dialog = that.Dialog;
 
 				/////// giorni multipli
 
@@ -984,8 +1003,12 @@ sap.ui.define([
 					var oTree = sap.ui.getCore().byId("Tree");
 					var oModelJson = new sap.ui.model.json.JSONModel();
 					var oJson = JSON.parse(sJson);
-					oModelJson.setData(oJson, false);
-
+				
+         
+        			oModelJson.setSizeLimit(999999999);
+        
+        			oModelJson.setData(oJson, false);
+         
 					sap.ui.getCore().setModel(oModelJson, "CommessaCollection");
 					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
 					var oTemplate = new sap.m.StandardTreeItem({
@@ -1170,14 +1193,14 @@ sap.ui.define([
             
             handleCBoxMultiDay: function(oEvent) {
             	
-         // var chk = sap.ui.getCore().byId("multidaySel").getSelected();
+        	// var chk = sap.ui.getCore().byId("multidaySel").getSelected();
                var chk = sap.ui.getCore().byId("multidaySel").getState();
 	           if 	( !chk ) {
+	           	// se switch è NO cancello chiave tms in modo da creare nuova riga
 	            	this.sTimesheetKey = undefined;
 					sap.ui.getCore().byId("ore").setValue("");
 				//	sap.ui.getCore().byId("descrizione").setValue("");
-	
-					//	this.sCommessaId = this.sOrderjob;
+				
 						sap.ui.getCore().byId("sedi").setEnabled(true);
 						
 						//sap.ui.getCore().byId("commessa").setValue(this.sCommessaName);
@@ -1186,16 +1209,16 @@ sap.ui.define([
 						////// le sedi sono diverse dipendentemente dal cliente
 						this.callSediSet(this.sCommessaId);
 						
-					//	sap.ui.getCore().byId("multidaySel").setEditable(false);
-						sap.ui.getCore().byId("multidaySel").setEnabled(false);
+					//	sap.ui.getCore().byId("multidaySel").setEnabled(false);
 	           }
-	         /*  else{
+	           else{
+	           	this.callSediReset(this.sSede);
 	           
-	           sap.ui.getCore().byId("sedi").setValue(this.sSede);
-	           }*/
+	           }
 	           
             },
             
+            //selezione riga da tabella commesse già usate DialogTableSel
 			handleClose: function(oEvent) {
 				var aContexts = oEvent.getParameter("selectedContexts");
 				var oInput = sap.ui.getCore().byId("commessa");
@@ -1252,18 +1275,19 @@ sap.ui.define([
 						return oContext.getObject().Tmskey;
 					})[0];
 					
+					
 					this.sCommessaId = aContexts.map(function(oContext) {
 						return oContext.getObject().Orderjob;
 					})[0];
 				}
 				oEvent.getSource().getBinding("items").filter([]);
 				
-			/*	 var chk = sap.ui.getCore().byId("multidaySel").getState();
+		/*		 var chk = sap.ui.getCore().byId("multidaySel").getState();
 	           if 	( !chk ) {
 					sap.ui.getCore().byId("sedi").setEnabled(true);
               
 						////// le sedi sono diverse dipendentemente dal cliente
-						this.callSediSet(this.sOrderjob);
+						this.callSediSet(this.sCommessaId);
 	           }*/
 	           
 			//abilito checkbox per selezione commessa multi day
@@ -1274,7 +1298,8 @@ sap.ui.define([
 		//	sap.ui.getCore().byId("multidaySel").setEditable(true);
 			sap.ui.getCore().byId("label_multidaySel").setVisible(true);
 			},
-
+            
+            //ritrovo lista sedi
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 				var sDesinenza = "";
@@ -1300,7 +1325,13 @@ sap.ui.define([
 						oSelect.removeAllItems();
 						aSediResult = data.results;
 						var oJsonModel = new sap.ui.model.json.JSONModel();
+						
+						oJsonModel.setSizeLimit(999999999);
+						
 						oJsonModel.setData(data);
+						
+					   
+					   
 						sap.ui.getCore().setModel(oJsonModel, "results");
 						oSelect.setModel(sap.ui.getCore().getModel("results"));
 						var oTemplate = new sap.ui.core.Item({
@@ -1316,8 +1347,40 @@ sap.ui.define([
 						oSelect.setSelectedKey("");
 					});
 			},
+			
+			// reimposto la sede selezionata dopo selezione switch si/no
+				callSediReset: function(sSede) {
+				var oSede = sap.ui.getCore().byId("sedi");
+				
+				oSede.setForceSelection(true);
 
-			handleSelectChange: function(oEvent) {
+					var mSede = {
+						sede: [{
+							Office: sSede
+							
+						}]
+					};
+
+					var oModel = new sap.ui.model.json.JSONModel();
+					oModel.setData(mSede);
+					sap.ui.getCore().setModel(oModel, "sede");
+					oSede.setModel(sap.ui.getCore().getModel("sede"));
+
+					var oTemplate = new sap.ui.core.Item({
+						key: "{Office}",
+						text: "{Office}"
+					});
+					oSede.bindAggregation("items", {
+						path: "/sede",
+						template: oTemplate
+					});
+					
+					oSede.setSelectedItem(sSede);
+					oSede.setValue(sSede);
+			},
+            
+            //selezione sedi
+			handleSelectChangeSedi: function(oEvent) {
 				var oSelect = oEvent.getSource();
 				var oSelectedKey = oSelect.getSelectedKey();
 
@@ -2250,7 +2313,8 @@ sap.ui.define([
 				}
 
 			},
-
+            
+            //seleziona riga da lista commesse  
 			handleCommessaSelection: function(oEvent) {
 				var that = this;
 				// MP: mi salvo il valore della Tmskey per verificare se ci sono più commesse sulla stessa riga
@@ -2354,7 +2418,9 @@ sap.ui.define([
 				
 
 			},
-			
+
+           
+           // apertura dialog di modifica su selezione riga da lista
 
 			openDialogSel: function(oEvent) {
 				var that = this;
