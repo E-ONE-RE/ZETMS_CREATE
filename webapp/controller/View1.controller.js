@@ -1303,8 +1303,11 @@ sap.ui.define([
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 				var sDesinenza = "";
-                if (this.sIdButton == "btnCommModify"){
-                	sDesinenza = "Sel";
+				var oSelect;
+				var that = this;
+                if (this.sIdButton == "btnCommModify" || this.sCaller != undefined){
+                	sDesinenza = "Sel"; //aggiungo la desinenza per riferirmi ai controlli nel dialog di modifica
+                	this.sCaller = undefined;
                 }
                
 				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
@@ -1320,7 +1323,7 @@ sap.ui.define([
 						}
 					},
 					function(data, response) {
-						var oSelect = sap.ui.getCore().byId("sedi" + sDesinenza);
+					    oSelect = sap.ui.getCore().byId("sedi" + sDesinenza);
 						oSelect.destroyItems();
 						oSelect.removeAllItems();
 						aSediResult = data.results;
@@ -1345,7 +1348,18 @@ sap.ui.define([
 						});
 						oSelect.setForceSelection(false);
 						oSelect.setSelectedKey("");
+						
+						//////MP: per forzare la selezione quando si va in modifica
+						 if (that.sIdButton == "btnCommModify" || sDesinenza == "Sel"){
+					  	 oSelect.setForceSelection(true);
+						oSelect.setSelectedKey(that.sSedeOriginale);
+					  }
+					  ////////////////////////////////////////////////////////////
+					  
 					});
+					 
+					
+					
 			},
 			
 			// reimposto la sede selezionata dopo selezione switch si/no
@@ -2321,8 +2335,14 @@ sap.ui.define([
 			handleCommessaSelection: function(oEvent) {
 				var that = this;
 				// MP: mi salvo il valore della Tmskey per verificare se ci sono più commesse sulla stessa riga
+				// mi salvo l'identificativo della commessa per richiamare le sedi tramite callSediSet(sCommessa)
+				// salvo in una variabile globale il nome della funzione chiamante per richiamare le sedi in modifica
+				// e fare il binding alla select del dialog di modifica (vedi callSediSet)
 				if (oEvent.getId() == "itemPress") {
 				this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey; 
+				this.sCommessaId = oEvent.getParameter("listItem").getBindingContext().getObject().Orderjob;
+				this.sCaller = "handleCommessaSelection";
+				this.callSediSet(this.sCommessaId);
 				}
 			    this.openDialogSel(oEvent);	
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
