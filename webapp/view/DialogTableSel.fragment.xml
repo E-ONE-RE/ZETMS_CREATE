@@ -4,7 +4,7 @@ xmlns:html="http://www.w3.org/1999/xhtml">
 
 
 	<TableSelectDialog id="tableCommEx" noDataText="Nessuna commessa trovata" title="Seleziona commessa" search="handleSearch"
-		confirm="handleClose">
+		confirm="handleClose" growingThreshold="200">
 		<columns>
 			
 			<Column id="comm_column_Id_comm" width="auto" minScreenWidth="phone" demandPopin="false" visible="true">
