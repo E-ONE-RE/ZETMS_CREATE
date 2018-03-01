@@ -1764,7 +1764,7 @@ sap.ui.define([
 					// controllo che la funzione è andata a buon fine recuperando il risultato della function sap
 					//	if (oData.Type == "S") {
 					if (response.statusCode == "201") {
-
+                        that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
 						//	var msg = "Success: "+oData.Message+", "+sTypeAction;
 						//var msg = "Richiesta " + sAction + " con successo.\nID: " + formatter.formatRequestId(oData.ZrequestId) + "";
 						var msg;
@@ -2195,6 +2195,7 @@ sap.ui.define([
 
 										});
 										that._onBindingChange();
+										that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
 										oModel.refresh();
 										oDialog.close();
 									},
