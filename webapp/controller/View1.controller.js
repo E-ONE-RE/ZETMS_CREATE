@@ -905,6 +905,7 @@ sap.ui.define([
 			openDialog: function(oEvent) {
 
 				var that = this;
+				this.sIdButton = undefined;
 				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
 				if (!that.Dialog) {
 
@@ -982,7 +983,7 @@ sap.ui.define([
 
 			},
 
-			//MP: funzione che richiama il fragment contenente l'albero
+			//MP: funzione che richiama il fragment contenente l'albero delle commesse
 			showPopoverCommessa: function(oEvent) {
                 this.sIdButton = oEvent.getParameter("id");
 				var that = this;
@@ -1031,7 +1032,7 @@ sap.ui.define([
 
 			},
 
-			//MP: funzione richiamata alla selezione di una commessa
+			//MP: funzione richiamata alla selezione di una commessa dall'albero delle commesse
 			onCommessaSelect: function(oEvent) {
 				var sDesinenza = ""; //per differenziare. Se la commessa è stata scelta dal dialog di modifica aggiungo "del" all'id del controllo
 				if(this.sIdButton != "btnCommModify"){ //caso dialog di creazione nuova entry nel TMS a partire da una nuova commessa
@@ -1064,9 +1065,9 @@ sap.ui.define([
 				
 					//disabilito checkbox per selezione commessa multi day
 						if(this.sIdButton != "btnCommModify"){
-			sap.ui.getCore().byId("multidaySel").setVisible(false);
-			sap.ui.getCore().byId("multidaySel").setEnabled(false);
-			sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+							sap.ui.getCore().byId("multidaySel").setVisible(false);
+							sap.ui.getCore().byId("multidaySel").setEnabled(false);
+							sap.ui.getCore().byId("label_multidaySel").setVisible(false);
 						}
 			
 
@@ -2334,6 +2335,7 @@ sap.ui.define([
             //seleziona riga da lista commesse  
 			handleCommessaSelection: function(oEvent) {
 				var that = this;
+			
 				// MP: mi salvo il valore della Tmskey per verificare se ci sono più commesse sulla stessa riga
 				// mi salvo l'identificativo della commessa per richiamare le sedi tramite callSediSet(sCommessa)
 				// salvo in una variabile globale il nome della funzione chiamante per richiamare le sedi in modifica
@@ -2446,6 +2448,7 @@ sap.ui.define([
            // apertura dialog di modifica su selezione riga da lista
 
 			openDialogSel: function(oEvent) {
+				this.sIdButton = undefined;
 				var that = this;
 				this.aGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
 
@@ -2577,6 +2580,7 @@ sap.ui.define([
 
 			openDialogSpese: function(oEvent) {
 				var that = this;
+				this.sIdButton = undefined;
 
 				if (!that.DialogSpese) {
 
