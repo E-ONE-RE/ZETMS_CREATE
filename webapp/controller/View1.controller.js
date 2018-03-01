@@ -173,8 +173,8 @@ sap.ui.define([
 
 								'<li>Nel caso di scelta commessa da quelle già utilizzate nel mese è possibile condividere la stessa commessa per' +
 								' più giorni. Questo significa che la sede non può essere modificata e che la descrizione sarà condivisa per tutti i giorni'+
-								' associati. Scegliendo <strong>"SI"</strong> se si modifica la descrizone di una commessa multi day la modifica sarà riportata su tutti i giorni associati. </li>' +
-								' <li>Selezionare <strong>"NO"</strong> se invece si vuole inserire una commessa indipendente per poter scegliere sede ed inserire una descrizione dedicata al singolo giorno.' +
+								' associati. Scegliendo <strong>"SI"</strong> se si modifica la descrizone di una commessa multi day la modifica sarà riportata su tutti i giorni associati (stesso ID Commessa). </li>' +
+								' <li>Selezionare <strong>"NO"</strong> se invece si vuole inserire una commessa indipendente per poter scegliere la sede ed inserire una descrizione dedicata al singolo giorno.' +
 					
 								
 								'</li>' +
@@ -206,21 +206,21 @@ sap.ui.define([
 								'<ul>' +
 
 
-								'<li><strong>Seleziona una commessa già utilizzata nel mese:</strong> in questo caso si potrà scegliere ' +
-								' tra una commessa multi day (condivisa per più giorni) o una commessa per singolo giorno. ' +
-								'Nel primo caso la sede non protrà essere modificata e le modifiche al campo descrizione saranno riportate ' + 
-								'anche nei giorni per i quali la commessa è gia stata utilizzata. ' + 
-								'Nel secondo caso invece si potrà selezionare la sede ed inserire una descrizione dedicata al singolo giorno. ' +
+								'<li><strong>Seleziona una commessa già utilizzata nel mese:</strong> Verrà visualizzata la lista delle commesse già utilizzate nel mese, dopo la selezione di un commessa da questa lista verrà attivato ' +
+								' un apposito pulsante \"Commessa multi day SI/NO\" dal quale si potrà scegliere se inserire una commessa multi day (condivisa per più giorni) o una commessa indipendente per singolo giorno. ' +
+								'<br><strong>Commessa multi day:</strong> la sede non protrà essere modificata e le modifiche al campo descrizione saranno riportate ' + 
+								'anche nei giorni già associati al relativo ID Commessa selezionato. ' + 
+								'<br><strong>Commessa indipendente per singolo giorno:</strong> si potrà selezionare la sede ed inserire una descrizione dedicata al singolo giorno. ' +
 
 								'</li>' +
 								'<li><strong>Seleziona una nuova commessa:</strong> in questo caso potrà essere selezionata una nuova commessa ' +
 								' tra tutte quelle a disposizione indipendentemente dal fatto che sia già stata utilizzata nel mese, ' +
-								'si potrà selezionare la sede ed aggiungere una nuova descrizione. ' +
+								'si potrà selezionare la sede ed aggiungere una nuova descrizione, con questo metodo quindi si creerà sempre una commessa indipendente con un nuovo ID (NO multi day). ' +
 								'</li>' +
 
 							  
-								'<li>Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
-								'ed aver selezionato eventuali spese, premere il tasto <strong>"Conferma"</strong> per salvare la commessa.' +
+								'<li><strong>Conferma inserimento</strong>: Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) '+
+								'ed aver selezionato eventuali spese, selezionare il tasto <strong>"Conferma"</strong> per salvare la commessa.' +
 
 
 								'</li>' +
@@ -235,15 +235,16 @@ sap.ui.define([
 								'<ul>' +
 
 								'<li>Per la commessa selezionata, è possibile: ' +
-								' <br> - Modificare ore e descrizione' +
-								' <br> - Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la descrizione verrà modificata per tutti i giorni ad essa associati. ' +
+								' <br> - Modificare ore e spese' +
+								' <br> - Modificare commessa, sede e descrizione' +
+								' <br> - Attenzione: se la commessa è di tipo multi-day (stesso ID commessa su più giorni) la commessa, la sede e la descrizione verranno modificate per tutti i giorni ad essa associati (stesso ID Commessa). ' +
 								' <br> - Inserire eventuali nuove spese espandendo la relativa sezione ' +
-
+								' <br> ' +
 								'<br>Una volta terminati gli inserimenti, premere sul tasto "Modifica commessa"' +
 								' per apportare le modifiche.</li>' +
 								'</ul>' +
 								'<ul>' +
-								'<li>Per eliminare la commessa e le relative spese associate, cliccare sul tasto "Elimina commessa"</li>' +
+								'<li>Per eliminare la commessa (per il singolo giorno) e le relative spese associate, cliccare sul tasto "Elimina commessa"</li>' +
 								'</ul>' +
 								'<strong>Modificare o eliminare le singole spese già presenti</strong>' +
 								'<ul>' +
@@ -287,7 +288,7 @@ sap.ui.define([
 								'ma non su più mesi contemporaneamente. ' +
 								'Es. Si può copiare il 15 maggio sul 20 maggio, oppure sul 20 giugno ma non contemporaneamente sul 20 maggio e sul 20 giugno. ' +
 								'In ogni caso verranno copiate solo le commesse (no spese) e la commessa sarà di tipo multi-day (la sede non potrà ' +
-								'essere modificata e la descrizione sarà condivisa per tutti i giorni associati. '  +
+								'essere modificata e la descrizione sarà condivisa per tutti i giorni associati (stesso ID Commessa). '  +
 								' </li>' +
 								
 
@@ -309,7 +310,7 @@ sap.ui.define([
 								'<li>Cliccare sul pulsante in alto a destra della lista di interesse e scegliere il settaggio desiderato.</li>' +
 								'</ul>' +
 
-								'<strong>Come filtrare le lista per singoli giorni </strong>' +
+								'<strong>Come filtrare le lista per singoli giorni o più giorni</strong>' +
 		                        '<ul>' +
 		                        '<li> Selezionare un giorno o più giorni dal calendario, se esistono commesse associate verranno visualizzate nelle liste in basso.</li>' +
                                  '</ul>' ,
@@ -972,6 +973,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
 				
+				
 				this.handleRemoveSelection();
 				this.count = undefined;
 				this.onExpenseSelect(undefined);
@@ -1451,7 +1453,7 @@ sap.ui.define([
 				var sButtonName = oEvent.getSource().getId() + "a";
 				if(sButtonName == "Modificaa"){
 					if(this.aGiorni.length > 1){
-					sMessage = "Ad eccezione del campo \"<strong>Ore</strong>\", le modifiche verranno applicate anche alle commesse inserite nei seguenti giorni: ";
+					sMessage = "Ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le modifiche verranno applicate anche ai seguenti giorni: ";
 					for(var i = 0 ; i < this.aGiorni.length; i++){
 					sMessage +=   "<br/> <strong>" + this.aGiorni[i] + "</strong>" ;
 					}
@@ -1563,14 +1565,14 @@ sap.ui.define([
 
 				var aDate = [];
 				var oExpenseTable;
+				
+				sCommessaId = this.sCommessaId;
 
 				//MP: la chiamata viene eseguita solo se tutti i campi obbligatori sono valorizzati, 
 				//altrimenti viene richiesto di inserire dei valori
-				if (aParam.length === 4) {
+				if (aParam.length === 4 & sCommessaId != undefined) {
 					this.getView().byId("btn1").setEnabled(false);
 					
-                    sCommessaId = this.sCommessaId;
-                
 					///(SE) start giorni multipli
 
 					var datesListLenght = this.DatesList.length;
@@ -1719,39 +1721,41 @@ sap.ui.define([
 							title: "Errore",
 							actions: [sap.m.MessageBox.Action.CLOSE]
 						});
+						
+							return;
 
 				}
 
 
-				if (this.DatesList.length > 1) {
-
-					var msg;
-					if (that.buttonEvent !== "Modificaa") {
-						msg = "Commesse create con successo";
-					} else {
-						msg = "Commesse modificate con successo";
-					}
-					sap.m.MessageToast.show(msg, {
-						duration: 5000,
-						autoClose: true,
-						closeOnBrowserNavigation: false
-
-					});
-
-					if (that.buttonEvent !== "Modificaa") {
-						that._onBindingChange();
-						that.closeDialog();
-					} else {
-						that._onBindingChange();
-						that.DialogSel.close();
-						sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
-						sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-						that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-						that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-						that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-
-					}
-				}
+							if (this.DatesList.length > 1) {
+			
+								var msg;
+								if (that.buttonEvent !== "Modificaa") {
+									msg = "Commesse create con successo";
+								} else {
+									msg = "Commesse modificate con successo";
+								}
+								sap.m.MessageToast.show(msg, {
+									duration: 5000,
+									autoClose: true,
+									closeOnBrowserNavigation: false
+			
+								});
+			
+								if (that.buttonEvent !== "Modificaa") {
+									that._onBindingChange();
+									that.closeDialog();
+								} else {
+									that._onBindingChange();
+									that.DialogSel.close();
+									sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+									sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+									that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+									that.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+									that.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+			
+								}
+							}
 
 				function fnS(oData, response) {
 					//	console.log(oData);
@@ -2494,8 +2498,8 @@ sap.ui.define([
 				if(this.aGiorni.length > 1){
 					        oSwitchMulti.setState(true);// se commessa si riferisce a più giorni, attivo lo Switch e mostro un dialog con un messaggio per notificare
 							sap.m.MessageBox.show(
-												"La commessa selezionata si riferisce a più giorni."+
-												 " Le eventuali modifiche verranno applicate a tutti i giorni.", {
+												"La commessa selezionata è di tipo multi-day (utilizzata su più giorni)."+
+												 " Le eventuali modifiche ai campi Commessa, Sede e Descrizione verranno applicate a tutti i giorni ad essa associati (stesso ID Commessa).", {
 													icon: sap.m.MessageBox.Icon.WARNING,
 													title: "Attenzione",
 													actions: [sap.m.MessageBox.Action.CLOSE],
@@ -2666,8 +2670,11 @@ sap.ui.define([
 
 			handleCalendarChange: function(oEvent) {
 				
+		
                 this.aItems = undefined;
 				this._onBindingChange();
+				
+	
 			},
 
 			handleCopyCalChange: function(oEvent) {
@@ -2979,7 +2986,7 @@ sap.ui.define([
 
 			_onBindingChange: function() {
 				//(SE
-				this.showBusyIndicator();
+				this.showBusyIndicator(0);
 				var that = this;
 				//(SE           
 				var oView = this.getView();
@@ -3682,7 +3689,7 @@ sap.ui.define([
 					that.hideBusyIndicator();
 
 					//(SE) busy indicator per singolo elemento
-					//oView.byId("LRS1_BUSY_CALENDAR").setBusy(false);
+				//	oView.byId("LRS1_BUSY_CALENDAR").setBusy(false);
 				} // END FUNCTION SUCCESS
 
 				function fnReadE(oError) {
@@ -3697,9 +3704,13 @@ sap.ui.define([
 				sap.ui.core.BusyIndicator.hide();
 			},
 
+
+
+			
 			//	showBusyIndicator : function (iDuration, iDelay) {
-			showBusyIndicator: function() {
-				sap.ui.core.BusyIndicator.show();
+			showBusyIndicator: function(iDelay) {
+				sap.ui.core.BusyIndicator.show(iDelay);
+			
 
 				/*	if (iDuration && iDuration > 0) {
 								if (this._sTimeoutId) {
