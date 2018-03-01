@@ -12,6 +12,7 @@
 		<groupItems>
 			<ViewSettingsItem text="Giorno" key="Giorno" />
 			<ViewSettingsItem text="Commessa" key="Descrorder" />
+			
 		</groupItems>
 		
 	</ViewSettingsDialog>
