@@ -1737,6 +1737,7 @@ sap.ui.define([
 								var msg;
 								if (that.buttonEvent !== "Modificaa") {
 									msg = "Commesse create con successo";
+								    that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
 								} else {
 									msg = "Commesse modificate con successo";
 								}
