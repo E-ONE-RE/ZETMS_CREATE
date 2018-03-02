@@ -1282,7 +1282,11 @@ sap.ui.define([
 					this.sCommessaId = aContexts.map(function(oContext) {
 						return oContext.getObject().Orderjob;
 					})[0];
+					
+				
 				}
+				
+				
 				oEvent.getSource().getBinding("items").filter([]);
 				
 		/*		 var chk = sap.ui.getCore().byId("multidaySel").getState();
@@ -1447,6 +1451,7 @@ sap.ui.define([
 			openMessageDialog: function(oEvent) {
 				var that;
 				var sMessage = "";
+				var oView = this.getView();
 				
 			
 
@@ -2281,9 +2286,9 @@ sap.ui.define([
 							nRemainingHours = 8;
 						}
 						oInput = sap.ui.getCore().byId(sNameOre);
-						if (oInput.getValue() < 1 || oInput.getValue() > nRemainingHours) {
+						if (oInput.getValue() <= 0 || oInput.getValue() > nRemainingHours) {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("inserire un numero di ore compreso tra 1 e " + nRemainingHours);
+							oInput.setValueStateText("inserire un numero di ore compreso tra 0 (escluso) e " + nRemainingHours + " (incluso)");
 						} else {
 							oInput.setValueState(sap.ui.core.ValueState.None);
 						}
