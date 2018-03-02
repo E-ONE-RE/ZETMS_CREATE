@@ -761,6 +761,7 @@ sap.ui.define([
 					//	console.log(response);
 					// controllo che la funzione è andata a buon fine 
 					if (response.statusCode == "200") { //Se lettura delle commesse in un giorno va a buon fine allora vado a copiare le commesse nei giorni selezionati
+						  that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
 						for (var i = 0; i < aSelectedDates.length; i++) {
 							oStartDate = aSelectedDates[i].getStartDate();
 							sSelectedMonth = that.oFormatMonth.format(oStartDate);
