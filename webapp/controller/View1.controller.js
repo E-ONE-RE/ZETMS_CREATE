@@ -851,6 +851,7 @@ sap.ui.define([
 												that._onBindingChange();
 												that._onBindingCalendar();
 												that.closePopover();
+												that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 												that.handleRemoveSelection();
 												iControl = 0;
 											}
@@ -3337,6 +3338,9 @@ sap.ui.define([
 
 				oBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
+					if (oSource.aAllKeys == null) {
+						oSource.aAllKeys = oSource.aKeys;
+					}
 					oSource.bClientOperation = true;
 					oSource.sOperationMode = "Client"; //operationMode = Client
 
@@ -3358,10 +3362,10 @@ sap.ui.define([
 	         };*/
 				aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
                 
-                	
-				    if (oBinding.aAllKeys == null) {
+                	if (oBinding.aAllKeys == null) {
 						oBinding.aAllKeys = oBinding.aKeys;
 					}
+				    
 					
 				oBinding.sort(aSorters);
 
