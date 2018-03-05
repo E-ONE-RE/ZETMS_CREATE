@@ -851,6 +851,7 @@ sap.ui.define([
 												that._onBindingChange();
 												that._onBindingCalendar();
 												that.closePopover();
+												that.handleRemoveSelection();
 												iControl = 0;
 											}
 
@@ -2204,6 +2205,7 @@ sap.ui.define([
 										});
 										that._onBindingChange();
 										that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
+										that.handleRemoveSelection();
 										oModel.refresh();
 										oDialog.close();
 									},
