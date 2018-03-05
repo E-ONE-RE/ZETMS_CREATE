@@ -640,9 +640,9 @@ sap.ui.define([
 
 			handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
-				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
-				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").filter();
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter("");
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter("");
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").filter("");
 				this.count = undefined;
 				this.byId("btn1").setEnabled(false);
 				this.byId("copyBtn").setEnabled(false);
@@ -851,6 +851,7 @@ sap.ui.define([
 												that._onBindingChange();
 												that._onBindingCalendar();
 												that.closePopover();
+												that.handleRemoveSelection();
 												iControl = 0;
 											}
 
@@ -2204,6 +2205,7 @@ sap.ui.define([
 										});
 										that._onBindingChange();
 										that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
+										that.handleRemoveSelection();
 										oModel.refresh();
 										oDialog.close();
 									},
@@ -2671,7 +2673,7 @@ sap.ui.define([
 			onUpdateFinished: function(oEvent) {
             	//MP: tengo traccia di tutti gli Item nella Table; mi serve per la modifica di commesse che coinvolgono più giorni.
 				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
-				if(this.aItems == undefined){
+				if(this.aItems == undefined || this.aItems.length == 0){
 				this.aItems = oTableComm.getAggregation("items");
 				}
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
