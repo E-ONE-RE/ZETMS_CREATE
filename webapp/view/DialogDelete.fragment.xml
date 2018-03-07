@@ -155,7 +155,7 @@
 							</content>
 						</Panel>
 						<ToolbarSpacer/>
-						<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Aggiungi nuove spese" width="auto" class="sapUiResponsiveMargin">
+						<Panel id="panelSpeseSel" expandable="true" expanded="false" headerText="Inserisci nuove spese" width="auto" class="sapUiResponsiveMargin">
 							<content>
 								<Table id="tabellaSpeseSel" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
 									<columns>
