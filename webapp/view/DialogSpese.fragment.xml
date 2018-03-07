@@ -49,7 +49,7 @@
 								</f:FormElement>
 								<f:FormElement label="Descrizione Spesa">
 									<f:fields>
-										<TextArea id="descrizioneSelSpese" width="100%" height="3rem" wrapping="None" maxLength="200" tooltip="Descrizione spesa." value="{Descr}"/>
+										<TextArea id="descrizioneSelSpese" width="100%" height="3rem" wrapping="None" maxLength="50" tooltip="Descrizione spesa." value="{Descr}"/>
 									</f:fields>
 								</f:FormElement>
 							</f:formElements>

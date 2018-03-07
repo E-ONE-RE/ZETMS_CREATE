@@ -6,7 +6,7 @@
 		</html:style>
 		<FlexBox alignItems="End" justifyContent="End">
 			<items>
-				<Button id="help2" text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
+				<Button text="Help" press="handleResponsivePopoverPress" type="Emphasized" icon="sap-icon://message-information"
 					tooltip="Clicca per informazioni sull'uso del Timesheet"></Button>
 			</items>
 		</FlexBox>
@@ -21,7 +21,7 @@
 						<f:FormContainer ariaLabelledBy="Title2">
 							<f:toolbar>
 								<Toolbar>
-									<Title id="dettaglio" text="Dettaglio" level="H5" titleStyle="H5"/>
+									<Title  text="Dettaglio" level="H5" titleStyle="H5"/>
 									<ToolbarSpacer/>
 								</Toolbar>
 							</f:toolbar>
@@ -52,12 +52,12 @@
 								<f:FormElement label="Seleziona Commessa">
 									<f:fields>
 										<Hbox>
-										<Button text="Già utilizzata" id="btnCommEx" type="Transparent" icon="sap-icon://clinical-order"
+										<Button text="Già utilizzata" type="Transparent" icon="sap-icon://clinical-order"
 												tooltip="Scegli la commessa" press="handleTableSelectDialogPress" enabled="true" class="sapUiSmallMarginBottom">
 												
 											</Button>
 											
-												<Button text="Nuova" id="btnComm" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
+												<Button text="Nuova" type="Transparent" icon="sap-icon://clinical-order" tooltip="Scegli la commessa"
 												press="showPopoverCommessa" enabled="true"></Button>
 										</Hbox>	
 										
@@ -74,7 +74,7 @@
 											<FlexItemData growFactor="1" />
 										</layoutData>
 									</Switch>
-									<Button id="btnMultiday" icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
+									<Button  icon="sap-icon://sys-help-2" press="handleResponsivePopoverMultydayPress" />
 				
 									</Hbox>
 								</f:FormElement>
@@ -89,7 +89,7 @@
 								<f:FormElement id="sediList" label="Sede">
 									<f:fields>
 										<Label required="true" visible="false"></Label>
-										<Select width="100%" id="sedi" change="handleSelectChange"></Select>
+										<Select width="100%" id="sedi" change="handleSelectChangeSedi"></Select>
 									</f:fields>
 								</f:FormElement>
 								<f:FormElement label="Ore">
@@ -108,7 +108,7 @@
 							<f:formElements>
 								<f:FormElement>
 									<f:fields>
-										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Spese" width="auto" class="sapUiResponsiveMargin">
+										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Inserisci Spese" width="auto" class="sapUiResponsiveMargin">
 											<content>
 												<Table id="tabellaSpese" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
 													<columns>
@@ -126,7 +126,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="00 - Chilometri (KM)"/>
-																<TextArea id="descrizioneKm" enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea id="descrizioneKm" enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input id="chilometri" tooltip="Chilometri" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -134,7 +134,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="01 - Autostrada (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Autostrada" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -142,7 +142,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="02 - Cena (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Cena" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -150,7 +150,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="03 - Treno (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Treno" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -158,7 +158,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="04 - Albergo (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Albergo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -166,7 +166,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="05 - Taxi/BUS (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Taxi/BUS" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -174,7 +174,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="06 - Aereo (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Aereo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -182,7 +182,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="07 - Parcheggio (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Parcheggio" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -190,7 +190,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="08 - Pranzo (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Pranzo" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
@@ -198,7 +198,7 @@
 														<ColumnListItem>
 															<cells>
 																<ObjectIdentifier title="09 - Altro (EUR)"/>
-																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="200"
+																<TextArea enabled="false" tooltip="descrizione spesa" textAlign="Begin" width="auto" maxLength="50"
 																	placeholder="descrizione spesa (opzionale)"/>
 																<Input tooltip="Altro" type="Number" width="4rem" enabled="false" liveChange="onLiveChange"/>
 															</cells>
