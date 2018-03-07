@@ -1668,6 +1668,7 @@ sap.ui.define([
 								sExpDesc = oItem.getAggregation("cells")[1].getValue();
 								sExpImp = oItem.getAggregation("cells")[2].getValue();
 
+								if(sExpImp > 0){
 								oUrlParams.FromCommToExp.push({
 									Exptype: sExpType,
 									Expdescr: sExpDesc,
@@ -1677,6 +1678,7 @@ sap.ui.define([
 									Calyear: sYear,
 									Giorno: sDay
 								});
+												}
 							}
 						}
 
