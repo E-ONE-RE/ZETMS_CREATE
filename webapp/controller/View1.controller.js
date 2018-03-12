@@ -2246,9 +2246,10 @@ sap.ui.define([
 
 			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
 			onLiveChange: function(oEvent) {
-				var oInput;
+				var oInput, sType;
 				var sNameOre;
 				var sNameDescr;
+				var sDescrSpesa;
 				var oCal, aSpecialDates, oSpecialDate, oSelectedDate, sSelectedDate;
 				oCal = this.getView().byId("LRS4_DAT_CALENDAR");
 				aSpecialDates = oCal.getSpecialDates();
@@ -2303,7 +2304,7 @@ sap.ui.define([
 						break;
 					case "chilometri":
 						oInput = sap.ui.getCore().byId("chilometri");
-						if (oInput.getValue().length > 4) {
+						if (oInput.getValue().length > 5) {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
 							oInput.setValueStateText("Controllare inserimento");
 						} else {
@@ -2322,11 +2323,27 @@ sap.ui.define([
 
 					case "ValueSelSpese":
 						oInput = sap.ui.getCore().byId("ValueSelSpese");
+						sDescrSpesa = sap.ui.getCore().byId("TipoSelSpese").getText();
 						if (oInput.getValue() == "") {
 							oInput.setValueState(sap.ui.core.ValueState.Error);
 							oInput.setValueStateText("inserisci un importo");
 						} else {
-							oInput.setValueState(sap.ui.core.ValueState.None);
+							if(sDescrSpesa == "Chilometri (KM)"){
+								if(oInput.getValue().length > 5){
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+								}else{
+									oInput.setValueState(sap.ui.core.ValueState.None);
+								}
+							}else{
+									if(oInput.getValue().length > 11){
+										oInput.setValueState(sap.ui.core.ValueState.Error);
+										oInput.setValueStateText("Controllare inserimento");
+									}else{
+										oInput.setValueState(sap.ui.core.ValueState.None);	
+									}
+							}
+							
 						}
 						break;
 					default:
@@ -2337,15 +2354,56 @@ sap.ui.define([
 						for (var i = 0; i < aItems.length; i++) {
 							oItem = aItems[i];
 							oInputImp = oItem.getAggregation("cells")[2];
-							if (oInputImp.getValue().length > 4) {
-								oInputImp.setValueState(sap.ui.core.ValueState.Error);
-								oInputImp.setValueStateText("Controllare inserimento");
-							} else {
-								oInputImp.setValueState(sap.ui.core.ValueState.None);
-							}
+							if(i == 0){
+								if(oInputImp.getValue().length > 5){
+										oInputImp.setValueState(sap.ui.core.ValueState.Error);
+										oInputImp.setValueStateText("Controllare inserimento");
+								}else{
+									oInputImp.setValueState(sap.ui.core.ValueState.None);
+								}
+							}else{
+								if (oInputImp.getValue().length > 8) {
+										oInputImp.setValueState(sap.ui.core.ValueState.Error);
+										oInputImp.setValueStateText("Controllare inserimento");
+								} else {
+										oInputImp.setValueState(sap.ui.core.ValueState.None);
+								}
+																	}
 
 						}
 
+				}
+				
+				var aSource = oEvent.getSource().getId().split("-"); // array di due elementi splittato
+				var oExpTable = sap.ui.getCore().byId("speseCommessa");
+				var aItems = oExpTable.getAggregation("items");
+				if (aSource[0] == "ImpOrKm"){
+					oInput = oEvent.getSource();
+					for (var i = 0; i < aItems.length ; i++){
+						if(aItems[i].getCells()[2].getEditable()){ //meccanismo per cercare l'Item che è stato selezionato. WORKAROUND
+						sType = aItems[i].getBindingContext().getProperty("Exptype");
+						if (sType == "00"){
+							if(oInput.getValue() == "" || oInput.getValue().length > 5){
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+									break;
+								}else{
+									oInput.setValueState(sap.ui.core.ValueState.None);
+									break;
+								}
+						}else{
+							
+								if(oInput.getValue().length > 11){
+										oInput.setValueState(sap.ui.core.ValueState.Error);
+										oInput.setValueStateText("Controllare inserimento");
+										break;
+									}else{
+										oInput.setValueState(sap.ui.core.ValueState.None);	
+										break;
+									}
+						}
+					}
+					}
 				}
 
 			},
@@ -2530,11 +2588,14 @@ sap.ui.define([
 				oInputDescr = sap.ui.getCore().byId("descrizioneSel");
 				oInputCommessa = sap.ui.getCore().byId("commessaSel");
 				oSelectSede = sap.ui.getCore().byId("sediSel");
+				var oButtonElim = sap.ui.getCore().byId("EliminaSel");
+				var oButtonMod = sap.ui.getCore().byId("Modifica");
 				this.DialogSel.close();
 				/////////////////////////////////////////////////////////////////////
-				// MP: per pulire i campi della tabella nel panel e chiudere il panel
+				// MP: per pulire i campi della tabella nei panel e chiudere i panel
 				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
 				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+				sap.ui.getCore().byId("panelSpeseIns").setExpanded(false);
 
 				if (oEvent.getSource().getId() == "Indietro") {
 					oInputOre.setValue(this.sOraOriginale);
@@ -2553,6 +2614,8 @@ sap.ui.define([
 					this.sDescrOriginale = undefined;
 					this.sCommessaOriginale = undefined;
 					this.sSedeOriginale = undefined;
+					oButtonElim.setEnabled(true);
+					oButtonMod.setEnabled(true);
 				}
 				this.onExpenseSelect(oEvent);
 				/////////////////////////////////////////////////////////////////////
