@@ -640,9 +640,9 @@ sap.ui.define([
 
 			handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
-				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter();
-				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter();
-				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").filter();
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter("");
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").filter("");
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").filter("");
 				this.count = undefined;
 				this.byId("btn1").setEnabled(false);
 				this.byId("copyBtn").setEnabled(false);
@@ -851,6 +851,7 @@ sap.ui.define([
 												that._onBindingChange();
 												that._onBindingCalendar();
 												that.closePopover();
+												that.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
 												that.handleRemoveSelection();
 												iControl = 0;
 											}
@@ -1667,6 +1668,7 @@ sap.ui.define([
 								sExpDesc = oItem.getAggregation("cells")[1].getValue();
 								sExpImp = oItem.getAggregation("cells")[2].getValue();
 
+								if(sExpImp > 0){
 								oUrlParams.FromCommToExp.push({
 									Exptype: sExpType,
 									Expdescr: sExpDesc,
@@ -1676,6 +1678,7 @@ sap.ui.define([
 									Calyear: sYear,
 									Giorno: sDay
 								});
+												}
 							}
 						}
 
@@ -2736,10 +2739,10 @@ sap.ui.define([
 			onUpdateFinished: function(oEvent) {
             	//MP: tengo traccia di tutti gli Item nella Table; mi serve per la modifica di commesse che coinvolgono più giorni.
 				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
-				if(this.aItems == undefined){
+				if(this.aItems == undefined || this.aItems.length == 0){
 				this.aItems = oTableComm.getAggregation("items");
 				}
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
 			},
 
 			handleCalendarChange: function(oEvent) {
@@ -3400,6 +3403,9 @@ sap.ui.define([
 
 				oBinding.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
 					var oSource = oEvent.getSource();
+					if (oSource.aAllKeys == null) {
+						oSource.aAllKeys = oSource.aKeys;
+					}
 					oSource.bClientOperation = true;
 					oSource.sOperationMode = "Client"; //operationMode = Client
 
@@ -3421,10 +3427,10 @@ sap.ui.define([
 	         };*/
 				aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
                 
-                	
-				    if (oBinding.aAllKeys == null) {
+                	if (oBinding.aAllKeys == null) {
 						oBinding.aAllKeys = oBinding.aKeys;
 					}
+				    
 					
 				oBinding.sort(aSorters);
 
