@@ -100,7 +100,7 @@
 					<sap.ui.layout:content>
 						
 				<Panel id="panelSpeseIns" expandable="true" expanded="false" headerText="Gestisci spese inserite" width="auto" class="sapUiResponsiveMargin">
-					<content>
+					 <content>
 						<smartTable:SmartTable id="ST_SPESE" entitySet="ListaSpeseGroupSet" tableType="Table" useVariantManagement="false"
 							showVariantManagement="false" useExportToExcel="false" useTablePersonalisation="false" header="Spese inserite" showRowCount="true"
 							enableAutoBinding="true" tableBindingPath="FromCommToExp" class="sapUiResponsiveContentPadding" enableCustomFilter="false">
