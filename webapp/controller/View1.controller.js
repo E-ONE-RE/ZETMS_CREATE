@@ -42,6 +42,7 @@ sap.ui.define([
 			oFormatYear: null,
 			_oDialog: null,
 
+			//********* Lifecycle methods *********//
 			onInit: function() {
 
 				this._initCntrls();
@@ -100,25 +101,39 @@ sap.ui.define([
 
 			},
 
-			//NON USATA
-			getGroupHeader: function(oGroup) {
-				return new GroupHeaderListItem({
-					title: oGroup.key,
-					upperCase: false
+			onBeforeRendering: function() {
+				var oModel = this.getView().getModel();
+				var sRead = "/CommessaSet";
+
+				oModel.read(sRead, {
+
+					success: fnReadS,
+
+					error: fnReadE
 				});
+
+				function fnReadS(oData, response) {
+					//console.log(oData);
+					//console.log(response);
+
+					sJson = oData.results["0"].Json;
+
+				}
+
+				function fnReadE(oError) {
+					//console.log(oError);
+				}
+
 			},
 
-			// funzioni per treetable
-			onCollapseAll: function() {
-				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
-				//	var oTreeTable = sap.ui.getCore().byId("treeTable");
-				oTreeTable.collapseAll();
+			onAfterRendering: function(oEvent) {
 
-			},
+				var oIconTabFilterTree = this.getView().byId("commesseTree");
+				if (sap.ui.Device.system.phone) {
+					oIconTabFilterTree.setVisible(false);
 
-			onExpandFirstLevel: function() {
-				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
-				oTreeTable.expandToLevel(1);
+				}
+
 			},
 
 			onExit: function() {
@@ -147,8 +162,197 @@ sap.ui.define([
 				}
 
 			},
+			//************************************// 
 
-			// gestione tasto HELP
+			//********* Funzione per validazione Form. La validazione avviene anche in onConfirmation *********// 
+			// Funzione per gestire la validazione di alcuni Input field dei vari Form (ore, chilometri, spese)
+			onLiveChange: function(oEvent) {
+				var oInput, sType;
+				var sNameOre;
+				var sNameDescr;
+				var sDescrSpesa;
+				var oCal, aSpecialDates, oSpecialDate, oSelectedDate, sSelectedDate;
+				oCal = this.getView().byId("LRS4_DAT_CALENDAR");
+				aSpecialDates = oCal.getSpecialDates();
+				var aSource = oEvent.getSource().getId().split("-"); // array di due elementi splittato
+
+				if (oCal.getSelectedDates().length > 0) {
+					oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
+					sSelectedDate = oSelectedDate.toString();
+				}
+
+				var sInsertedHours;
+				var nInsertedHours;
+				var nRemainingHours;
+				var sTooltip;
+				var flag = 0;
+				if (oEvent.getSource().getId() == "ore") {
+					sNameOre = "ore";
+				} else {
+					sNameOre = "oreSel";
+				}
+
+				if (oEvent.getSource().getId() == "descrizione") {
+					sNameDescr = "descrizione";
+				} else {
+					sNameDescr = "descrizioneSel";
+				}
+
+				switch (oEvent.getSource().getId()) {
+					case sNameOre:
+						for (var i = 0; i < aSpecialDates.length; i++) {
+							oSpecialDate = oCal.getSpecialDates()[i];
+							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
+								flag = 1;
+								if (oSpecialDate.getProperty("type") == "Type03" && sNameOre != "oreSel") {
+									sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
+									sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
+									nInsertedHours = Number(sInsertedHours);
+									nRemainingHours = 8 - nInsertedHours;
+								} else {
+									nRemainingHours = 8;
+								}
+							}
+						}
+						if (flag == 0) {
+							nRemainingHours = 8;
+						}
+						oInput = sap.ui.getCore().byId(sNameOre);
+						if (oInput.getValue() <= 0 || oInput.getValue() > nRemainingHours) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("inserire un numero di ore compreso tra 0 (escluso) e " + nRemainingHours + " (incluso)");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case "chilometri":
+						oInput = sap.ui.getCore().byId("chilometri");
+						if (oInput.getValue().length > 5) {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("Controllare inserimento");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+					case sNameDescr:
+						oInput = sap.ui.getCore().byId(sNameDescr);
+						if (oInput.getValue() == "") {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("la descrizione è obbligatoria");
+						} else {
+							oInput.setValueState(sap.ui.core.ValueState.None);
+						}
+						break;
+
+					case "ValueSelSpese":
+						oInput = sap.ui.getCore().byId("ValueSelSpese");
+						sDescrSpesa = sap.ui.getCore().byId("TipoSelSpese").getText();
+						if (oInput.getValue() == "") {
+							oInput.setValueState(sap.ui.core.ValueState.Error);
+							oInput.setValueStateText("inserisci un importo");
+						} else {
+							if (sDescrSpesa == "Chilometri (KM)") {
+								if (oInput.getValue().length > 5) {
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+								} else {
+									oInput.setValueState(sap.ui.core.ValueState.None);
+								}
+
+							} else {
+								if (oInput.getValue().length > 11) {
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+								} else {
+									oInput.setValueState(sap.ui.core.ValueState.None);
+								}
+
+							}
+
+						}
+						break;
+					default:
+						var oTable = oEvent.getSource().getParent().getParent();
+						var aItems = oTable.getAggregation("items");
+						var oItem;
+						var oInputImp;
+						for (var i = 0; i < aItems.length; i++) {
+							oItem = aItems[i];
+							oInputImp = oItem.getAggregation("cells")[2];
+							if (i == 0) {
+								if (oInputImp.getValue().length > 5) {
+									oInputImp.setValueState(sap.ui.core.ValueState.Error);
+									oInputImp.setValueStateText("Controllare inserimento");
+								} else {
+									oInputImp.setValueState(sap.ui.core.ValueState.None);
+								}
+							} else {
+								if (oInputImp.getValue().length > 8) {
+									oInputImp.setValueState(sap.ui.core.ValueState.Error);
+									oInputImp.setValueStateText("Controllare inserimento");
+								} else {
+									oInputImp.setValueState(sap.ui.core.ValueState.None);
+								}
+							}
+
+						}
+
+				}
+
+				if (aSource[0] == "ImpOrKm") {
+					var oExpTable = sap.ui.getCore().byId("speseCommessa");
+					var aItems = oExpTable.getAggregation("items");
+					oInput = oEvent.getSource();
+					for (var i = 0; i < aItems.length; i++) {
+						if (aItems[i].getCells()[2].getEditable()) { //meccanismo per cercare l'Item che è stato selezionato. WORKAROUND
+							sType = aItems[i].getBindingContext().getProperty("Exptype");
+							if (sType == "00") {
+								if (oInput.getValue() == "" || oInput.getValue().length > 5) {
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+									break;
+								} else {
+									oInput.setValueState(sap.ui.core.ValueState.None);
+									break;
+								}
+							} else {
+
+								if (oInput.getValue().length > 11) {
+									oInput.setValueState(sap.ui.core.ValueState.Error);
+									oInput.setValueStateText("Controllare inserimento");
+									break;
+								} else {
+									oInput.setValueState(sap.ui.core.ValueState.None);
+									break;
+								}
+							}
+						}
+					}
+				}
+
+			},
+			//*************************************************************************************************//
+
+			//********* Funzioni per treetable *********//
+			// Collapse per i nodi
+			onCollapseAll: function() {
+				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
+				//	var oTreeTable = sap.ui.getCore().byId("treeTable");
+				oTreeTable.collapseAll();
+
+			},
+
+			// Richiamata per l'espansione di una riga della treetable
+			onExpandFirstLevel: function() {
+				var oTreeTable = this.getView().byId("TREETABLE_CONTENTS");
+				oTreeTable.expandToLevel(1);
+			},
+			//*****************************************//
+
+			//////////////////////////////////////////SEZIONE POPOVER////////////////////////////////////////
+
+			//********* Funzione per getione Popover alla pressione del tasto help su Multiday *********//
+			// Funzione per getione Popover alla pressione del tasto help su Multiday
 			handleResponsivePopoverMultydayPress: function(oEvent) {
 				if (!this._PopoverHelpMulti) {
 					this._PopoverHelpMulti = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelpMulti", this, "ZETMS_CREATE.controller.View1");
@@ -178,8 +382,11 @@ sap.ui.define([
 				oVboxM.addItem(oHTML);
 				this._PopoverHelpMulti.openBy(oEvent.getSource());
 			},
+			//******************************************************************************************//
 
-			// gestione tasto HELP
+			//********* Funzioni per gestione Popover help per per tutte le casistiche *********//
+			// La funzione seguente apre il popover relativo all'help; al suo interno è presente 
+			// uno switch per la gestione del testo dell'help a seconda del contesto (creazione, modifica...)
 			handleResponsivePopoverPress: function(oEvent) {
 				if (!this._oPopoverHelp) {
 					this._oPopoverHelp = sap.ui.xmlfragment("ZETMS_CREATE.view.PopoverHelp", this, "ZETMS_CREATE.controller.View1");
@@ -311,11 +518,174 @@ sap.ui.define([
 				this._oPopoverHelp.openBy(oEvent.getSource());
 			},
 
-			// chiude help
+			// La funzione seguente è utilizzata per la chiusura del Popover del tasto help
 			handleCloseButton: function(oEvent) {
 				this._oPopoverHelp.close();
 			},
+			//********************************************************************************//
 
+			//********* Funzioni per gestione Popover riportante il calendario di copia *********//
+			// Funzione per gestire l'apertura del popover del calendario di 
+			// copia
+			openCalendar: function(oEvent) {
+				var sDay, sMonth, sYear;
+				var that = this;
+				if (!this._oPopoverCopy) {
+					this._oPopoverCopy = sap.ui.xmlfragment("ZETMS_CREATE.view.CopyOfDayPopover", this, "ZETMS_CREATE.controller.View1");
+					this.getView().addDependent(this._oPopoverCopy);
+				}
+
+				this._oPopoverCopy.openBy(oEvent.getSource());
+
+				var oCal = sap.ui.getCore().byId("CALE_ID");
+
+				oCal.displayDate(this.startDate);
+				this._onBindingCalendar();
+
+				var oOriginalCal = this.getView().byId("LRS4_DAT_CALENDAR");
+				var oSelectedDate = oOriginalCal.getSelectedDates()[0].getStartDate();
+
+				sDay = oSelectedDate.getDate().toString();
+				sMonth = (oSelectedDate.getMonth() + 1).toString();
+				sYear = oSelectedDate.getFullYear().toString();
+
+				if (sDay.length == 1) {
+					sDay = "0" + sDay;
+				}
+
+				if (sMonth.length == 1) {
+					sMonth = "0" + sMonth;
+				}
+
+				var sTitle = sDay + "/" + sMonth + "/" + sYear;
+
+				this._oPopoverCopy.setTitle("Copia commesse del " + sTitle);
+
+			},
+
+			// Funzione per gestire la chiusura del popover del calendario di
+			// copia
+			closePopover: function(oEvent) {
+
+				this._oPopoverCopy.close();
+
+			},
+			//***********************************************************************************//
+
+			//********* Funzioni per la gestione del Popover di selezione di una NUOVA commessa *********//
+			// Funzione che richiama il Popover fragment contenente l'albero delle commesse
+			showPopoverCommessa: function(oEvent) {
+				this.sIdButton = oEvent.getParameter("id");
+				var that = this;
+
+				if (!that._oPopover) {
+
+					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.View1");
+					//to get access to the global model
+					this.getView().addDependent(that._oPopover);
+				}
+				var oButton = oEvent.getSource();
+				jQuery.sap.delayedCall(0, this, function() {
+
+					// MP: logica per il binding dell'albero riportante le commesse;
+					// la lettura del modello (oModel.read) è stata effettutata nel
+					// metodo onBeforeRendering
+
+					var oTree = sap.ui.getCore().byId("Tree");
+					var oModelJson = new sap.ui.model.json.JSONModel();
+					var oJson = JSON.parse(sJson);
+
+					oModelJson.setSizeLimit(999999999);
+
+					oModelJson.setData(oJson, false);
+
+					sap.ui.getCore().setModel(oModelJson, "CommessaCollection");
+					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
+					var oTemplate = new sap.m.StandardTreeItem({
+						title: "{name}",
+						icon: "{icon}",
+						select: true
+					});
+					oTemplate.setType("Active");
+					oTree.bindAggregation("items", {
+						path: "/CommessaCollection",
+						template: oTemplate,
+						parameters: {
+							numberOfExpandedLevels: 1
+						}
+					});
+
+					var oInput = sap.ui.getCore().byId("commessa");
+					this._oPopover.openBy(oButton);
+				});
+
+			},
+
+			// Funzione richiamata alla selezione di una commessa dall'albero delle commesse
+			onCommessaSelect: function(oEvent) {
+				var sDesinenza = ""; //per differenziare. Se la commessa è stata scelta dal dialog di modifica aggiungo "del" all'id del controllo
+				if (this.sIdButton != "btnCommModify") { //caso dialog di creazione nuova entry nel TMS a partire da una nuova commessa
+					this.sTimesheetKey = undefined;
+					sap.ui.getCore().byId("ore").setValue("");
+					sap.ui.getCore().byId("descrizione").setValue("");
+				} else {
+					sDesinenza = "Sel";
+				}
+
+				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
+				var oTree = sap.ui.getCore().byId("Tree");
+				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
+				if (sIcon !== "sap-icon://folder-full" && sIcon !== "sap-icon://folder-blank") {
+
+					var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");
+					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-") - 1);
+					sap.ui.getCore().byId("sedi" + sDesinenza).setEnabled(true);
+					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 2, sCommessa.length);
+					sap.ui.getCore().byId("commessa" + sDesinenza).setValue(this.sCommessaName);
+					sap.ui.getCore().byId("commessa" + sDesinenza).setValueState("None");
+					this._oPopover.close();
+					////// le sedi sono diverse dipendentemente dal cliente
+					this.callSediSet(this.sCommessaId);
+					//////
+
+				} else {
+					oTree.removeSelections();
+				}
+
+				//disabilito checkbox per selezione commessa multi day
+				if (this.sIdButton != "btnCommModify") {
+					sap.ui.getCore().byId("multidaySel").setVisible(false);
+					sap.ui.getCore().byId("multidaySel").setEnabled(false);
+					sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+				}
+
+			},
+			//******************************************************************************************//
+
+			///////////////////////////////////////FINE SEZIONE POPOVER///////////////////////////////////////
+
+			//////////////////////////////////////////SEZIONE DIALOG/////////////////////////////////////////
+
+			//********* Funzioni per gestione apertura Dialog di settaggio tabella commmesse *********//
+			// Funzione per aprire il setting Dialog per l'ordinamento delle commesse
+			handleViewSettingsDialogButtonPressed: function(oEvent) {
+				var that = this;
+				this.sButtonKey = oEvent.getSource().getId();
+				if (!that._oDialogSettings) {
+					that._oDialogSettings = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
+					//to get access to the global model
+					this.getView().addDependent(that._oDialogSettings);
+					/*	if (sap.ui.Device.system.phone) {
+							that._oDialog.setStretch(true);
+						}*/
+				}
+				// toggle compact style
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialogSettings);
+				that._oDialogSettings.open();
+			},
+
+			// Funzione richiamata alla selezione di un metodo per il sorting della tabella
+			// delle commesse. Chiude il Dialog.
 			handleConfirm: function(oEvent) {
 
 				var oView = this.getView();
@@ -372,49 +742,502 @@ sap.ui.define([
 				}
 
 			},
+			//***************************************************************************************//
 
-			handleViewSettingsDialogButtonPressed: function(oEvent) {
+			//********* Funzioni apertura e chiusura Dialog modifica *********// 
+			//  Funzione che gestisce l'apertura del dialog di modifica, richiamata alla selezione di un item dalla tabella delle commesse
+			// o dalla selezione di una commessa dalla treeTable
+			openDialogSel: function(oEvent) {
+				this.sIdButton = undefined;
 				var that = this;
-				this.sButtonKey = oEvent.getSource().getId();
-				if (!that._oDialogSettings) {
-					that._oDialogSettings = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTable", this, "ZETMS_CREATE.controller.View1");
+				this.aGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
+
+				if (!that.DialogSel) {
+
+					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogDelete", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
-					this.getView().addDependent(that._oDialogSettings);
-					/*	if (sap.ui.Device.system.phone) {
-							that._oDialog.setStretch(true);
-						}*/
+					this.getView().addDependent(that.DialogSel);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
 				}
-				// toggle compact style
-				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), that._oDialogSettings);
-				that._oDialogSettings.open();
+				that.DialogSel.open();
+				this._DialogSel = that.DialogSel;
+
+				// MP: logica per mostrare il messaggio nel caso in cui la commessa aperta si riferisca a più giorni.
+				var oTableCommesse = this.getView().byId("COMMESSE_CONTENTS");
+				var aItems = this.aItems;
+				var oItem, oBindingContext, oObject, sTmsKey, sCurrentTmsKey, sDay, sMonth, sYear;
+				sCurrentTmsKey = this.sCurrentTmsKey;
+				for (var i = 0; i < aItems.length; i++) {
+					oItem = aItems[i];
+					oBindingContext = oItem.getBindingContext();
+					if (oBindingContext != null) { //non sono sulla riga di "testata" della commessa (riepilogo)
+						oObject = oBindingContext.getObject();
+						sTmsKey = oObject.Tmskey;
+						sDay = oObject.Giorno;
+						sMonth = oObject.Calmonth;
+						sYear = oObject.Calyear;
+						if (sDay.length == 1) {
+							sDay = "0" + sDay;
+						}
+						if (sMonth.length == 1) {
+							sMonth = "0" + sMonth;
+						}
+
+						if (sTmsKey == sCurrentTmsKey) {
+							this.aGiorni.push(sDay + "/" + sMonth + "/" + sYear);
+						}
+					}
+				}
+				var oSwitchMulti = sap.ui.getCore().byId("multidaySelModify"); //MP: per segnalare con lo Switch MultiDay le commesse che si riferiscono a più giorni
+				if (this.aGiorni.length > 1) {
+					oSwitchMulti.setState(true); // se commessa si riferisce a più giorni, attivo lo Switch e mostro un dialog con un messaggio per notificare
+					sap.m.MessageBox.show(
+						"La commessa selezionata è di tipo multi-day (utilizzata su più giorni)." +
+						" Le eventuali modifiche ai campi Commessa, Sede e Descrizione verranno applicate a tutti i giorni ad essa associati (stesso ID Commessa).", {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Attenzione",
+							actions: [sap.m.MessageBox.Action.CLOSE],
+						});
+				} else {
+					oSwitchMulti.setState(false); // se commessa inserita in un solo giorno, setto lo stato dello switch a "false"
+				} //End if//
+
 			},
 
-			onBeforeRendering: function() {
+			// Funzione per la chiusura del Dialog di modifica delle commesse
+			closeDialogSel: function(oEvent) {
+				var oInputOre, oInputDescr, oInputCommessa, oSelectSede;
+				oInputOre = sap.ui.getCore().byId("oreSel");
+				oInputDescr = sap.ui.getCore().byId("descrizioneSel");
+				oInputCommessa = sap.ui.getCore().byId("commessaSel");
+				oSelectSede = sap.ui.getCore().byId("sediSel");
+				var oButtonElim = sap.ui.getCore().byId("EliminaSel");
+				var oButtonMod = sap.ui.getCore().byId("Modifica");
+				this.DialogSel.close();
+				/////////////////////////////////////////////////////////////////////
+				// MP: per pulire i campi della tabella nei panel e chiudere i panel
+				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
+				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
+				sap.ui.getCore().byId("panelSpeseIns").setExpanded(false);
+
+				if (oEvent.getSource().getId() == "Indietro") {
+					oInputOre.setValue(this.sOraOriginale);
+					oInputDescr.setValue(this.sDescrOriginale);
+					oInputCommessa.setValue(this.sCommessaOriginale);
+					oSelectSede.setSelectedKey(this.sSedeOriginale);
+					oInputCommessa.setValueStateText("");
+					oInputCommessa.setValueState("None");
+					oSelectSede.setValueStateText("");
+					oSelectSede.setValueState("None");
+					oInputOre.setValueStateText("");
+					oInputOre.setValueState("None");
+					oInputDescr.setValueStateText("");
+					oInputDescr.setValueState("None");
+					this.sOraOriginale = undefined;
+					this.sDescrOriginale = undefined;
+					this.sCommessaOriginale = undefined;
+					this.sSedeOriginale = undefined;
+					oButtonElim.setEnabled(true);
+					oButtonMod.setEnabled(true);
+				}
+				this.onExpenseSelect(oEvent);
+				/////////////////////////////////////////////////////////////////////
+
+			},
+			//**************************************************************//
+
+			//********* Funzioni apertura e chiusura Dialog spese *********//
+			// Funzione per l'apertura del Dialog relativo alla singola spesa
+			openDialogSpese: function(oEvent) {
+				var that = this;
+				this.sIdButton = undefined;
+
+				if (!that.DialogSpese) {
+
+					that.DialogSpese = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogSpese", this, "ZETMS_CREATE.controller.View1");
+					//to get access to the global model
+					this.getView().addDependent(that.DialogSpese);
+					if (sap.ui.Device.system.phone) {
+						that.DialogSpese.setStretch(true);
+					}
+				}
+				that.DialogSpese.open();
+				this._DialogSpese = that.DialogSpese;
+			},
+
+			// Funzione che gestisce la chiusura del Dialog della singola spesa
+			closeDialogSpese: function() {
+
+				this._onBindingChange();
+				this.DialogSpese.close();
+
+				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
+				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
+			},
+
+			// Funzione che gestisce la chiusura del Dialog della singola spesa
+			// e performa alcune operazione addizionali
+			navBackDialogSpese: function(oEvent) {
+				var oInputImp = sap.ui.getCore().byId("ValueSelSpese");
+				var oInputExpDescr = sap.ui.getCore().byId("descrizioneSelSpese");
+				this.DialogSpese.close();
+
+				oInputImp.setValueState("None");
+				oInputImp.setValueStateText("");
+
+				if (oEvent.getSource().getId() == "IndietroExp") {
+					oInputImp.setValue(this.sImportoOriginale);
+					oInputExpDescr.setValue(this.sDescrExpOriginale);
+					this.sImportoOriginale = undefined;
+					this.sDescrExpOriginale = undefined;
+				}
+
+			},
+			//***********************************************************//
+
+			//********* Funzioni per gestire il Dialog di creazione *********//
+			// Funzione per aprire il Dialog con il form per l'inserimento dei dati di una commessa
+			openDialog: function(oEvent) {
+
+				var that = this;
+				this.sIdButton = undefined;
+				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
+				if (!that.Dialog) {
+
+					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.View1");
+
+					//to get access to the global model
+					this.getView().addDependent(that.Dialog);
+					if (sap.ui.Device.system.phone) {
+						that.Dialog.setStretch(true);
+					}
+				}
+				that.Dialog.open();
+				this._Dialog = that.Dialog;
+
+				/////// giorni multipli
+
+				var aDatesList = [];
+				var oDate;
+				var oDateTxt = "";
+				var oComma = "";
+				var aSelectedDates = this.cale.getSelectedDates();
+
+				if (aSelectedDates.length > 0) {
+					for (var i = 0; i < aSelectedDates.length; i++) {
+						oDate = aSelectedDates[i].getStartDate();
+						oDate = formatter.formatCalDate(oDate.toString());
+						//		oDate = this.oFormatYyyymmdd.format(oDate);
+						//		oDate = formatter.formatDate(oDate);
+						//		oDate = formatter.formatDate(oDate);
+						//oDataSel.selectedDates.push({Date:oDate});
+						if (oDateTxt !== "") {
+							oComma = ", ";
+						}
+						aDatesList.push(oDate);
+						oDateTxt = oDateTxt + oComma + oDate;
+					}
+				}
+				//////// giorni multipli
+				this.DateTxt = oDateTxt;
+				this.DatesList = aDatesList;
+				//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
+				//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
+				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.DateTxt);
+				//sap.ui.getCore().byId("dettaglio").setText("Inserire dettaglio per il giorno " + this.DateTxt);
+
+				sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
+
+			},
+
+			// Funzione per la chiusura del Dialog 
+			closeDialog: function() {
+				this.Dialog.close();
+				sap.ui.getCore().byId("commessa").setValue("");
+				sap.ui.getCore().byId("commessa").setValueState("None");
+				//sap.ui.getCore().byId("sedi").setEnabled(false);
+				sap.ui.getCore().byId("sedi").unbindItems();
+				sap.ui.getCore().byId("sedi").setValueState("None");
+				sap.ui.getCore().byId("ore").setValue("");
+				sap.ui.getCore().byId("ore").setValueState("None");
+				sap.ui.getCore().byId("descrizione").setValue("");
+				sap.ui.getCore().byId("descrizione").setValueState("None");
+				sap.ui.getCore().byId("tabellaSpese").removeSelections();
+				sap.ui.getCore().byId("panelSpese").setExpanded(false);
+				sap.ui.getCore().byId("multidaySel").setVisible(false);
+				sap.ui.getCore().byId("multidaySel").setEnabled(false);
+				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+
+				this.handleRemoveSelection();
+				this.count = undefined;
+				this.onExpenseSelect(undefined);
+				this.getView().removeDependent(this.Dialog);
+
+				//MP: per gestire refresh
+				//this._onBindingChange();
+				//this.byId("LRS4_DAT_CALENDAR").rerender();
+
+			},
+			//**************************************************************//
+
+			//********* Funzioni per gestire il Dialog riportante le commesse già esistenti *********//
+			// Funzione per l'apertura della tabella con le commesse già esistenti
+			handleTableSelectDialogPress: function(oEvent) {
+
+				//	var that = this;
+
+				if (!this._oDialogSelComm) {
+
+					this._oDialogSelComm = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
+				}
+
+				// Multi-select if required
+				//var bMultiSelect = !!oEvent.getSource().data("multi");
+				//	this._oDialog.setMultiSelect(bMultiSelect);
+
+				// Remember selections if required
+				//	var bRemember = !!oEvent.getSource().data("remember");
+				//	this._oDialog.setRememberSelections(bRemember);
+
+				this.getView().addDependent(this._oDialogSelComm);
 				var oModel = this.getView().getModel();
-				var sRead = "/CommessaSet";
 
-				oModel.read(sRead, {
+				var oTableCommEx = sap.ui.getCore().byId("tableCommEx"); //tabella per commesse già inserite
 
-					success: fnReadS,
+				oTableCommEx.setModel(oModel);
 
-					error: fnReadE
+				var oTemplate = new sap.m.ColumnListItem({
+					cells: [
+						new sap.m.Text({
+							text: "{Tmskey}",
+							wrapping: false
+						}),
+
+						new sap.m.Text({
+							text: "{Orderjob}",
+							wrapping: false
+
+						}),
+
+						new sap.m.ObjectIdentifier({
+							title: "{Descrorder}",
+							wrapping: false
+						}),
+
+						new sap.m.Text({
+							text: "{Descr}"
+						}),
+
+						new sap.m.Text({
+							text: "{Office}"
+						})
+					]
 				});
 
-				function fnReadS(oData, response) {
-					//console.log(oData);
-					//console.log(response);
+				var startDate = this.cale.getStartDate();
+				var startMonth = this.oFormatMonth.format(startDate);
+				if (startMonth.length === 1) {
 
-					sJson = oData.results["0"].Json;
-
+					startMonth = "0" + startMonth;
 				}
 
-				function fnReadE(oError) {
-					//console.log(oError);
-				}
+				var startYear = this.oFormatYear.format(startDate);
 
+				//	var sDate = this.formattedDate;
+				////	var	sDate = this.DatesList[0];
+				//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
+				//	var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
+
+				var fMonth = new sap.ui.model.odata.Filter('Calmonth', [{
+					operator: "EQ",
+					value1: startMonth
+				}]);
+				var fYear = new sap.ui.model.odata.Filter('Calyear', [{
+					operator: "EQ",
+					value1: startYear
+				}]);
+				var fFlag = new sap.ui.model.odata.Filter('Parentid', [{
+					operator: "EQ",
+					value1: "X"
+				}]);
+
+				oTableCommEx.bindItems({
+
+					path: "/ListaCommesseGroupSet",
+
+					template: oTemplate,
+					filters: [fMonth, fYear, fFlag],
+				});
+
+				oTableCommEx._oSearchField.setVisible(false);
+				var oBindingEx = oTableCommEx.getBinding("items");
+
+				oBindingEx.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
+					var oSource = oEvent.getSource();
+					oSource.bClientOperation = true;
+					oSource.sOperationMode = "Client"; //operationMode = Client
+
+				});
+
+				// toggle compact style
+				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
+				this._oDialogSelComm.open();
 			},
 
-			//MP: logica per la selezione del calendario
+			// Funzione richiamata alla selezione di una riga da tabella commesse già usate DialogTableSel
+			handleClose: function(oEvent) {
+				var aContexts = oEvent.getParameter("selectedContexts");
+				var oInput = sap.ui.getCore().byId("commessa");
+				var oSede = sap.ui.getCore().byId("sedi");
+				var oDescr = sap.ui.getCore().byId("descrizione");
+
+				oSede.setForceSelection(true);
+
+				if (aContexts && aContexts.length) {
+
+					oInput.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Descrorder;
+					}));
+
+					var mSede = {
+						sede: [{
+							Office: aContexts.map(function(oContext) {
+								return oContext.getObject().Office;
+							})
+						}]
+					};
+
+					var oModel = new sap.ui.model.json.JSONModel();
+					oModel.setData(mSede);
+					sap.ui.getCore().setModel(oModel, "sede");
+					oSede.setModel(sap.ui.getCore().getModel("sede"));
+
+					var oTemplate = new sap.ui.core.Item({
+						key: "{Office}",
+						text: "{Office}"
+					});
+					oSede.bindAggregation("items", {
+						path: "/sede",
+						template: oTemplate
+					});
+					oSede.setSelectedItem(aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					}));
+					oSede.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					}));
+
+					this.sSede = aContexts.map(function(oContext) {
+						return oContext.getObject().Office;
+					})[0];
+
+					oDescr.setValue(aContexts.map(function(oContext) {
+						return oContext.getObject().Descr;
+					}));
+
+					this.sTimesheetKey = aContexts.map(function(oContext) {
+						return oContext.getObject().Tmskey;
+					})[0];
+
+					this.sCommessaId = aContexts.map(function(oContext) {
+						return oContext.getObject().Orderjob;
+					})[0];
+
+				}
+
+				oEvent.getSource().getBinding("items").filter([]);
+
+				/*		 var chk = sap.ui.getCore().byId("multidaySel").getState();
+	           if 	( !chk ) {
+					sap.ui.getCore().byId("sedi").setEnabled(true);
+              
+						////// le sedi sono diverse dipendentemente dal cliente
+						this.callSediSet(this.sCommessaId);
+	           }*/
+
+				//abilito checkbox per selezione commessa multi day
+				sap.ui.getCore().byId("multidaySel").setVisible(true);
+				sap.ui.getCore().byId("multidaySel").setEnabled(true);
+				//	sap.ui.getCore().byId("multidaySel").setSelected(true);
+				sap.ui.getCore().byId("multidaySel").setState(true);
+				//	sap.ui.getCore().byId("multidaySel").setEditable(true);
+				sap.ui.getCore().byId("label_multidaySel").setVisible(true);
+			},
+			//***************************************************************************************//
+
+			//********* Funzione per la gestione del message Dialog per i messaggi di conferma *********//
+			// Funzione per aprire il Dialog di conferma delle azioni per
+			// ogni azione eseguibile dall'applicazione
+			openMessageDialog: function(oEvent) {
+				var that;
+				var sMessage = "";
+				var oView = this.getView();
+				var oMultiDay = sap.ui.getCore().byId("multidaySel");
+
+				var sButtonName = oEvent.getSource().getId() + "a";
+				if (sButtonName == "Modificaa") {
+					if (this.aGiorni.length > 1) {
+						sMessage =
+							"Ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le modifiche verranno applicate anche ai seguenti giorni: <br/>";
+						for (var i = 0; i < this.aGiorni.length; i++) {
+							sMessage += "<br/><strong>" + this.aGiorni[i] + "</strong>";
+						}
+					}
+				} else {
+					sMessage = "L'operazione avrà effetto sui seguenti giorni:<br/>";
+					for (var j = 0; j < this.DatesList.length; j++) {
+						sMessage += "<br/><strong>" + this.DatesList[j] + "</strong> ";
+					}
+					if (oMultiDay.getState() == true) {
+						sMessage +=
+							"<br/><br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", eventuali modifiche al campo \"Descrizione\" si rifletteranno su tutti i giorni coinvolti.";
+					}
+				}
+				that = this;
+				var dialog = new Dialog({
+					title: 'Attenzione',
+					type: 'Message',
+					state: 'Warning',
+					content: new sap.m.FormattedText({
+						htmlText: "Sei sicuro di voler confermare l'azione? <br/>" + sMessage
+					}),
+					beginButton: new sap.m.Button(sButtonName, {
+						text: 'Conferma',
+						type: 'Accept',
+						press: function() {
+							dialog.close();
+							that.onConfirmation(oEvent);
+							that.count = undefined;
+						}
+					}),
+					endButton: new sap.m.Button({
+						text: 'Annulla',
+						type: 'Reject',
+						press: function() {
+							dialog.close();
+						}
+					}),
+					afterClose: function() {
+						dialog.destroy();
+					}
+				});
+
+				dialog.open();
+
+			},
+			//*****************************************************************************************//
+
+			///////////////////////////////////////FINE SEZIONE DIALOG///////////////////////////////////////
+
+			//////////////////////////////////////////SEZIONE FUNZIONALITA'/////////////////////////////////////////
+
+			//********* Funzioni per gestire il calendario principale *********//
+			// Funzione richiamata alla selezione di un giorno del calendario;
+			// all'interno di questa è presente la logica per la gestione dei 
+			// bottoni nella View1
 			handleCalendarSelect: function(oEvent) {
 
 				var sDate, sDayFilter, oFilter, oTreeFilter;
@@ -618,11 +1441,8 @@ sap.ui.define([
 
 			},
 
-			handleCopyCalendarSelect: function(oEvent) {
-				var oCal = oEvent.getSource();
-				this.aSelectedDates = oCal.getSelectedDates();
-			},
-
+			// Funzione per rimuovere le date selezionate dal calendario
+			// principale
 			handleRemoveSelection: function(oEvent) {
 				this.getView().byId("LRS4_DAT_CALENDAR").removeAllSelectedDates();
 				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").filter("");
@@ -633,49 +1453,20 @@ sap.ui.define([
 				this.byId("copyBtn").setEnabled(false);
 				//	this._clearModel();
 			},
+			//***************************************************************//
 
-			openCalendar: function(oEvent) {
-				var sDay, sMonth, sYear;
-				var that = this;
-				if (!this._oPopoverCopy) {
-					this._oPopoverCopy = sap.ui.xmlfragment("ZETMS_CREATE.view.CopyOfDayPopover", this, "ZETMS_CREATE.controller.View1");
-					this.getView().addDependent(this._oPopoverCopy);
-				}
-
-				this._oPopoverCopy.openBy(oEvent.getSource());
-
-				var oCal = sap.ui.getCore().byId("CALE_ID");
-
-				oCal.displayDate(this.startDate);
-				this._onBindingCalendar();
-
-				var oOriginalCal = this.getView().byId("LRS4_DAT_CALENDAR");
-				var oSelectedDate = oOriginalCal.getSelectedDates()[0].getStartDate();
-
-				sDay = oSelectedDate.getDate().toString();
-				sMonth = (oSelectedDate.getMonth() + 1).toString();
-				sYear = oSelectedDate.getFullYear().toString();
-
-				if (sDay.length == 1) {
-					sDay = "0" + sDay;
-				}
-
-				if (sMonth.length == 1) {
-					sMonth = "0" + sMonth;
-				}
-
-				var sTitle = sDay + "/" + sMonth + "/" + sYear;
-
-				this._oPopoverCopy.setTitle("Copia commesse del " + sTitle);
-
+			//********* Funzioni per gestire il calendario di copia e le azioni eseguite su di esso *********//
+			// Funzione che salva le date selezionate nel calendario di copia
+			handleCopyCalendarSelect: function(oEvent) {
+				var oCal = oEvent.getSource();
+				this.aSelectedDates = oCal.getSelectedDates();
 			},
 
-			closePopover: function(oEvent) {
-
-				this._oPopoverCopy.close();
-
-			},
-
+			// Funzione richiamata alla pressione del tasto conferma per la copia;
+			// la logica prevede la copia dell'inserimento in un giorno selezionato
+			// dal calendario principale (Descrizione, ore, commessa...) e la
+			// scrittura dei dati sulle giornate selezionate nel calendario 
+			// di copia
 			handleDayCopy: function(oEvent) {
 
 				var that = this;
@@ -889,295 +1680,10 @@ sap.ui.define([
 				this.count = undefined;
 
 			},
+			//**********************************************************************************************//
 
-			//MP: function per aprire il dialog con il form per l'inserimento dei dati di una commessa e la visualizzazione di una esistente
-			openDialog: function(oEvent) {
-
-				var that = this;
-				this.sIdButton = undefined;
-				this.sButtonKey = undefined; //mi salvo il valore chiave del bottone per la gestione dei conflitti in actionTask
-				if (!that.Dialog) {
-
-					that.Dialog = sap.ui.xmlfragment("ZETMS_CREATE.view.Dialog", this, "ZETMS_CREATE.controller.View1");
-
-					//to get access to the global model
-					this.getView().addDependent(that.Dialog);
-					if (sap.ui.Device.system.phone) {
-						that.Dialog.setStretch(true);
-					}
-				}
-				that.Dialog.open();
-				this._Dialog = that.Dialog;
-
-				/////// giorni multipli
-
-				var aDatesList = [];
-				var oDate;
-				var oDateTxt = "";
-				var oComma = "";
-				var aSelectedDates = this.cale.getSelectedDates();
-
-				if (aSelectedDates.length > 0) {
-					for (var i = 0; i < aSelectedDates.length; i++) {
-						oDate = aSelectedDates[i].getStartDate();
-						oDate = formatter.formatCalDate(oDate.toString());
-						//		oDate = this.oFormatYyyymmdd.format(oDate);
-						//		oDate = formatter.formatDate(oDate);
-						//		oDate = formatter.formatDate(oDate);
-						//oDataSel.selectedDates.push({Date:oDate});
-						if (oDateTxt !== "") {
-							oComma = ", ";
-						}
-						aDatesList.push(oDate);
-						oDateTxt = oDateTxt + oComma + oDate;
-					}
-				}
-				//////// giorni multipli
-				this.DateTxt = oDateTxt;
-				this.DatesList = aDatesList;
-				//	this.formattedDate = formatter.formatCalDate(this.selectedDate.toString());
-				//	that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.formattedDate);
-				that.Dialog.setTitle("Inserire dettaglio per il giorno " + this.DateTxt);
-				//sap.ui.getCore().byId("dettaglio").setText("Inserire dettaglio per il giorno " + this.DateTxt);
-
-				sap.ui.getCore().byId("sedi").setSelectedKey(""); //setting della chiave del sap.m.Select a ""
-
-			},
-
-			closeDialog: function() {
-				this.Dialog.close();
-				sap.ui.getCore().byId("commessa").setValue("");
-				sap.ui.getCore().byId("commessa").setValueState("None");
-				//sap.ui.getCore().byId("sedi").setEnabled(false);
-				sap.ui.getCore().byId("sedi").unbindItems();
-				sap.ui.getCore().byId("sedi").setValueState("None");
-				sap.ui.getCore().byId("ore").setValue("");
-				sap.ui.getCore().byId("ore").setValueState("None");
-				sap.ui.getCore().byId("descrizione").setValue("");
-				sap.ui.getCore().byId("descrizione").setValueState("None");
-				sap.ui.getCore().byId("tabellaSpese").removeSelections();
-				sap.ui.getCore().byId("panelSpese").setExpanded(false);
-				sap.ui.getCore().byId("multidaySel").setVisible(false);
-				sap.ui.getCore().byId("multidaySel").setEnabled(false);
-				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
-
-				this.handleRemoveSelection();
-				this.count = undefined;
-				this.onExpenseSelect(undefined);
-				this.getView().removeDependent(this.Dialog);
-
-				//MP: per gestire refresh
-				//this._onBindingChange();
-				//this.byId("LRS4_DAT_CALENDAR").rerender();
-
-			},
-
-			//MP: funzione che richiama il fragment contenente l'albero delle commesse
-			showPopoverCommessa: function(oEvent) {
-				this.sIdButton = oEvent.getParameter("id");
-				var that = this;
-
-				if (!that._oPopover) {
-
-					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.View1");
-					//to get access to the global model
-					this.getView().addDependent(that._oPopover);
-				}
-				var oButton = oEvent.getSource();
-				jQuery.sap.delayedCall(0, this, function() {
-
-					// MP: logica per il binding dell'albero riportante le commesse;
-					// la lettura del modello (oModel.read) è stata effettutata nel
-					// metodo onBeforeRendering
-
-					var oTree = sap.ui.getCore().byId("Tree");
-					var oModelJson = new sap.ui.model.json.JSONModel();
-					var oJson = JSON.parse(sJson);
-
-					oModelJson.setSizeLimit(999999999);
-
-					oModelJson.setData(oJson, false);
-
-					sap.ui.getCore().setModel(oModelJson, "CommessaCollection");
-					oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
-					var oTemplate = new sap.m.StandardTreeItem({
-						title: "{name}",
-						icon: "{icon}",
-						select: true
-					});
-					oTemplate.setType("Active");
-					oTree.bindAggregation("items", {
-						path: "/CommessaCollection",
-						template: oTemplate,
-						parameters: {
-							numberOfExpandedLevels: 1
-						}
-					});
-
-					var oInput = sap.ui.getCore().byId("commessa");
-					this._oPopover.openBy(oButton);
-				});
-
-			},
-
-			//MP: funzione richiamata alla selezione di una commessa dall'albero delle commesse
-			onCommessaSelect: function(oEvent) {
-				var sDesinenza = ""; //per differenziare. Se la commessa è stata scelta dal dialog di modifica aggiungo "del" all'id del controllo
-				if (this.sIdButton != "btnCommModify") { //caso dialog di creazione nuova entry nel TMS a partire da una nuova commessa
-					this.sTimesheetKey = undefined;
-					sap.ui.getCore().byId("ore").setValue("");
-					sap.ui.getCore().byId("descrizione").setValue("");
-				} else {
-					sDesinenza = "Sel";
-				}
-
-				var sIcon = oEvent.getSource().getSelectedItem().getProperty("icon");
-				var oTree = sap.ui.getCore().byId("Tree");
-				// MP: non permette di selezionare i nodi radice ma solo quelli foglia, le commesse
-				if (sIcon !== "sap-icon://folder-full" && sIcon !== "sap-icon://folder-blank") {
-
-					var sCommessa = oEvent.getSource().getSelectedItem().getProperty("title");
-					this.sCommessaId = sCommessa.substring(0, sCommessa.indexOf("-") - 1);
-					sap.ui.getCore().byId("sedi" + sDesinenza).setEnabled(true);
-					this.sCommessaName = sCommessa.substring(sCommessa.indexOf("-") + 2, sCommessa.length);
-					sap.ui.getCore().byId("commessa" + sDesinenza).setValue(this.sCommessaName);
-					sap.ui.getCore().byId("commessa" + sDesinenza).setValueState("None");
-					this._oPopover.close();
-					////// le sedi sono diverse dipendentemente dal cliente
-					this.callSediSet(this.sCommessaId);
-					//////
-
-				} else {
-					oTree.removeSelections();
-				}
-
-				//disabilito checkbox per selezione commessa multi day
-				if (this.sIdButton != "btnCommModify") {
-					sap.ui.getCore().byId("multidaySel").setVisible(false);
-					sap.ui.getCore().byId("multidaySel").setEnabled(false);
-					sap.ui.getCore().byId("label_multidaySel").setVisible(false);
-				}
-
-			},
-
-			handleTableSelectDialogPress: function(oEvent) {
-
-				//	var that = this;
-
-				if (!this._oDialogSelComm) {
-
-					this._oDialogSelComm = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogTableSel", this, "ZETMS_CREATE.controller.View1");
-				}
-
-				// Multi-select if required
-				//var bMultiSelect = !!oEvent.getSource().data("multi");
-				//	this._oDialog.setMultiSelect(bMultiSelect);
-
-				// Remember selections if required
-				//	var bRemember = !!oEvent.getSource().data("remember");
-				//	this._oDialog.setRememberSelections(bRemember);
-
-				this.getView().addDependent(this._oDialogSelComm);
-				var oModel = this.getView().getModel();
-
-				var oTableCommEx = sap.ui.getCore().byId("tableCommEx"); //tabella per commesse già inserite
-
-				oTableCommEx.setModel(oModel);
-
-				var oTemplate = new sap.m.ColumnListItem({
-					cells: [
-						new sap.m.Text({
-							text: "{Tmskey}",
-							wrapping: false
-						}),
-
-						new sap.m.Text({
-							text: "{Orderjob}",
-							wrapping: false
-
-						}),
-
-						new sap.m.ObjectIdentifier({
-							title: "{Descrorder}",
-							wrapping: false
-						}),
-
-						new sap.m.Text({
-							text: "{Descr}"
-						}),
-
-						new sap.m.Text({
-							text: "{Office}"
-						})
-					]
-				});
-
-				var startDate = this.cale.getStartDate();
-				var startMonth = this.oFormatMonth.format(startDate);
-				if (startMonth.length === 1) {
-
-					startMonth = "0" + startMonth;
-				}
-
-				var startYear = this.oFormatYear.format(startDate);
-
-				//	var sDate = this.formattedDate;
-				////	var	sDate = this.DatesList[0];
-				//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
-				//	var sYear = sDate.substring(sDate.indexOf("/", 3) + 1, sDate.length);
-
-				var fMonth = new sap.ui.model.odata.Filter('Calmonth', [{
-					operator: "EQ",
-					value1: startMonth
-				}]);
-				var fYear = new sap.ui.model.odata.Filter('Calyear', [{
-					operator: "EQ",
-					value1: startYear
-				}]);
-				var fFlag = new sap.ui.model.odata.Filter('Parentid', [{
-					operator: "EQ",
-					value1: "X"
-				}]);
-
-				oTableCommEx.bindItems({
-
-					path: "/ListaCommesseGroupSet",
-
-					template: oTemplate,
-					filters: [fMonth, fYear, fFlag],
-				});
-
-				oTableCommEx._oSearchField.setVisible(false);
-				var oBindingEx = oTableCommEx.getBinding("items");
-
-				oBindingEx.attachDataReceived(function(oEvent) { //l'operationMode.Client viene impostato solo dopo che i dati sono stati ricevuti dal Back-end
-					var oSource = oEvent.getSource();
-					oSource.bClientOperation = true;
-					oSource.sOperationMode = "Client"; //operationMode = Client
-
-				});
-
-				// toggle compact style
-				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
-				this._oDialogSelComm.open();
-			},
-
-			// funzione search non implementata al momento
-			handleSearch: function(oEvent) {
-				var sValue = oEvent.getParameter("value");
-				var oBinding = oEvent.getSource().getBinding("items");
-				oEvent.getSource().getBindingContext();
-				if (sValue != "") {
-					var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
-					if (oBinding.aAllKeys == null) {
-						oBinding.aAllKeys = oBinding.aKeys;
-					}
-					oBinding.filter(oFilter);
-				} else {
-					oBinding.filter();
-				}
-			},
-
+			//********* Funzioni per la gestione dei dati  di una commessa ESISTENTE *********//
+			// Funzione per la gestione del bottone Multiday
 			handleCBoxMultiDay: function(oEvent) {
 
 				// var chk = sap.ui.getCore().byId("multidaySel").getSelected();
@@ -1203,88 +1709,10 @@ sap.ui.define([
 				}
 
 			},
+			//******************************************************************************//
 
-			//selezione riga da tabella commesse già usate DialogTableSel
-			handleClose: function(oEvent) {
-				var aContexts = oEvent.getParameter("selectedContexts");
-				var oInput = sap.ui.getCore().byId("commessa");
-				var oSede = sap.ui.getCore().byId("sedi");
-				var oDescr = sap.ui.getCore().byId("descrizione");
-
-				oSede.setForceSelection(true);
-
-				if (aContexts && aContexts.length) {
-
-					oInput.setValue(aContexts.map(function(oContext) {
-						return oContext.getObject().Descrorder;
-					}));
-
-					var mSede = {
-						sede: [{
-							Office: aContexts.map(function(oContext) {
-								return oContext.getObject().Office;
-							})
-						}]
-					};
-
-					var oModel = new sap.ui.model.json.JSONModel();
-					oModel.setData(mSede);
-					sap.ui.getCore().setModel(oModel, "sede");
-					oSede.setModel(sap.ui.getCore().getModel("sede"));
-
-					var oTemplate = new sap.ui.core.Item({
-						key: "{Office}",
-						text: "{Office}"
-					});
-					oSede.bindAggregation("items", {
-						path: "/sede",
-						template: oTemplate
-					});
-					oSede.setSelectedItem(aContexts.map(function(oContext) {
-						return oContext.getObject().Office;
-					}));
-					oSede.setValue(aContexts.map(function(oContext) {
-						return oContext.getObject().Office;
-					}));
-
-					this.sSede = aContexts.map(function(oContext) {
-						return oContext.getObject().Office;
-					})[0];
-
-					oDescr.setValue(aContexts.map(function(oContext) {
-						return oContext.getObject().Descr;
-					}));
-
-					this.sTimesheetKey = aContexts.map(function(oContext) {
-						return oContext.getObject().Tmskey;
-					})[0];
-
-					this.sCommessaId = aContexts.map(function(oContext) {
-						return oContext.getObject().Orderjob;
-					})[0];
-
-				}
-
-				oEvent.getSource().getBinding("items").filter([]);
-
-				/*		 var chk = sap.ui.getCore().byId("multidaySel").getState();
-	           if 	( !chk ) {
-					sap.ui.getCore().byId("sedi").setEnabled(true);
-              
-						////// le sedi sono diverse dipendentemente dal cliente
-						this.callSediSet(this.sCommessaId);
-	           }*/
-
-				//abilito checkbox per selezione commessa multi day
-				sap.ui.getCore().byId("multidaySel").setVisible(true);
-				sap.ui.getCore().byId("multidaySel").setEnabled(true);
-				//	sap.ui.getCore().byId("multidaySel").setSelected(true);
-				sap.ui.getCore().byId("multidaySel").setState(true);
-				//	sap.ui.getCore().byId("multidaySel").setEditable(true);
-				sap.ui.getCore().byId("label_multidaySel").setVisible(true);
-			},
-
-			//ritrovo lista sedi
+			//********* Funzioni per la gestione delle sedi nel controllo Select *********// 
+			// Funzione che richiama l'elenco delle sedi per una specifica commessa
 			callSediSet: function(sCommessa) {
 				var oModel = this.getView().getModel();
 				var sDesinenza = "";
@@ -1343,7 +1771,7 @@ sap.ui.define([
 
 			},
 
-			// reimposto la sede selezionata dopo selezione switch si/no
+			// Funzione per reimpostare la sede selezionata dopo selezione switch si/no
 			callSediReset: function(sSede) {
 				var oSede = sap.ui.getCore().byId("sedi");
 
@@ -1374,7 +1802,7 @@ sap.ui.define([
 				oSede.setValue(sSede);
 			},
 
-			//selezione sedi
+			// Funzione per la gestione del cambiamento di selezione nel Select delle sedi
 			handleSelectChangeSedi: function(oEvent) {
 				var oSelect = oEvent.getSource();
 				var oSelectedKey = oSelect.getSelectedKey();
@@ -1386,7 +1814,12 @@ sap.ui.define([
 				}
 
 			},
+			//**************************************************************************//
 
+			//********* Funzioni per la gestione delle spese da inserire (tabella aggiunta spese in creazione e modifica) *********// 
+			// Funzione richiamata alla selezione di una nuova spesa da inserire
+			// sia nel Dialog di creazione che in quello di modifica. Gestisce 
+			// l'abilitazione degli Input Field nella tabella delle spese
 			onExpenseSelect: function(oEvent) {
 				var oTable;
 				if (oEvent == undefined || oEvent.getSource().getId() == "Modificaa" || oEvent.getSource().getId() == "Indietro") {
@@ -1422,65 +1855,31 @@ sap.ui.define([
 				}
 			},
 
-			openMessageDialog: function(oEvent) {
-				var that;
-				var sMessage = "";
-				var oView = this.getView();
-				var oMultiDay = sap.ui.getCore().byId("multidaySel");
+			// Funzione per la validazione degli Input field relativi agli
+			// importi e ai chilometri della tabella delle spese
+			onExpenseValidation: function(sId) {
+				var oExpenseTable;
+				var aItems;
+				var bFind = false;
+				///////////////////////////VALIDAZIONE SPESE//////////////////////////	
+				oExpenseTable = sap.ui.getCore().byId(sId);
+				aItems = oExpenseTable.getAggregation("items");
 
-				var sButtonName = oEvent.getSource().getId() + "a";
-				if (sButtonName == "Modificaa") {
-					if (this.aGiorni.length > 1) {
-						sMessage =
-							"Ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le modifiche verranno applicate anche ai seguenti giorni: <br/>";
-						for (var i = 0; i < this.aGiorni.length; i++) {
-							sMessage += "<br/><strong>" + this.aGiorni[i] + "</strong>";
-						}
-					}
-				} else {
-					sMessage = "L'operazione avrà effetto sui seguenti giorni:<br/>";
-					for (var j = 0; j < this.DatesList.length; j++) {
-						sMessage += "<br/><strong>" + this.DatesList[j] + "</strong> ";
-					}
-					if (oMultiDay.getState() == true) {
-						sMessage +=
-							"<br/><br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", eventuali modifiche al campo \"Descrizione\" si rifletteranno su tutti i giorni coinvolti.";
+				for (var k = 0; k < aItems.length; k++) {
+					if (aItems[k].getCells()[2].getValueState() == "Error") {
+						bFind = true;
 					}
 				}
-				that = this;
-				var dialog = new Dialog({
-					title: 'Attenzione',
-					type: 'Message',
-					state: 'Warning',
-					content: new sap.m.FormattedText({
-						htmlText: "Sei sicuro di voler confermare l'azione? <br/>" + sMessage
-					}),
-					beginButton: new sap.m.Button(sButtonName, {
-						text: 'Conferma',
-						type: 'Accept',
-						press: function() {
-							dialog.close();
-							that.onConfirmation(oEvent);
-							that.count = undefined;
-						}
-					}),
-					endButton: new sap.m.Button({
-						text: 'Annulla',
-						type: 'Reject',
-						press: function() {
-							dialog.close();
-						}
-					}),
-					afterClose: function() {
-						dialog.destroy();
-					}
-				});
 
-				dialog.open();
+				return bFind;
+				//////////////////////////////////////////////////////////////////////////////////////////////////
 
 			},
+			//*********************************************************************************************************************//
 
-			//MP function per salvare riga timesheet
+			//********* Funzioni per la creazione, la modifica e l'eliminazione delle entry nel timesheet *********//
+			// Funzione per la gestione delle azioni di inserimento e modifica delle 
+			// entry sul timesheet
 			onConfirmation: function(oEvent) {
 				//check per completezza dati inseriti
 				this.oEvent = oEvent;
@@ -1490,19 +1889,18 @@ sap.ui.define([
 				var sValue;
 				var bFind;
 				var that = this;
-			
 
 				this.buttonEvent = oEvent.getSource().getId();
 
 				if (this.buttonEvent !== "Modificaa") {
 					aControls.push(sap.ui.getCore().byId("commessa"), sap.ui.getCore().byId("ore"), sap.ui.getCore().byId("descrizione"), sap.ui.getCore()
 						.byId("sedi"));
-						bFind = this.onExpenseValidation("tabellaSpese");
-				
-				} else {
-			           bFind = this.onExpenseValidation("tabellaSpeseSel");
+					bFind = this.onExpenseValidation("tabellaSpese");
 
-	             	aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"), sap.ui.getCore().byId("commessaSel"), sap
+				} else {
+					bFind = this.onExpenseValidation("tabellaSpeseSel");
+
+					aControls.push(sap.ui.getCore().byId("oreSel"), sap.ui.getCore().byId("descrizioneSel"), sap.ui.getCore().byId("commessaSel"), sap
 						.ui.getCore().byId("sediSel"));
 					for (var k = 0; k < aControls.length; k++) {
 						oInput = aControls[k];
@@ -1711,7 +2109,7 @@ sap.ui.define([
 				} else {
 					this.getView().byId("btn1").setEnabled(true);
 					var sMessage = "";
-					if(bFind){
+					if (bFind) {
 						sMessage += "Rispettare il limite sui caratteri per i chilometri e gli importi in euro.";
 					}
 					//jQuery.sap.require("sap.m.MessageBox");
@@ -1816,26 +2214,79 @@ sap.ui.define([
 				}
 
 			},
-			
-			onExpenseValidation: function(sId){
-				     var oExpenseTable;
-				     var aItems;
-				     var bFind = false;
-					///////////////////////////VALIDAZIONE SPESE//////////////////////////	
-					oExpenseTable = sap.ui.getCore().byId(sId);
-					aItems = oExpenseTable.getAggregation("items");
 
-					for (var k = 0; k < aItems.length; k++) {
-						if (aItems[k].getCells()[2].getValueState() == "Error") {
-                           bFind = true;
-					}
-					}
-					
-return bFind;
-					//////////////////////////////////////////////////////////////////////////////////////////////////
+			// Funzione per gestire la cancellazione di una commessa
+			handleDeleteComm: function(oEvent) {
+				var oModel = this.getView().getModel();
+				var oContext = oEvent.getSource().getBindingContext();
+				var oEntry = {};
+				var oDialog = this.DialogSel;
+				var that = this;
 
-				
+				var dialog = new Dialog({
+					title: 'Attenzione',
+					type: 'Message',
+					state: 'Warning',
+					content: new sap.m.Text({
+						text: "La commessa verrà eliminata. Continuare?"
+					}),
+					beginButton: new sap.m.Button({
+						text: 'Conferma',
+						type: 'Accept',
+						press: function() {
+							dialog.close();
+
+							oEntry.Tmskey = oContext.getProperty("Tmskey");
+							oEntry.Giorno = oContext.getProperty("Giorno");
+
+							oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
+								oEntry, {
+									method: "PUT",
+									success: function(data) {
+										var msg = "Commessa eliminata con successo";
+										sap.m.MessageToast.show(msg, {
+											duration: 5000,
+											autoClose: true,
+											closeOnBrowserNavigation: false
+
+										});
+										that._onBindingChange();
+										that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
+										that.handleRemoveSelection();
+										oModel.refresh();
+										oDialog.close();
+									},
+									error: function(e) {
+										sap.m.MessageBox.show(
+											"Error: " + oData.Message, {
+												icon: sap.m.MessageBox.Icon.WARNING,
+												title: "Error",
+												actions: [sap.m.MessageBox.Action.CLOSE]
+
+											});
+
+									}
+
+								});
+						}
+					}),
+					endButton: new sap.m.Button({
+						text: 'Annulla',
+						type: 'Reject',
+						press: function() {
+							dialog.close();
+						}
+					}),
+					afterClose: function() {
+						dialog.destroy();
+					}
+				});
+
+				dialog.open();
+				this.count = undefined;
+
 			},
+			//****************************************************************************************************//
 
 			/*_reqInsert: function(oUrlParams, y) {
 	         var oModel = this.getView().getModel();
@@ -1852,9 +2303,9 @@ return bFind;
 					
              },	
              */
-			//MP: metodi per la gestione della modifica e cancellazione di righe del timesheet
-
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
+			//********* Funzioni per la gestione delle spese inserite. Le funzioni si riferiscono alle spese presenti nella tabella del Dialog di modifica  *********// 
+			// Funzione richiamata alla modifica delle spese già inserite (da tabella spese dentro al Dialog di modifica)
+			// la funzione rende editabile gli Input field per descrizione e importo
 			onExpenseModify: function(oEvent) {
 				var oDescrizione = sap.ui.getCore().byId("descrSpesa");
 				var oImpOrKm = sap.ui.getCore().byId("ImpOrKm");
@@ -1892,33 +2343,7 @@ return bFind;
 
 			},
 
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7			
-			onExpenseListModify: function(oEvent) {
-
-				//	var that = this;
-				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
-				var oInput, oModel;
-				var oSaveButton = aCells[6].getAggregation("content")[1];
-				oSaveButton.setEnabled(true);
-
-				//	oModel=this.getView().getModel();
-
-				for (var i = 1; i < 3; i++) {
-					oInput = aCells[i];
-					oInput.setEditable(true);
-
-					if (oInput.getEditable() == false) {
-						oInput.setEditable(true);
-						oInput.unbindElement();
-
-					} else {
-						oInput.setEditable(false);
-						oSaveButton.setEnabled(false);
-					}
-				}
-				//		oModel.updateBindings(true);
-			},
-
+			// Funzione per gestire l'eliminazione o la modifica di una spesa inserita
 			onExpenseCancelOrSave: function(oEvent) {
 
 				// Per disabilitare e abilitare i bottoni di eliminazione e modifica commessa
@@ -1937,18 +2362,18 @@ return bFind;
 				var that = this;
 				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
 				oSaveButton = aCells[3].getAggregation("content")[1];
-				
-				for(var i=0; i<aCells.length - 1 ; i++){
-					if(aCells[i].getValueState() == "Error" && EventType != "Reject"){
-							sap.m.MessageBox.show(
-						    "Errore: controllare gli inserimenti. Rispettare il limite di caratteri per i chilometri e gli importi.", {
-							icon: sap.m.MessageBox.Icon.WARNING,
-							title: "Errore",
-							actions: [sap.m.MessageBox.Action.CLOSE]
-						});
+
+				for (var i = 0; i < aCells.length - 1; i++) {
+					if (aCells[i].getValueState() == "Error" && EventType != "Reject") {
+						sap.m.MessageBox.show(
+							"Errore: controllare gli inserimenti. Rispettare il limite di caratteri per i chilometri e gli importi.", {
+								icon: sap.m.MessageBox.Icon.WARNING,
+								title: "Errore",
+								actions: [sap.m.MessageBox.Action.CLOSE]
+							});
 						return;
 					}
-					
+
 				}
 
 				if (EventType == "Reject") {
@@ -2066,7 +2491,10 @@ return bFind;
 				this.count = undefined;
 
 			},
+			//*******************************************************************************************************************************************************//
 
+			//********* Funzione per la cancellazione o la modifica della spesa dal Dialog *********//
+			// Funzione per la cancellazione o la modifica delle spese dal Dialog delle spese
 			onSingleExpenseCancelOrSave: function(oEvent) {
 
 				var oModel = sap.ui.getCore().getModel();
@@ -2086,7 +2514,7 @@ return bFind;
 					msg = "Spesa modificata correttamente";
 				}
 
-				if (EventType !== "Reject" && (sImporto == "" || oInputImp.getValueState()=="Error")) {
+				if (EventType !== "Reject" && (sImporto == "" || oInputImp.getValueState() == "Error")) {
 					oInputImp.setValueState("Error");
 					oInputImp.setValueStateText("Inserire importo corretto");
 
@@ -2192,247 +2620,10 @@ return bFind;
 				this.count = undefined;
 
 			},
+			//*************************************************************************************//
 
-			handleDeleteComm: function(oEvent) {
-				var oModel = this.getView().getModel();
-				var oContext = oEvent.getSource().getBindingContext();
-				var oEntry = {};
-				var oDialog = this.DialogSel;
-				var that = this;
-
-				var dialog = new Dialog({
-					title: 'Attenzione',
-					type: 'Message',
-					state: 'Warning',
-					content: new sap.m.Text({
-						text: "La commessa verrà eliminata. Continuare?"
-					}),
-					beginButton: new sap.m.Button({
-						text: 'Conferma',
-						type: 'Accept',
-						press: function() {
-							dialog.close();
-
-							oEntry.Tmskey = oContext.getProperty("Tmskey");
-							oEntry.Giorno = oContext.getProperty("Giorno");
-
-							oModel.update("/ListaCommesseGroupSet(Tmskey='" + oEntry.Tmskey + "',Giorno='" + oEntry.Giorno + "')",
-								oEntry, {
-									method: "PUT",
-									success: function(data) {
-										var msg = "Commessa eliminata con successo";
-										sap.m.MessageToast.show(msg, {
-											duration: 5000,
-											autoClose: true,
-											closeOnBrowserNavigation: false
-
-										});
-										that._onBindingChange();
-										that.aItems = undefined; // MP: devo recuperare il valore degli Item dopo l'operazione
-										that.handleRemoveSelection();
-										oModel.refresh();
-										oDialog.close();
-									},
-									error: function(e) {
-										sap.m.MessageBox.show(
-											"Error: " + oData.Message, {
-												icon: sap.m.MessageBox.Icon.WARNING,
-												title: "Error",
-												actions: [sap.m.MessageBox.Action.CLOSE]
-
-											});
-
-									}
-
-								});
-						}
-					}),
-					endButton: new sap.m.Button({
-						text: 'Annulla',
-						type: 'Reject',
-						press: function() {
-							dialog.close();
-						}
-					}),
-					afterClose: function() {
-						dialog.destroy();
-					}
-				});
-
-				dialog.open();
-				this.count = undefined;
-
-			},
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-			//MP: per gestire la validazione di alcuni Input field del Form (ore, chilometri e spese)
-			onLiveChange: function(oEvent) {
-				var oInput, sType;
-				var sNameOre;
-				var sNameDescr;
-				var sDescrSpesa;
-				var oCal, aSpecialDates, oSpecialDate, oSelectedDate, sSelectedDate;
-				oCal = this.getView().byId("LRS4_DAT_CALENDAR");
-				aSpecialDates = oCal.getSpecialDates();
-				var aSource = oEvent.getSource().getId().split("-"); // array di due elementi splittato
-
-				if (oCal.getSelectedDates().length > 0) {
-					oSelectedDate = oCal.getSelectedDates()[0].getStartDate();
-					sSelectedDate = oSelectedDate.toString();
-				}
-
-				var sInsertedHours;
-				var nInsertedHours;
-				var nRemainingHours;
-				var sTooltip;
-				var flag = 0;
-				if (oEvent.getSource().getId() == "ore") {
-					sNameOre = "ore";
-				} else {
-					sNameOre = "oreSel";
-				}
-
-				if (oEvent.getSource().getId() == "descrizione") {
-					sNameDescr = "descrizione";
-				} else {
-					sNameDescr = "descrizioneSel";
-				}
-
-				switch (oEvent.getSource().getId()) {
-					case sNameOre:
-						for (var i = 0; i < aSpecialDates.length; i++) {
-							oSpecialDate = oCal.getSpecialDates()[i];
-							if (oSpecialDate.getStartDate().toString() == sSelectedDate) {
-								flag = 1;
-								if (oSpecialDate.getProperty("type") == "Type03" && sNameOre != "oreSel") {
-									sTooltip = oSpecialDate.getAggregation("tooltip").split(": ");
-									sInsertedHours = oSpecialDate.getAggregation("tooltip").split(": ")[1];
-									nInsertedHours = Number(sInsertedHours);
-									nRemainingHours = 8 - nInsertedHours;
-								} else {
-									nRemainingHours = 8;
-								}
-							}
-						}
-						if (flag == 0) {
-							nRemainingHours = 8;
-						}
-						oInput = sap.ui.getCore().byId(sNameOre);
-						if (oInput.getValue() <= 0 || oInput.getValue() > nRemainingHours) {
-							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("inserire un numero di ore compreso tra 0 (escluso) e " + nRemainingHours + " (incluso)");
-						} else {
-							oInput.setValueState(sap.ui.core.ValueState.None);
-						}
-						break;
-					case "chilometri":
-						oInput = sap.ui.getCore().byId("chilometri");
-						if (oInput.getValue().length > 5) {
-							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("Controllare inserimento");
-						} else {
-							oInput.setValueState(sap.ui.core.ValueState.None);
-						}
-						break;
-					case sNameDescr:
-						oInput = sap.ui.getCore().byId(sNameDescr);
-						if (oInput.getValue() == "") {
-							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("la descrizione è obbligatoria");
-						} else {
-							oInput.setValueState(sap.ui.core.ValueState.None);
-						}
-						break;
-
-					case "ValueSelSpese":
-						oInput = sap.ui.getCore().byId("ValueSelSpese");
-						sDescrSpesa = sap.ui.getCore().byId("TipoSelSpese").getText();
-						if (oInput.getValue() == "") {
-							oInput.setValueState(sap.ui.core.ValueState.Error);
-							oInput.setValueStateText("inserisci un importo");
-						} else {
-							if (sDescrSpesa == "Chilometri (KM)") {
-								if (oInput.getValue().length > 5) {
-									oInput.setValueState(sap.ui.core.ValueState.Error);
-									oInput.setValueStateText("Controllare inserimento");
-								} else {
-									oInput.setValueState(sap.ui.core.ValueState.None);
-								}
-
-							} else {
-								if (oInput.getValue().length > 11) {
-									oInput.setValueState(sap.ui.core.ValueState.Error);
-									oInput.setValueStateText("Controllare inserimento");
-								} else {
-									oInput.setValueState(sap.ui.core.ValueState.None);
-								}
-
-							}
-
-						}
-						break;
-					default:
-						var oTable = oEvent.getSource().getParent().getParent();
-						var aItems = oTable.getAggregation("items");
-						var oItem;
-						var oInputImp;
-						for (var i = 0; i < aItems.length; i++) {
-							oItem = aItems[i];
-							oInputImp = oItem.getAggregation("cells")[2];
-							if (i == 0) {
-								if (oInputImp.getValue().length > 5) {
-									oInputImp.setValueState(sap.ui.core.ValueState.Error);
-									oInputImp.setValueStateText("Controllare inserimento");
-								} else {
-									oInputImp.setValueState(sap.ui.core.ValueState.None);
-								}
-							} else {
-								if (oInputImp.getValue().length > 8) {
-									oInputImp.setValueState(sap.ui.core.ValueState.Error);
-									oInputImp.setValueStateText("Controllare inserimento");
-								} else {
-									oInputImp.setValueState(sap.ui.core.ValueState.None);
-								}
-							}
-
-						}
-
-				}
-
-				if (aSource[0] == "ImpOrKm") {
-					var oExpTable = sap.ui.getCore().byId("speseCommessa");
-					var aItems = oExpTable.getAggregation("items");
-					oInput = oEvent.getSource();
-					for (var i = 0; i < aItems.length; i++) {
-						if (aItems[i].getCells()[2].getEditable()) { //meccanismo per cercare l'Item che è stato selezionato. WORKAROUND
-							sType = aItems[i].getBindingContext().getProperty("Exptype");
-							if (sType == "00") {
-								if (oInput.getValue() == "" || oInput.getValue().length > 5) {
-									oInput.setValueState(sap.ui.core.ValueState.Error);
-									oInput.setValueStateText("Controllare inserimento");
-									break;
-								} else {
-									oInput.setValueState(sap.ui.core.ValueState.None);
-									break;
-								}
-							} else {
-
-								if (oInput.getValue().length > 11) {
-									oInput.setValueState(sap.ui.core.ValueState.Error);
-									oInput.setValueStateText("Controllare inserimento");
-									break;
-								} else {
-									oInput.setValueState(sap.ui.core.ValueState.None);
-									break;
-								}
-							}
-						}
-					}
-				}
-
-			},
-
-			//seleziona riga da lista commesse  
+			//********* Funzioni per gestire la selezione degli item nelle tabelle delle commesse, delle spese e nella treeTable *********//
+			// Funzione richiamata alla selezione di una nuova commessa dall'albero 
 			handleCommessaSelection: function(oEvent) {
 				var that = this;
 
@@ -2542,107 +2733,7 @@ return bFind;
 
 			},
 
-			// apertura dialog di modifica su selezione riga da lista
-
-			openDialogSel: function(oEvent) {
-				this.sIdButton = undefined;
-				var that = this;
-				this.aGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
-
-				if (!that.DialogSel) {
-
-					that.DialogSel = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogDelete", this, "ZETMS_CREATE.controller.View1");
-					//to get access to the global model
-					this.getView().addDependent(that.DialogSel);
-					if (sap.ui.Device.system.phone) {
-						that.Dialog.setStretch(true);
-					}
-				}
-				that.DialogSel.open();
-				this._DialogSel = that.DialogSel;
-
-				// MP: logica per mostrare il messaggio nel caso in cui la commessa aperta si riferisca a più giorni.
-				var oTableCommesse = this.getView().byId("COMMESSE_CONTENTS");
-				var aItems = this.aItems;
-				var oItem, oBindingContext, oObject, sTmsKey, sCurrentTmsKey, sDay, sMonth, sYear;
-				sCurrentTmsKey = this.sCurrentTmsKey;
-				for (var i = 0; i < aItems.length; i++) {
-					oItem = aItems[i];
-					oBindingContext = oItem.getBindingContext();
-					if (oBindingContext != null) { //non sono sulla riga di "testata" della commessa (riepilogo)
-						oObject = oBindingContext.getObject();
-						sTmsKey = oObject.Tmskey;
-						sDay = oObject.Giorno;
-						sMonth = oObject.Calmonth;
-						sYear = oObject.Calyear;
-						if (sDay.length == 1) {
-							sDay = "0" + sDay;
-						}
-						if (sMonth.length == 1) {
-							sMonth = "0" + sMonth;
-						}
-
-						if (sTmsKey == sCurrentTmsKey) {
-							this.aGiorni.push(sDay + "/" + sMonth + "/" + sYear);
-						}
-					}
-				}
-				var oSwitchMulti = sap.ui.getCore().byId("multidaySelModify"); //MP: per segnalare con lo Switch MultiDay le commesse che si riferiscono a più giorni
-				if (this.aGiorni.length > 1) {
-					oSwitchMulti.setState(true); // se commessa si riferisce a più giorni, attivo lo Switch e mostro un dialog con un messaggio per notificare
-					sap.m.MessageBox.show(
-						"La commessa selezionata è di tipo multi-day (utilizzata su più giorni)." +
-						" Le eventuali modifiche ai campi Commessa, Sede e Descrizione verranno applicate a tutti i giorni ad essa associati (stesso ID Commessa).", {
-							icon: sap.m.MessageBox.Icon.WARNING,
-							title: "Attenzione",
-							actions: [sap.m.MessageBox.Action.CLOSE],
-						});
-				} else {
-					oSwitchMulti.setState(false); // se commessa inserita in un solo giorno, setto lo stato dello switch a "false"
-				} //End if//
-
-			},
-
-			closeDialogSel: function(oEvent) {
-				var oInputOre, oInputDescr, oInputCommessa, oSelectSede;
-				oInputOre = sap.ui.getCore().byId("oreSel");
-				oInputDescr = sap.ui.getCore().byId("descrizioneSel");
-				oInputCommessa = sap.ui.getCore().byId("commessaSel");
-				oSelectSede = sap.ui.getCore().byId("sediSel");
-				var oButtonElim = sap.ui.getCore().byId("EliminaSel");
-				var oButtonMod = sap.ui.getCore().byId("Modifica");
-				this.DialogSel.close();
-				/////////////////////////////////////////////////////////////////////
-				// MP: per pulire i campi della tabella nei panel e chiudere i panel
-				sap.ui.getCore().byId("tabellaSpeseSel").removeSelections();
-				sap.ui.getCore().byId("panelSpeseSel").setExpanded(false);
-				sap.ui.getCore().byId("panelSpeseIns").setExpanded(false);
-
-				if (oEvent.getSource().getId() == "Indietro") {
-					oInputOre.setValue(this.sOraOriginale);
-					oInputDescr.setValue(this.sDescrOriginale);
-					oInputCommessa.setValue(this.sCommessaOriginale);
-					oSelectSede.setSelectedKey(this.sSedeOriginale);
-					oInputCommessa.setValueStateText("");
-					oInputCommessa.setValueState("None");
-					oSelectSede.setValueStateText("");
-					oSelectSede.setValueState("None");
-					oInputOre.setValueStateText("");
-					oInputOre.setValueState("None");
-					oInputDescr.setValueStateText("");
-					oInputDescr.setValueState("None");
-					this.sOraOriginale = undefined;
-					this.sDescrOriginale = undefined;
-					this.sCommessaOriginale = undefined;
-					this.sSedeOriginale = undefined;
-					oButtonElim.setEnabled(true);
-					oButtonMod.setEnabled(true);
-				}
-				this.onExpenseSelect(oEvent);
-				/////////////////////////////////////////////////////////////////////
-
-			},
-
+			// Funzione che gestisce la selezione di un item dalla tabella delle spese (o dalle righe delle spese nella treeTable)
 			handleSpeseSelection: function(oEvent) {
 				this.openDialogSpese(oEvent);
 				var sSelItemPath;
@@ -2679,105 +2770,10 @@ return bFind;
 				oDialog.setTitle("ID Commessa: " + sID + " - " + "Giorno: " + sDate);
 				//	oDialog.setTitle("Dettaglio spesa " + sDate);
 			},
+			//***************************************************************************************************************************//
 
-			openDialogSpese: function(oEvent) {
-				var that = this;
-				this.sIdButton = undefined;
-
-				if (!that.DialogSpese) {
-
-					that.DialogSpese = sap.ui.xmlfragment("ZETMS_CREATE.view.DialogSpese", this, "ZETMS_CREATE.controller.View1");
-					//to get access to the global model
-					this.getView().addDependent(that.DialogSpese);
-					if (sap.ui.Device.system.phone) {
-						that.DialogSpese.setStretch(true);
-					}
-				}
-				that.DialogSpese.open();
-				this._DialogSpese = that.DialogSpese;
-			},
-
-			closeDialogSpese: function() {
-
-				this._onBindingChange();
-				this.DialogSpese.close();
-
-				this.getView().byId("COMMESSE_CONTENTS").getBinding("items").refresh();
-				this.getView().byId("SPESE_CONTENTS").getBinding("items").refresh();
-				this.getView().byId("TREETABLE_CONTENTS").getBinding("rows").refresh();
-			},
-
-			navBackDialogSpese: function(oEvent) {
-				var oInputImp = sap.ui.getCore().byId("ValueSelSpese");
-				var oInputExpDescr = sap.ui.getCore().byId("descrizioneSelSpese");
-				this.DialogSpese.close();
-
-				oInputImp.setValueState("None");
-				oInputImp.setValueStateText("");
-
-				if (oEvent.getSource().getId() == "IndietroExp") {
-					oInputImp.setValue(this.sImportoOriginale);
-					oInputExpDescr.setValue(this.sDescrExpOriginale);
-					this.sImportoOriginale = undefined;
-					this.sDescrExpOriginale = undefined;
-				}
-
-			},
-
-			_onRouteMatched: function(oEvent) {
-
-				var oView = this.getView();
-
-				oView.bindElement({
-					path: "/CalendarSet",
-					//	parameters : {expand: 'ToLeaveReqPos'}, 
-
-					events: {
-						change: this._onBindingChange.bind(this),
-						dataRequested: function(oEvent) {
-							oView.setBusy(true);
-						},
-						dataReceived: function(oEvent) {
-							oView.setBusy(false);
-
-						}
-					}
-				});
-
-			},
-
-			onAfterRendering: function(oEvent) {
-
-				var oIconTabFilterTree = this.getView().byId("commesseTree");
-				if (sap.ui.Device.system.phone) {
-					oIconTabFilterTree.setVisible(false);
-
-				}
-
-			},
-
-			onUpdateFinished: function(oEvent) {
-				//MP: tengo traccia di tutti gli Item nella Table; mi serve per la modifica di commesse che coinvolgono più giorni.
-				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
-				if (this.aItems == undefined || this.aItems.length == 0) {
-					this.aItems = oTableComm.getAggregation("items");
-				}
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-			},
-
-			handleCalendarChange: function(oEvent) {
-
-				this.aItems = undefined;
-				this._onBindingChange();
-
-			},
-
-			handleCopyCalChange: function(oEvent) {
-
-				this._onBindingCalendar();
-
-			},
-
+			//********* Funzione per apertura PDF per TMS e spese *********//
+			// Funzione per apertura documento
 			// evento button per apertura pdf odc (SE) per apertura diretta
 			onOpenDoc: function(oEvent) {
 				//var OData = new sap.ui.mode.odata.ODataModel(); 
@@ -2853,8 +2849,27 @@ return bFind;
 				});
 
 			},
+			//*************************************************************//
 
-			// calendario per la copia
+			///////////////////////////////////////FINE SEZIONE FUNZIONALITA'///////////////////////////////////////
+
+			//********* Funzioni per gestione calendari *********//
+			// Funzione per la gestione dei cambiamenti nel calendario principale
+			handleCalendarChange: function(oEvent) {
+
+				this.aItems = undefined;
+				this._onBindingChange();
+
+			},
+
+			// Funzione per la gestione dei cambiamenti nel calendario di copia
+			handleCopyCalChange: function(oEvent) {
+
+				this._onBindingCalendar();
+
+			},
+
+			// Funzione per binding calendario di copia
 			_onBindingCalendar: function() {
 				var oView = this.getView();
 				var oModel = this.getView().getModel();
@@ -3077,6 +3092,7 @@ return bFind;
 
 			},
 
+			// Funzione per binding calendario principale 
 			_onBindingChange: function() {
 				//(SE
 				this.showBusyIndicator(0);
@@ -3792,11 +3808,15 @@ return bFind;
 				}
 
 			},
+			//**************************************************//
 
+			//********* Funzioni per busyIndicator *********//
+			// Funzione per nascondere il Busy Indicator
 			hideBusyIndicator: function() {
 				sap.ui.core.BusyIndicator.hide();
 			},
 
+			// Funzione per mostrare il busyIndicator in caricamento
 			//	showBusyIndicator : function (iDuration, iDelay) {
 			showBusyIndicator: function(iDelay) {
 				sap.ui.core.BusyIndicator.show(iDelay);
@@ -3812,7 +3832,10 @@ return bFind;
 								});
 							}*/
 			},
+			//*********************************************//
 
+			//********* Funzioni per refresh *********//
+			// Funzione per la gestione del pullToRefresh
 			onPullToRefresh: function() {
 
 				this._onBindingChange();
@@ -3832,6 +3855,7 @@ return bFind;
 				this.getView().byId("pullToRefresh").hide();
 			},
 
+			// Funzione per la gestione del refresh manuale tramite bottone
 			onClickRefresh: function() {
 
 				this._onBindingChange();
@@ -3849,9 +3873,75 @@ return bFind;
 			});
 */
 			},
+			//*****************************************//
 
-			/////////////////////////////////////////////////////////////////////  
+			//********* Funzioni per gestione updateFinished tabelle *********//
+			// Funzione richiamata quando tutti i dati sono stati renderizzati
+			// COMUNE A TUTTE LE TABELLE
+			onUpdateFinished: function(oEvent) {
+				//MP: tengo traccia di tutti gli Item nella Table; mi serve per la modifica di commesse che coinvolgono più giorni.
+				var oTableComm = this.getView().byId("COMMESSE_CONTENTS");
+				if (this.aItems == undefined || this.aItems.length == 0) {
+					this.aItems = oTableComm.getAggregation("items");
+				}
+			},
+			//***************************************************************//
 
+			//****************** NON UTILIZZATE ******************// 
+			// funzione search non implementata al momento
+			handleSearch: function(oEvent) {
+				var sValue = oEvent.getParameter("value");
+				var oBinding = oEvent.getSource().getBinding("items");
+				oEvent.getSource().getBindingContext();
+				if (sValue != "") {
+					var oFilter = new Filter("Descrorder", sap.ui.model.FilterOperator.Contains, sValue);
+					if (oBinding.aAllKeys == null) {
+						oBinding.aAllKeys = oBinding.aKeys;
+					}
+					oBinding.filter(oFilter);
+				} else {
+					oBinding.filter();
+				}
+			},
+
+			// funzione getGroupHeader non implementata al momento
+			getGroupHeader: function(oGroup) {
+				return new GroupHeaderListItem({
+					title: oGroup.key,
+					upperCase: false
+				});
+			},
+
+			// funzione non implementata al momento		
+			onExpenseListModify: function(oEvent) {
+
+				//	var that = this;
+				var aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
+				var oInput, oModel;
+				var oSaveButton = aCells[6].getAggregation("content")[1];
+				oSaveButton.setEnabled(true);
+
+				//	oModel=this.getView().getModel();
+
+				for (var i = 1; i < 3; i++) {
+					oInput = aCells[i];
+					oInput.setEditable(true);
+
+					if (oInput.getEditable() == false) {
+						oInput.setEditable(true);
+						oInput.unbindElement();
+
+					} else {
+						oInput.setEditable(false);
+						oSaveButton.setEnabled(false);
+					}
+				}
+				//		oModel.updateBindings(true);
+			},
+			//***************************************************//
+
+			//********* Funzioni per navigazione *********//
+			// Funzione per la navigazione 
 			onHistoryPress: function(oEvent) {
 
 				//this.getRouter().getTargets().display("view1s");
@@ -3860,10 +3950,35 @@ return bFind;
 
 			},
 
-			getRouter: function() {
-				return sap.ui.core.UIComponent.getRouterFor(this);
+			// Funzione richiamata al matching della route
+			_onRouteMatched: function(oEvent) {
 
-			}
+				var oView = this.getView();
+
+				oView.bindElement({
+					path: "/CalendarSet",
+					//	parameters : {expand: 'ToLeaveReqPos'}, 
+
+					events: {
+						change: this._onBindingChange.bind(this),
+						dataRequested: function(oEvent) {
+							oView.setBusy(true);
+						},
+						dataReceived: function(oEvent) {
+							oView.setBusy(false);
+
+						}
+					}
+				});
+
+			},
+
+			// Funzione per ritornare le route di navigazione
+			getRouter: function() {
+					return sap.ui.core.UIComponent.getRouterFor(this);
+
+				}
+				//*******************************************//
 
 		});
 	});
