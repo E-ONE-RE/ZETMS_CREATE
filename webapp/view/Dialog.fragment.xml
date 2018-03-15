@@ -63,7 +63,7 @@
 										
 									</f:fields>
 								</f:FormElement>
-									<f:FormElement id = "label_multidaySel" label="Commessa Multi day" visible ="false" >
+									<f:FormElement id = "label_multidaySel" label="Commessa Multi day" visible ="false">
 											
 									<Hbox>
 								<!--	<CheckBox id="multidaySel" text="" visible ="false" selected="true" enabled="false" tooltip="Se attivo la commessa sarà condivisa"

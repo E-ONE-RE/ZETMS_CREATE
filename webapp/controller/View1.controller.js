@@ -1176,7 +1176,7 @@ sap.ui.define([
 				var sMessage = "";
 				var oView = this.getView();
 				var oMultiDay = sap.ui.getCore().byId("multidaySel");
-
+                var oFormElement = sap.ui.getCore().byId("label_multidaySel");
 				var sButtonName = oEvent.getSource().getId() + "a";
 				if (sButtonName == "Modificaa") {
 					if (this.aGiorni.length > 1) {
@@ -1191,7 +1191,7 @@ sap.ui.define([
 					for (var j = 0; j < this.DatesList.length; j++) {
 						sMessage += "<br/><strong>" + this.DatesList[j] + "</strong> ";
 					}
-					if (oMultiDay.getState() == true) {
+					if (oMultiDay.getState() == true && oFormElement.getVisible() == true) {
 						sMessage +=
 							"<br/><br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", eventuali modifiche al campo \"Descrizione\" si rifletteranno su tutti i giorni coinvolti.";
 					}
