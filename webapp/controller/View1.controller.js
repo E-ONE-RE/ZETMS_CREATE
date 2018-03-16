@@ -413,7 +413,7 @@ sap.ui.define([
 								'</li>' +
 								'<li><strong>Seleziona una nuova commessa:</strong> in questo caso potrà essere selezionata una nuova commessa ' +
 								' tra tutte quelle a disposizione indipendentemente dal fatto che sia già stata utilizzata nel mese, ' +
-								'si potrà selezionare la sede ed aggiungere una nuova descrizione, con questo metodo quindi si creerà sempre una commessa indipendente con un nuovo ID (NO multi day). ' +
+								'si potrà selezionare la sede ed aggiungere una nuova descrizione. Con questo metodo quindi si creerà sempre una commessa indipendente con un nuovo ID (NO multi day). Anche in caso di inserimento contemporaneo di più giorni verranno create comunque commesse indipendenti per singolo giorno. ' +
 								'</li>' +
 
 								'<li><strong>Conferma inserimento</strong>: Dopo aver completato tutti gli inserimenti (i campi contrassegnati da <span style="color: red">*</span> sono obbligatori) ' +
@@ -719,7 +719,10 @@ sap.ui.define([
 					        text: name
 					    };
 					};*/
+					// raggruppo e ordino in base alla selezione del popover
 					aSorters.push(new sap.ui.model.Sorter(sPath, bDescending, vGroup));
+					// forzo l'ordinamento per giorno
+					aSorters.push(new sap.ui.model.Sorter("Giorno", bDescending));
 
 					if (oBinding.aAllKeys == null) {
 						oBinding.aAllKeys = oBinding.aKeys;
@@ -728,8 +731,8 @@ sap.ui.define([
 					oBinding.sort(aSorters);
 				} else {
 					// apply sorter
-					var sPathSort = mParams.sortItem.getKey();
-					//var sPath ="Descrorder";
+					//var sPathSort = mParams.sortItem.getKey();
+					var sPathSort ="Giorno";
 					var bDescendingSort = mParams.sortDescending;
 					//    var bDescending = true;
 					aSortersSort.push(new sap.ui.model.Sorter(sPathSort, bDescendingSort));
@@ -865,6 +868,9 @@ sap.ui.define([
 				}
 				that.DialogSpese.open();
 				this._DialogSpese = that.DialogSpese;
+				
+	
+		
 			},
 
 			// Funzione che gestisce la chiusura del Dialog della singola spesa
@@ -1093,6 +1099,8 @@ sap.ui.define([
 				var oInput = sap.ui.getCore().byId("commessa");
 				var oSede = sap.ui.getCore().byId("sedi");
 				var oDescr = sap.ui.getCore().byId("descrizione");
+				
+					
 
 				oSede.setForceSelection(true);
 
@@ -1158,6 +1166,39 @@ sap.ui.define([
 						this.callSediSet(this.sCommessaId);
 	           }*/
 
+
+
+	///////////////////
+				this.aGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
+
+
+			var oTableCommesse = this.getView().byId("COMMESSE_CONTENTS");
+
+				var aItems = this.aItems;
+				var oItem, oBindingContext, oObject, sTmsKey, sCurrentTmsKey, sDay, sMonth, sYear;
+				sCurrentTmsKey = this.sTimesheetKey;
+			for (var i = 0; i < aItems.length; i++) {
+					oItem = aItems[i];
+					oBindingContext = oItem.getBindingContext();
+					if (oBindingContext != null) { //non sono sulla riga di "testata" della commessa (riepilogo)
+						oObject = oBindingContext.getObject();
+						sTmsKey = oObject.Tmskey;
+						sDay = oObject.Giorno;
+						sMonth = oObject.Calmonth;
+						sYear = oObject.Calyear;
+						if (sDay.length == 1) {
+							sDay = "0" + sDay;
+						}
+						if (sMonth.length == 1) {
+							sMonth = "0" + sMonth;
+						}
+
+						if (sTmsKey == sCurrentTmsKey) {
+							this.aGiorni.push(sDay + "/" + sMonth + "/" + sYear);
+						}
+					}
+				}
+		//////////		
 				//abilito checkbox per selezione commessa multi day
 				sap.ui.getCore().byId("multidaySel").setVisible(true);
 				sap.ui.getCore().byId("multidaySel").setEnabled(true);
@@ -1181,19 +1222,23 @@ sap.ui.define([
 				if (sButtonName == "Modificaa") {
 					if (this.aGiorni.length > 1) {
 						sMessage =
-							"Ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le modifiche verranno applicate anche ai seguenti giorni: <br/>";
+							"<br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le eventuali modifiche apportate verranno applicate anche ai seguenti giorni: <br/>";
 						for (var i = 0; i < this.aGiorni.length; i++) {
 							sMessage += "<br/><strong>" + this.aGiorni[i] + "</strong>";
 						}
 					}
 				} else {
-					sMessage = "L'operazione avrà effetto sui seguenti giorni:<br/>";
+					sMessage = "Stai inserendo la commessa selezionata sui seguenti giorni:<br/>";
 					for (var j = 0; j < this.DatesList.length; j++) {
 						sMessage += "<br/><strong>" + this.DatesList[j] + "</strong> ";
 					}
 					if (oMultiDay.getState() == true && oFormElement.getVisible() == true) {
 						sMessage +=
-							"<br/><br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", eventuali modifiche al campo \"Descrizione\" si rifletteranno su tutti i giorni coinvolti.";
+							"<br/><br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", eventuali modifiche al campo \"Descrizione\" verranno applicate anche ai seguenti giorni:<br/>";
+					for (var i = 0; i < this.aGiorni.length; i++) {
+							sMessage += "<br/><strong>" + this.aGiorni[i] + "</strong>";
+						}
+						
 					}
 				}
 				that = this;
@@ -2340,10 +2385,14 @@ sap.ui.define([
 						oSaveButton.setEnabled(false);
 					}
 				}
+				
+		
+				
 
 			},
 
-			// Funzione per gestire l'eliminazione o la modifica di una spesa inserita
+			// Funzione per gestire l'eliminazione o la modifica di una spesa inserita all'interno del dialog della modifica
+			// della commessa
 			onExpenseCancelOrSave: function(oEvent) {
 
 				// Per disabilitare e abilitare i bottoni di eliminazione e modifica commessa
@@ -2362,6 +2411,42 @@ sap.ui.define([
 				var that = this;
 				aCells = oEvent.getSource().getParent().getParent().getAggregation("cells");
 				oSaveButton = aCells[3].getAggregation("content")[1];
+				
+				
+				oEntry.Tmskey = oContext.getProperty("Tmskey");
+				oEntry.Giorno = oContext.getProperty("Giorno");
+				oEntry.Expkey = oContext.getProperty("Expkey");
+				oEntry.Exptype = oContext.getProperty("Exptype");
+												
+				this.aExpGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
+								
+
+			    var oTableExp = this.getView().byId("SPESE_CONTENTS");
+
+				var aExpItems = this.aExpItems;
+				var oExpItem, oBindingContext, oObject, sExpKey, sCurrentExpKey, sDay, sMonth, sYear;
+				sCurrentExpKey = oEntry.Expkey;
+			for (var i = 0; i < aExpItems.length; i++) {
+					oExpItem = aExpItems[i];
+					oBindingContext = oExpItem.getBindingContext();
+					if (oBindingContext != null) { //non sono sulla riga di "testata" della commessa (riepilogo)
+						oObject = oBindingContext.getObject();
+						sExpKey = oObject.Expkey;
+						sDay = oObject.Giorno;
+						sMonth = oObject.Calmonth;
+						sYear = oObject.Calyear;
+						if (sDay.length == 1) {
+							sDay = "0" + sDay;
+						}
+						if (sMonth.length == 1) {
+							sMonth = "0" + sMonth;
+						}
+
+						if (sExpKey == sCurrentExpKey) {
+							this.aExpGiorni.push(sDay + "/" + sMonth + "/" + sYear);
+						}
+					}
+				}
 
 				for (var i = 0; i < aCells.length - 1; i++) {
 					if (aCells[i].getValueState() == "Error" && EventType != "Reject") {
@@ -2380,16 +2465,31 @@ sap.ui.define([
 					sDialogMessage = "La spesa verrà cancellata. Continuare?";
 					msg = "Spesa eliminata correttamente";
 				} else {
-					sDialogMessage = "La spesa verrà modificata. Continuare?";
-					msg = "Spesa modificata correttamente";
+						if (this.aExpGiorni.length > 1) {
+							sDialogMessage = "<br/>La spesa verrà modificata. Continuare?" + "<br/><strong>Attenzione</strong>: ID SPESA <strong>" +  oEntry.Expkey + " </strong> condiviso per più giorni, eventuali modifiche apportate al campo \"Descrizione spesa\" verranno applicate anche ai seguenti giorni: <br/>";
+								for (var i = 0; i < this.aExpGiorni.length; i++) {
+									sDialogMessage += "<br/><strong>" + this.aExpGiorni[i] + "</strong>";
+								}
+							msg = "Spesa modificata correttamente";
+						} else {
+						
+								
+							sDialogMessage = "La spesa verrà modificata. Continuare?";
+		
+							msg = "Spesa modificata correttamente";
+						}
 				}
+				
+				
+				
 
 				var dialog = new Dialog({
 					title: 'Attenzione',
 					type: 'Message',
 					state: 'Warning',
-					content: new sap.m.Text({
-						text: sDialogMessage
+					content: new sap.m.FormattedText({
+					htmlText: sDialogMessage
+			
 					}),
 					beginButton: new sap.m.Button({
 						text: 'Conferma',
@@ -2397,10 +2497,8 @@ sap.ui.define([
 						press: function() {
 							dialog.close();
 
-							oEntry.Tmskey = oContext.getProperty("Tmskey");
-							oEntry.Giorno = oContext.getProperty("Giorno");
-							oEntry.Expkey = oContext.getProperty("Expkey");
-							oEntry.Exptype = oContext.getProperty("Exptype");
+			
+				
 
 							if (EventType == "Reject") { // MP: sono in cancellazione
 
@@ -2510,9 +2608,23 @@ sap.ui.define([
 					sDialogMessage = "La spesa verrà cancellata. Continuare?";
 					msg = "Spesa eliminata correttamente";
 				} else {
-					sDialogMessage = "La spesa verrà modificata. Continuare?";
-					msg = "Spesa modificata correttamente";
-				}
+					
+
+						if (this.aExpGiorni.length > 1) {
+							sDialogMessage = "<br/>La spesa verrà modificata. Continuare?" + "<br/><strong>Attenzione</strong>: ID SPESA condiviso per più giorni, eventuali modifiche apportate al campo descrizione verranno applicate anche ai seguenti giorni: <br/>";
+								for (var i = 0; i < this.aExpGiorni.length; i++) {
+									sDialogMessage += "<br/><strong>" + this.aExpGiorni[i] + "</strong>";
+								}
+							msg = "Spesa modificata correttamente";
+						} else {
+						
+								
+							sDialogMessage = "La spesa verrà modificata. Continuare?";
+		
+							msg = "Spesa modificata correttamente";
+						}
+					
+					}
 
 				if (EventType !== "Reject" && (sImporto == "" || oInputImp.getValueState() == "Error")) {
 					oInputImp.setValueState("Error");
@@ -2531,9 +2643,12 @@ sap.ui.define([
 						title: 'Attenzione',
 						type: 'Message',
 						state: 'Warning',
-						content: new sap.m.Text({
-							text: sDialogMessage
+					content: new sap.m.FormattedText({
+							htmlText: sDialogMessage
 						}),
+						
+					
+					
 						beginButton: new sap.m.Button({
 							text: 'Conferma',
 							type: 'Accept',
@@ -2631,12 +2746,14 @@ sap.ui.define([
 				// mi salvo l'identificativo della commessa per richiamare le sedi tramite callSediSet(sCommessa)
 				// salvo in una variabile globale il nome della funzione chiamante per richiamare le sedi in modifica
 				// e fare il binding alla select del dialog di modifica (vedi callSediSet)
+				
 				if (oEvent.getId() == "itemPress") {
-					this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey;
-					this.sCommessaId = oEvent.getParameter("listItem").getBindingContext().getObject().Orderjob;
-					this.sCaller = "handleCommessaSelection";
-					this.callSediSet(this.sCommessaId);
+				this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey; 
+				this.sCommessaId = oEvent.getParameter("listItem").getBindingContext().getObject().Orderjob;
+				this.sCaller = "handleCommessaSelection";
+				this.callSediSet(this.sCommessaId);
 				}
+		
 				this.openDialogSel(oEvent);
 				var oDialog = sap.ui.getCore().byId("dialogDelComm");
 				var sSelItemPath;
@@ -2767,8 +2884,43 @@ sap.ui.define([
 				//this.sValue = oDialog.getBindingContext().getProperty("Importo");
 				var sDate = this.sDay + "/" + this.sMonth + "/" + this.sYear;
 				var sID = oDialog.getBindingContext().getProperty("Tmskey");
-				oDialog.setTitle("ID Commessa: " + sID + " - " + "Giorno: " + sDate);
+				var sExpID = oDialog.getBindingContext().getProperty("Expkey");
+				oDialog.setTitle("ID Commessa: " + sID + " - " + "ID Spesa: " + sExpID + " - " + "Giorno: " + sDate);
 				//	oDialog.setTitle("Dettaglio spesa " + sDate);
+				
+				
+			this.aExpGiorni = []; //MP: definisco un array per tenere traccia dei giorni che si riferiscono alla stessa commessa (riga) del timesheet
+
+
+			var oTableExp = this.getView().byId("SPESE_CONTENTS");
+
+				var aItems = this.aExpItems;
+				var oItem, oBindingContext, oObject, sExpKey, sCurrentExpKey, sDay, sMonth, sYear;
+				sCurrentExpKey = sExpID;
+			for (var i = 0; i < aItems.length; i++) {
+					oItem = aItems[i];
+					oBindingContext = oItem.getBindingContext();
+					if (oBindingContext != null) { //non sono sulla riga di "testata" della commessa (riepilogo)
+						oObject = oBindingContext.getObject();
+						sExpKey = oObject.Expkey;
+						sDay = oObject.Giorno;
+						sMonth = oObject.Calmonth;
+						sYear = oObject.Calyear;
+						if (sDay.length == 1) {
+							sDay = "0" + sDay;
+						}
+						if (sMonth.length == 1) {
+							sMonth = "0" + sMonth;
+						}
+
+						if (sExpKey == sCurrentExpKey) {
+							this.aExpGiorni.push(sDay + "/" + sMonth + "/" + sYear);
+						}
+					}
+				}
+				
+				
+			
 			},
 			//***************************************************************************************************************************//
 
@@ -3507,6 +3659,13 @@ sap.ui.define([
 							text: "{Tmskey}"
 
 						}),
+						
+							new sap.m.Text({
+
+							text: "{Expkey}"
+
+						}),
+						
 						new sap.m.ObjectIdentifier({
 							title: "{Descrorder}",
 							text: "{Office}",
@@ -3884,6 +4043,12 @@ sap.ui.define([
 				if (this.aItems == undefined || this.aItems.length == 0) {
 					this.aItems = oTableComm.getAggregation("items");
 				}
+				
+				var oTableExp = this.getView().byId("SPESE_CONTENTS");
+				if (this.aExpItems == undefined || this.aExpItems.length == 0) {
+					this.aExpItems = oTableExp.getAggregation("items");
+				}
+				
 			},
 			//***************************************************************//
 
