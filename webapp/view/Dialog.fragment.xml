@@ -108,7 +108,7 @@
 							<f:formElements>
 								<f:FormElement>
 									<f:fields>
-										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Inserisci Spese" width="auto" class="sapUiResponsiveMargin">
+										<Panel id="panelSpese" expandable="true" expanded="false" headerText="Inserisci Spese/KM" width="auto" class="sapUiResponsiveMargin">
 											<content>
 												<Table id="tabellaSpese" fixedLayout="true" growingThreshold="10" mode="MultiSelect" selectionChange="onExpenseSelect">
 													<columns>
