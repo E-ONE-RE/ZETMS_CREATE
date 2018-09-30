@@ -3065,7 +3065,10 @@ sap.ui.define([
 				var oYear2 = oYearN + 1;
 
 				// disabilito giorni festivi 
-				oCal2.addDisabledDate(new DateTypeRange({
+				// (SE) 19042018 commento perchè i giorni devono comunque essere selezionabili
+				// e la festività va inserita a mano se cade durante giorno feriale,
+				// inoltre qualcusno potrebbe lavorare anche se giorno festivo
+		/*		oCal2.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYearN + "0101")
 				}));
 
@@ -3153,7 +3156,7 @@ sap.ui.define([
 
 				oCal2.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYear2 + "1226")
-				}));
+				}));*/
 
 				var sRead = "/CalendarSet";
 
@@ -3300,7 +3303,10 @@ sap.ui.define([
 				var oYear2 = oYearN + 1;
 
 				// disabilito giorni festivi 
-				oCal1.addDisabledDate(new DateTypeRange({
+					// (SE) 19042018 commento perchè i giorni devono comunque essere selezionabili
+				// e la festività va inserita a mano se cade durante giorno feriale,
+				// inoltre qualcusno potrebbe lavorare anche se giorno festivo
+				/*oCal1.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYearN + "0101")
 				}));
 
@@ -3388,7 +3394,7 @@ sap.ui.define([
 
 				oCal1.addDisabledDate(new DateTypeRange({
 					startDate: this.oFormatYear.parse(oYear2 + "1226")
-				}));
+				}));*/
 
 				///////////////FINE FESTIVI////////////  
 				/*	var sOwnerId = this.getView()._sOwnerId;
