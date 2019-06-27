@@ -1219,7 +1219,7 @@ sap.ui.define([
 				var oMultiDay = sap.ui.getCore().byId("multidaySel");
                 var oFormElement = sap.ui.getCore().byId("label_multidaySel");
 				var sButtonName = oEvent.getSource().getId() + "a";
-				if (sButtonName == "Modificaa") {
+				if (sButtonName === "Modificaa") {
 					if (this.aGiorni.length > 1) {
 						sMessage =
 							"<br/><strong>Attenzione</strong>: essendo la commessa \"multiday\", ad eccezione del campo \"<strong>Ore</strong>\" e delle \"<strong>Spese</strong>\", le eventuali modifiche apportate verranno applicate anche ai seguenti giorni: <br/>";
@@ -1867,7 +1867,7 @@ sap.ui.define([
 			// l'abilitazione degli Input Field nella tabella delle spese
 			onExpenseSelect: function(oEvent) {
 				var oTable;
-				if (oEvent == undefined || oEvent.getSource().getId() == "Modificaa" || oEvent.getSource().getId() == "Indietro") {
+				if (oEvent == undefined || oEvent.getSource().getId() === "Modificaa" || oEvent.getSource().getId() == "Indietro") {
 					if (oEvent == undefined) {
 						oTable = sap.ui.getCore().byId("tabellaSpese");
 					} else {
@@ -2808,13 +2808,13 @@ sap.ui.define([
 					oButtonMod.setVisible(true);
 				}
 
-				if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined || this.sCommessaOriginale == undefined || this.sSedeOriginale ==
-					undefined) {
+		//		if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined || this.sCommessaOriginale == undefined || this.sSedeOriginale ==
+		//			undefined) {
 					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
 					this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
 					this.sCommessaOriginale = oDialog.getBindingContext().getProperty("Descrorder");
 					this.sSedeOriginale = oDialog.getBindingContext().getProperty("Office");
-				}
+		//		}
 
 				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
 				this.sMonth = oDialog.getBindingContext().getProperty("Calmonth");
