@@ -1767,6 +1767,8 @@ sap.ui.define([
 					sDesinenza = "Sel"; //aggiungo la desinenza per riferirmi ai controlli nel dialog di modifica
 					this.sCaller = undefined;
 				}
+				// con carattere speciale & il gateway andava in errore, sostituisco con codice ascii %26
+				sCommessa = sCommessa.replace("&", "%26");
 
 				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
 
