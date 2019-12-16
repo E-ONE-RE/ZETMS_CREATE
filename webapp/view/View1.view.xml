@@ -395,6 +395,10 @@ displayBlock="true">
 									<Label text="ID Comm." id="exp_label_Tmskey"/>
 								</Column>
 								
+									<Column id="exp_column_Expkey" width="auto" minScreenWidth="tablet" demandPopin="false" visible="true">
+									<Label text="ID Spesa" id="exp_label_Expkey"/>
+								</Column>
+								
 								<Column id="exp_column_Descrorder" width="auto" visible="true">
 									<Label text="{/#ListaSpeseGroupSet/Descrorder/@sap:label}" id="exp_label_Descrorder"/>
 								</Column>

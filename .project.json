@@ -7,7 +7,7 @@
     "targetFolder": "dist",
     "sourceFolder": "webapp",
     "buildRequired": true,
-    "lastBuildDateTime": "Thu, 02 Nov 2017 14:43:04 GMT"
+    "lastBuildDateTime": "Thu, 26 Sep 2019 16:02:17 GMT"
   },
   "generation": [
     {
@@ -59,6 +59,6 @@
   },
   "deploy": {
     "destination": "DEV",
-    "name": "ZLEAVE_C_2_4"
+    "name": "ZETMS_NEW"
   }
 }

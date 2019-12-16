@@ -113,13 +113,47 @@ sap.ui.define([], function() {
 			}
 		},
 
-		formatCalDate: function(sDate) {
-			var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+//		formatCalDate: function(sDate) {
+//			var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+//				pattern: "dd/MM/YYYY"
+//			});
+//			return oDateFormat.format(new Date(sDate));
+//		},
+		
+		
+				formatCalDate: function(sDate) {
+//			var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+			var sYear,
+				sMonth,
+				sDay;
+	
+			
+			var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
 				pattern: "dd/MM/YYYY"
 			});
-			return oDateFormat.format(new Date(sDate));
-		},
 		
+			var oDateReturn = oDateFormat.format(new Date(sDate));
+		//al 31 12 avanza di un anno, devo forzare anno indietro di uno
+		//è dovuto al fatto che consiedera le ore 00:00 del 31 12 come già del nuovo anno
+			if (oDateReturn) {
+				
+					sYear = oDateReturn.substring(6, 10);
+					sMonth	 = oDateReturn.substring(3, 5);
+					sDay = oDateReturn.substring(0, 2);
+			
+				
+			}
+			if (sDay=='31' && sMonth=='12') {
+				
+			sYear = sYear-1;
+			oDateReturn = sDay +'/'+sMonth+'/'+sYear;
+		
+			}
+	
+			return	oDateReturn;
+		//	return oDateFormat.format(new Date(sDate));
+			
+		},
 
 
 		formatAbsence: function(sAbtType) {
