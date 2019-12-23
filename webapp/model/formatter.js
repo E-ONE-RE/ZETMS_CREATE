@@ -129,13 +129,20 @@ sap.ui.define([], function() {
 	
 			
 			var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
-				pattern: "dd/MM/YYYY"
+				pattern: "dd/MM/yyyy"
+		//		pattern: "dd/MM/YYYY" con YYYY considerava il numero settimana per calcoare l'anno quindi al 31/12 
+		//se considerato come settimana 1 del nuovo anno avanzava di un anno. per es. 31/12/2018 -> 31/12/2019
 			});
 		
+		
 			var oDateReturn = oDateFormat.format(new Date(sDate));
+			
 		//al 31 12 avanza di un anno, devo forzare anno indietro di uno
 		//è dovuto al fatto che consiedera le ore 00:00 del 31 12 come già del nuovo anno
-			if (oDateReturn) {
+		// avendo corretto il data pattern con yyyy al posto di YYYY non serve più questa forzatura
+		//https://github.com/SAP/openui5/issues/2370
+		//https://sapui5.hana.ondemand.com/sdk/#/topic/91f2eba36f4d1014b6dd926db0e91070
+		/*	if (oDateReturn) {
 				
 					sYear = oDateReturn.substring(6, 10);
 					sMonth	 = oDateReturn.substring(3, 5);
@@ -143,12 +150,12 @@ sap.ui.define([], function() {
 			
 				
 			}
-			if (sDay=='31' && sMonth=='12') {
+			if ((sDay=='31' || sDay=='30') && sMonth=='12') {
 				
 			sYear = sYear-1;
 			oDateReturn = sDay +'/'+sMonth+'/'+sYear;
 		
-			}
+			}*/
 	
 			return	oDateReturn;
 		//	return oDateFormat.format(new Date(sDate));
