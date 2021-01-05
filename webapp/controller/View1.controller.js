@@ -3280,7 +3280,8 @@ sap.ui.define([
 					startMonth = "0" + startMonth;
 				}
 
-				var startYear = this.oFormatYear.format(startDate);
+				//var startYear = this.oFormatYear.format(startDate);
+				var startYear = startDate.getFullYear();
 
 				var oLeg1 = oView.byId("legend1");
 				oLeg1.destroyItems();
