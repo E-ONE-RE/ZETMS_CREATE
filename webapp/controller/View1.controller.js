@@ -1050,8 +1050,9 @@ sap.ui.define([
 					startMonth = "0" + startMonth;
 				}
 
-				var startYear = this.oFormatYear.format(startDate);
-
+				//var startYear = this.oFormatYear.format(startDate);
+				var startYear = startDate.getFullYear();
+				
 				//	var sDate = this.formattedDate;
 				////	var	sDate = this.DatesList[0];
 				//	var sMonth = sDate.substring(sDate.indexOf("/") + 1, sDate.indexOf("/") + 3);
@@ -1535,7 +1536,8 @@ sap.ui.define([
 					startMonth = "0" + startMonth;
 				}
 
-				var startYear = this.oFormatYear.format(startDate);
+				//var startYear = this.oFormatYear.format(startDate);
+				var startYear = startDate.getFullYear();
 				var startDay = oCal.getSelectedDates()[0].getStartDate().getDate().toString();
 				if (startDay.length == 1) {
 					startDay = "0" + startDay;
@@ -2960,7 +2962,8 @@ sap.ui.define([
 					startMonth = "0" + startMonth;
 				}
 
-				var startYear = this.oFormatYear.format(startDate);
+				//var startYear = this.oFormatYear.format(startDate);
+				var startYear = startDate.getFullYear();
 				var sRead = "/PdfSet(Calyear='" + startYear + "',Calmonth='" + startMonth + "',Extcall='',Printtype='" + sPrinttype + "')";
 				oModel.read(sRead, {
 
@@ -3045,7 +3048,8 @@ sap.ui.define([
 					startMonth = "0" + startMonth;
 				}
 
-				var startYear = this.oFormatYear.format(startDate);
+				//var startYear = this.oFormatYear.format(startDate);
+				var startYear = startDate.getFullYear();
 
 				//imposto la data minima selezionabile dietro di un anno
 				var nowP = new Date();
