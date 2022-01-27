@@ -3055,7 +3055,8 @@ sap.ui.define([
 				var nowP = new Date();
 
 				var nowF = new Date();
-				nowP.setDate(nowP.getDate() - 365);
+				//nowP.setDate(nowP.getDate() - 365);
+				nowP.setDate(nowP.getDate() - 1095);
 				oCal2.setMinDate(nowP);
 
 				//imposto la data massima selezionabile avanti di un anno
@@ -3294,7 +3295,8 @@ sap.ui.define([
 				var nowP = new Date();
 
 				var nowF = new Date();
-				nowP.setDate(nowP.getDate() - 365);
+				//nowP.setDate(nowP.getDate() - 365);
+				nowP.setDate(nowP.getDate() - 1095);
 				oCal1.setMinDate(nowP);
 
 				//imposto la data massima selezionabile avanti di un anno
