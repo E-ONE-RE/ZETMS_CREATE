@@ -645,7 +645,7 @@ sap.ui.define([
 					sap.ui.getCore().byId("commessa" + sDesinenza).setValueState("None");
 					this._oPopover.close();
 					////// le sedi sono diverse dipendentemente dal cliente
-					this.callSediSet(this.sCommessaId);
+					this.callSediSet(this.sCommessaId,this.DateTxt);
 					//////
 
 				} else {
@@ -1747,7 +1747,7 @@ sap.ui.define([
 					sap.ui.getCore().byId("commessa").setValueState("None");
 
 					////// le sedi sono diverse dipendentemente dal cliente
-					this.callSediSet(this.sCommessaId);
+					this.callSediSet(this.sCommessaId,this.DateTxt);
 
 					//	sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				} else {
@@ -1760,7 +1760,7 @@ sap.ui.define([
 
 			//********* Funzioni per la gestione delle sedi nel controllo Select *********// 
 			// Funzione che richiama l'elenco delle sedi per una specifica commessa
-			callSediSet: function(sCommessa) {
+			callSediSet: function(sCommessa,sDate) {
 				var oModel = this.getView().getModel();
 				var sDesinenza = "";
 				var oSelect;
@@ -1772,7 +1772,9 @@ sap.ui.define([
 				// con carattere speciale & il gateway andava in errore, sostituisco con codice ascii %26
 				sCommessa = sCommessa.replace("&", "%26");
 
-				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
+				//var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "'";
+				sDate = sDate.substring(6, 10) + sDate.substring(3, 5) + sDate.substring(0, 2);
+				var sReadURI = oModel.sServiceUrl + "/SediSet/?$format=json&$filter=Commessa eq'" + sCommessa + "' and Zdate_rec eq '" + sDate + "'";
 
 				oModel._request({
 
@@ -2257,9 +2259,13 @@ sap.ui.define([
 				} // END FUNCTION SUCCESS
 
 				function fnE(oError) {
-					//	console.log(oError);
 
-					alert("Error in read: " + oError.message + "\n" + oError.responseText);
+					var eMyJson = JSON.parse(oError.responseText);
+					alert("Error: " + eMyJson.error.message.value);
+
+					var oInputOre = sap.ui.getCore().byId("oreSel");
+					oInputOre.setValue(that.sOraRipristinare);
+
 				}
 
 			},
@@ -2752,10 +2758,13 @@ sap.ui.define([
 				// e fare il binding alla select del dialog di modifica (vedi callSediSet)
 				
 				if (oEvent.getId() == "itemPress") {
-				this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey; 
-				this.sCommessaId = oEvent.getParameter("listItem").getBindingContext().getObject().Orderjob;
-				this.sCaller = "handleCommessaSelection";
-				this.callSediSet(this.sCommessaId);
+					this.sCurrentTmsKey = oEvent.getParameter("listItem").getBindingContext().getObject().Tmskey; 
+					this.sCommessaId = oEvent.getParameter("listItem").getBindingContext().getObject().Orderjob;
+					this.sCaller = "handleCommessaSelection";
+					
+					var vDate = this.DateTxt = oEvent.getParameter("listItem").getBindingContext().getObject().Data;
+					this.DateTxt = vDate.substring(6, 8) + "/" + vDate.substring(4, 6) + "/" + vDate.substring(0, 4);
+					this.callSediSet(this.sCommessaId,this.DateTxt);
 				}
 		
 				this.openDialogSel(oEvent);
@@ -2815,6 +2824,7 @@ sap.ui.define([
 		//		if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined || this.sCommessaOriginale == undefined || this.sSedeOriginale ==
 		//			undefined) {
 					this.sOraOriginale = oDialog.getBindingContext().getProperty("Ore");
+					this.sOraRipristinare = oDialog.getBindingContext().getProperty("Ore");
 					this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
 					this.sCommessaOriginale = oDialog.getBindingContext().getProperty("Descrorder");
 					this.sSedeOriginale = oDialog.getBindingContext().getProperty("Office");

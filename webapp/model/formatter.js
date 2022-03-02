@@ -177,7 +177,8 @@ sap.ui.define([], function() {
 					break;
 				case "0004":
 					return "ROL";
-
+				case "0005":
+					return "Lavoro agile";
 			}
 
 		},
