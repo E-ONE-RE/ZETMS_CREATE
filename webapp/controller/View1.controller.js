@@ -1695,8 +1695,9 @@ sap.ui.define([
 
 									function fnE(oError, oData) {
 										//	console.log(oError);
-
-										alert("Error in read: " + oError.message + "\n" + oError.responseText);
+										//alert("Error in read: " + oError.message + "\n" + oError.responseText);
+										var eMyJson = JSON.parse(oError.responseText);
+										alert("Error: " + eMyJson.error.message.value);
 									}
 
 								}
@@ -2264,8 +2265,9 @@ sap.ui.define([
 					alert("Error: " + eMyJson.error.message.value);
 
 					var oInputOre = sap.ui.getCore().byId("oreSel");
-					oInputOre.setValue(that.sOraRipristinare);
-
+					if (oInputOre != undefined) {
+						oInputOre.setValue(that.sOraRipristinare);
+					}
 				}
 
 			},
