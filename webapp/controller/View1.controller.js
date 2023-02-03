@@ -646,6 +646,7 @@ sap.ui.define([
 					this._oPopover.close();
 					////// le sedi sono diverse dipendentemente dal cliente
 					this.callSediSet(this.sCommessaId,this.DateTxt);
+					this.calltkgap(this.sCommessaId,"idListaTKGAP" + sDesinenza); //Lista ticket GAP - TKGAP
 					//////
 
 				} else {
@@ -1039,6 +1040,11 @@ sap.ui.define([
 
 						new sap.m.Text({
 							text: "{Office}"
+						}),
+						
+						//TKGAP
+						new sap.m.Text({
+							text: "{Gapjobkey}"
 						})
 					]
 				});
@@ -1076,7 +1082,7 @@ sap.ui.define([
 					path: "/ListaCommesseGroupSet",
 
 					template: oTemplate,
-					filters: [fMonth, fYear, fFlag],
+					filters: [fMonth, fYear, fFlag]
 				});
 
 				oTableCommEx._oSearchField.setVisible(false);
@@ -1154,7 +1160,16 @@ sap.ui.define([
 					this.sCommessaId = aContexts.map(function(oContext) {
 						return oContext.getObject().Orderjob;
 					})[0];
-
+					
+					//	TKGAP
+					var oTicket = sap.ui.getCore().byId("idListaTKGAP");
+					var oFilter = [];
+					oFilter.push(new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, this.sCommessaId));
+					oTicket.getBinding("items").filter(oFilter);
+					oTicket.setSelectedKey(aContexts.map(function(oContext) {
+						return oContext.getObject().Gapjobkey;
+					}));
+					//	\TKGAP
 				}
 
 				oEvent.getSource().getBinding("items").filter([]);
@@ -1635,7 +1650,8 @@ sap.ui.define([
 										Calmonth: sSelectedMonth,
 										Calyear: sSelectedYear,
 										Giorno: sDay,
-										Ore: oData.results[j].Ore
+										Ore: oData.results[j].Ore,
+										Gapjobkey: oData.results[j].Gapjobkey	//TKGAP
 									};
 
 									oUrlCopyParams.FromCommToExp = [];
@@ -1749,7 +1765,7 @@ sap.ui.define([
 
 					////// le sedi sono diverse dipendentemente dal cliente
 					this.callSediSet(this.sCommessaId,this.DateTxt);
-
+					this.calltkgap(this.sCommessaId,"idListaTKGAP"); //Lista ticket GAP - TKGAP
 					//	sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				} else {
 					this.callSediReset(this.sSede);
@@ -2006,7 +2022,7 @@ sap.ui.define([
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
-
+				var sGapTicket; //TKGAP
 				var aDate = [];
 				var oExpenseTable;
 
@@ -2040,6 +2056,7 @@ sap.ui.define([
 							this.sDescrOriginale = sDescrizione;
 							this.sCommessaOriginale = sCommessaOriginale;
 							this.sSedeOriginale = sOffice;
+							sGapTicket = sap.ui.getCore().byId("idListaTKGAPSel").getSelectedKey();	//TKGAP
 						} else {
 
 							// controllo se commessa multi-day è on o off
@@ -2060,6 +2077,7 @@ sap.ui.define([
 							sChilometri = sap.ui.getCore().byId("chilometri").getValue();
 							sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
 							oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+							sGapTicket = sap.ui.getCore().byId("idListaTKGAP").getSelectedKey();	//TKGAP
 						}
 
 						//var oView = this.getView();
@@ -2074,7 +2092,8 @@ sap.ui.define([
 							Calmonth: sMonth,
 							Calyear: sYear,
 							Giorno: sDay,
-							Ore: sOre
+							Ore: sOre,
+							Gapjobkey: sGapTicket	//TKGAP
 						};
 
 						oUrlParams.FromCommToExp = [];
@@ -2767,6 +2786,7 @@ sap.ui.define([
 					var vDate = this.DateTxt = oEvent.getParameter("listItem").getBindingContext().getObject().Data;
 					this.DateTxt = vDate.substring(6, 8) + "/" + vDate.substring(4, 6) + "/" + vDate.substring(0, 4);
 					this.callSediSet(this.sCommessaId,this.DateTxt);
+					this.calltkgap(this.sCommessaId,"idListaTKGAPSel"); //Lista ticket GAP - TKGAP
 				}
 		
 				this.openDialogSel(oEvent);
@@ -2784,10 +2804,11 @@ sap.ui.define([
 						return;
 					}
 				}
+
 				oDialog.bindElement({
 					path: sSelItemPath,
 					parameters: {
-						expand: 'ToChildExpNodes'
+						expand: "ToChildExpNodes"
 					}
 				});
 				var sOrderJob = oDialog.getBindingContext().getProperty("Orderjob");
@@ -2797,6 +2818,13 @@ sap.ui.define([
 				var oDescrSel = sap.ui.getCore().byId("descrizioneSel");
 				var oPanelSpese = sap.ui.getCore().byId("panelSpeseIns");
 				var oPanel = sap.ui.getCore().byId("panelSpeseSel");
+				//	TKGAP
+				var oTicket = sap.ui.getCore().byId("idListaTKGAPSel");
+				var oFilter = [];
+				oFilter.push(new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, sOrderJob));
+				oTicket.getBinding("items").filter(oFilter);
+				oTicket.setSelectedKey(oDialog.getBindingContext().getProperty("Gapjobkey"));
+				//\	TKGAP
 				// MP: se permesso, ferie, ROL o recupero non si può cancellare o modificare
 				if (sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B") {
 					jQuery.sap.require("sap.m.MessageBox");
@@ -4169,10 +4197,21 @@ sap.ui.define([
 
 			// Funzione per ritornare le route di navigazione
 			getRouter: function() {
-					return sap.ui.core.UIComponent.getRouterFor(this);
-
+				return sap.ui.core.UIComponent.getRouterFor(this);
+			},
+			
+			//Lista ticket GAP - TKGAP 
+			calltkgap: function(pCommessa,oObj){
+				
+				if (sap.ui.getCore().byId(oObj) == undefined ){
+					return;
 				}
-				//*******************************************//
 
+				var oLista = sap.ui.getCore().byId(oObj);
+				var oFilter = [];
+				oFilter.push(new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, pCommessa));
+				oLista.getBinding("items").filter(oFilter);
+			}
+			
 		});
 	});

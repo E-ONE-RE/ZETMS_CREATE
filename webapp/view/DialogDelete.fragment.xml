@@ -81,6 +81,16 @@
 											change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
+								<f:FormElement label="Ticket">
+									<Select id="idListaTKGAPSel"
+										showSecondaryValues= "true"
+										items="{
+											path: '/TicketSet',
+											sorter: { path: 'Gapjobkey' }
+										}">
+										<core:ListItem key="{Gapjobkey}" text="{Descract}" additionalText= "{Gapjobkey}"/>
+									</Select>
+								</f:FormElement>
 							</f:formElements>
 						</f:FormContainer>
 					</f:formContainers>

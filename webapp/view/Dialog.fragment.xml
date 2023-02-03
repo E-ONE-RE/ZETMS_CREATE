@@ -103,7 +103,16 @@
 											tooltip="Inserisci la descrizione dell'attività."/>
 									</f:fields>
 								</f:FormElement>
-									
+								<f:FormElement label="Ticket">
+									<Select id="idListaTKGAP"
+										showSecondaryValues= "true"
+										items="{
+											path: '/TicketSet',
+											sorter: { path: 'Gapjobkey' }
+										}">
+										<core:ListItem key="{Gapjobkey}" text="{Descract}" additionalText= "{Gapjobkey}"/>
+									</Select>
+								</f:FormElement>
 							</f:formElements>
 							<f:formElements>
 								<f:FormElement>
