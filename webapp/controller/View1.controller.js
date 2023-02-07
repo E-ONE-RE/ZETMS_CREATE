@@ -845,6 +845,7 @@ sap.ui.define([
 					this.sSedeOriginale = undefined;
 					oButtonElim.setEnabled(true);
 					oButtonMod.setEnabled(true);
+					sap.ui.getCore().byId("popInputTree").setValue("");
 				}
 				this.onExpenseSelect(oEvent);
 				/////////////////////////////////////////////////////////////////////
@@ -977,6 +978,8 @@ sap.ui.define([
 				sap.ui.getCore().byId("multidaySel").setVisible(false);
 				sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+				sap.ui.getCore().byId("popInputTree").setValue("");
+				
 
 				this.handleRemoveSelection();
 				this.count = undefined;
@@ -1098,6 +1101,8 @@ sap.ui.define([
 				// toggle compact style
 				jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oDialog);
 				this._oDialogSelComm.open();
+				debugger;
+				sap.ui.getCore().byId("popInputTree").setValue("");
 			},
 
 			// Funzione richiamata alla selezione di una riga da tabella commesse già usate DialogTableSel
@@ -1283,6 +1288,7 @@ sap.ui.define([
 					}),
 					afterClose: function() {
 						dialog.destroy();
+						sap.ui.getCore().byId("popInputTree").setValue("");
 					}
 				});
 
@@ -2355,6 +2361,7 @@ sap.ui.define([
 					}),
 					afterClose: function() {
 						dialog.destroy();
+						sap.ui.getCore().byId("popInputTree").setValue("");
 					}
 				});
 
@@ -4211,6 +4218,42 @@ sap.ui.define([
 				var oFilter = [];
 				oFilter.push(new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, pCommessa));
 				oLista.getBinding("items").filter(oFilter);
+			},
+			onSearchTree: function(oEvent){
+				var oFilter = [];
+				oFilter.push(new Filter("Descr", sap.ui.model.FilterOperator.Contains, oEvent.getParameter("newValue")));
+				
+				var serviceUrl = this.getOwnerComponent().getManifestEntry("/sap.app/dataSources/ZTMS_NEW_SRV/uri");
+				var oModel = new sap.ui.model.odata.ODataModel(serviceUrl);
+				oModel.read("/CommessaSet", {
+					filters: oFilter,
+					success:function(oData, oResponse) {
+						var oTree = sap.ui.getCore().byId("Tree");
+						var oModelJson = new sap.ui.model.json.JSONModel();
+						var oJson = JSON.parse(oData.results["0"].Json);
+						oModelJson.setSizeLimit(999999999);
+						oModelJson.setData(oJson, false);
+
+						sap.ui.getCore().setModel(oModelJson, "CommessaCollection");
+						oTree.setModel(sap.ui.getCore().getModel("CommessaCollection"));
+						var oTemplate = new sap.m.StandardTreeItem({
+							title: "{name}",
+							icon: "{icon}",
+							select: true
+						});
+						oTemplate.setType("Active");
+						oTree.bindAggregation("items", {
+							path: "/CommessaCollection",
+							template: oTemplate,
+							parameters: {
+								numberOfExpandedLevels: 1
+							}
+						});
+    				},
+    				error: function(oError) {
+    					debugger;
+    				}
+				});
 			}
 			
 		});
