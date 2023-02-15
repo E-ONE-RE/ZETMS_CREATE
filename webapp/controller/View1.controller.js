@@ -4218,6 +4218,7 @@ sap.ui.define([
 				var oFilter = [];
 				oFilter.push(new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, pCommessa));
 				oLista.getBinding("items").filter(oFilter);
+				oLista.setSelectedKey("");
 			},
 			onSearchTree: function(oEvent){
 				var oFilter = [];
