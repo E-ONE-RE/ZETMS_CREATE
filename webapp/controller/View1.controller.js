@@ -2315,7 +2315,8 @@ sap.ui.define([
 									},
 									error: function(e) {
 										sap.m.MessageBox.show(
-											"Error: " + oData.Message, {
+											//"Error: " + oData.Message, {
+											"Impossibile cancellare", {
 												icon: sap.m.MessageBox.Icon.WARNING,
 												title: "Error",
 												actions: [sap.m.MessageBox.Action.CLOSE]
