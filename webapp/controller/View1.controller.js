@@ -2320,7 +2320,6 @@ sap.ui.define([
 												icon: sap.m.MessageBox.Icon.WARNING,
 												title: "Error",
 												actions: [sap.m.MessageBox.Action.CLOSE]
-
 											});
 
 									}
