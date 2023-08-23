@@ -4,7 +4,6 @@
 			<Input width="100%" id="idSearchComm" placeholder="Cerca il cliente" liveChange="onChangeTree"/>
 			<Tree id="Tree" includeItemInSelection="true" mode="SingleSelectMaster" selectionChange="onCommessaSelect">
 			</Tree>
-			
 		</content>
 		</ResponsivePopover>
 	</core:FragmentDefinition>

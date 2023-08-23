@@ -288,7 +288,6 @@ displayBlock="true">
 									<Label text="{/#ListaCommesseGroupSet/Ore/@sap:label}" id="comm_label_Ore"/>
 								</Column>
 								
-
 							</columns>
 							
 						
