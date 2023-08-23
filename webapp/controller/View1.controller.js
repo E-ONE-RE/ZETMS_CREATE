@@ -577,13 +577,17 @@ sap.ui.define([
 			showPopoverCommessa: function(oEvent) {
 				this.sIdButton = oEvent.getParameter("id");
 				var that = this;
-
+				
 				if (!that._oPopover) {
 
 					that._oPopover = sap.ui.xmlfragment("ZETMS_CREATE.view.Popover", this, "ZETMS_CREATE.controller.View1");
 					//to get access to the global model
 					this.getView().addDependent(that._oPopover);
 				}
+				
+				var oSearchComm = sap.ui.getCore().byId("idSearchComm");
+				oSearchComm.setValue("");
+				
 				var oButton = oEvent.getSource();
 				jQuery.sap.delayedCall(0, this, function() {
 
@@ -647,7 +651,8 @@ sap.ui.define([
 					////// le sedi sono diverse dipendentemente dal cliente
 					this.callSediSet(this.sCommessaId,this.DateTxt);
 					//////
-
+					var oFilter = new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, this.sCommessaId);
+					sap.ui.getCore().byId("idGap").getBinding("items").filter(oFilter, sap.ui.model.FilterType.Application);
 				} else {
 					oTree.removeSelections();
 				}
@@ -2006,7 +2011,7 @@ sap.ui.define([
 				var sOffice, sCommessaId, sOre,
 					sChilometri, sDescrizione,
 					sDay, sMonth, sYear, sKmDesc, sTimesheetKey;
-
+				var sGapjobkey;
 				var aDate = [];
 				var oExpenseTable;
 
@@ -2040,6 +2045,7 @@ sap.ui.define([
 							this.sDescrOriginale = sDescrizione;
 							this.sCommessaOriginale = sCommessaOriginale;
 							this.sSedeOriginale = sOffice;
+							sGapjobkey = sap.ui.getCore().byId("idGapSel").getSelectedKey();
 						} else {
 
 							// controllo se commessa multi-day è on o off
@@ -2060,6 +2066,7 @@ sap.ui.define([
 							sChilometri = sap.ui.getCore().byId("chilometri").getValue();
 							sKmDesc = sap.ui.getCore().byId("descrizioneKm").getValue();
 							oExpenseTable = sap.ui.getCore().byId("tabellaSpese");
+							sGapjobkey = sap.ui.getCore().byId("idGap").getSelectedKey();
 						}
 
 						//var oView = this.getView();
@@ -2074,7 +2081,8 @@ sap.ui.define([
 							Calmonth: sMonth,
 							Calyear: sYear,
 							Giorno: sDay,
-							Ore: sOre
+							Ore: sOre,
+							Gapjobkey: sGapjobkey
 						};
 
 						oUrlParams.FromCommToExp = [];
@@ -2316,11 +2324,10 @@ sap.ui.define([
 									error: function(e) {
 										sap.m.MessageBox.show(
 											//"Error: " + oData.Message, {
-												"Impossibile cancellare", {
+											"Impossibile cancellare", {
 												icon: sap.m.MessageBox.Icon.WARNING,
 												title: "Error",
 												actions: [sap.m.MessageBox.Action.CLOSE]
-
 											});
 
 									}
@@ -2798,6 +2805,7 @@ sap.ui.define([
 				var oDescrSel = sap.ui.getCore().byId("descrizioneSel");
 				var oPanelSpese = sap.ui.getCore().byId("panelSpeseIns");
 				var oPanel = sap.ui.getCore().byId("panelSpeseSel");
+				var oGapjobkey = sap.ui.getCore().byId("idGapSel"); //oDialog.getBindingContext().getProperty("Gapjobkey");
 				// MP: se permesso, ferie, ROL o recupero non si può cancellare o modificare
 				if (sOrderJob == "EON166" || sOrderJob == "EON16A" || sOrderJob == "EON16B") {
 					jQuery.sap.require("sap.m.MessageBox");
@@ -2815,6 +2823,7 @@ sap.ui.define([
 					oDescrSel.setEditable(false);
 					oButtonDel.setVisible(false);
 					oButtonMod.setVisible(false);
+					oGapjobkey.setVisible(false);
 				} else {
 					oPanelSpese.setVisible(true);
 					oPanel.setVisible(true);
@@ -2822,6 +2831,7 @@ sap.ui.define([
 					oDescrSel.setEditable(true);
 					oButtonDel.setVisible(true);
 					oButtonMod.setVisible(true);
+					oGapjobkey.setVisible(true);
 				}
 
 		//		if (this.sOraOriginale == undefined || this.sDescrOriginale == undefined || this.sCommessaOriginale == undefined || this.sSedeOriginale ==
@@ -2831,6 +2841,10 @@ sap.ui.define([
 					this.sDescrOriginale = oDialog.getBindingContext().getProperty("Descr");
 					this.sCommessaOriginale = oDialog.getBindingContext().getProperty("Descrorder");
 					this.sSedeOriginale = oDialog.getBindingContext().getProperty("Office");
+					
+					var oFilter = new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, sOrderJob);
+					oGapjobkey.getBinding("items").filter(oFilter, sap.ui.model.FilterType.Application);
+					oGapjobkey.setSelectedKey(oDialog.getBindingContext().getProperty("Gapjobkey"));
 		//		}
 
 				this.sDay = oDialog.getBindingContext().getProperty("Giorno");
@@ -4172,7 +4186,12 @@ sap.ui.define([
 			getRouter: function() {
 					return sap.ui.core.UIComponent.getRouterFor(this);
 
-				}
+			},
+			onChangeTree: function(oEvent){
+				var oTree = sap.ui.getCore().byId("Tree");
+				var oFilter = new Filter("name", sap.ui.model.FilterOperator.Contains, oEvent.getParameters("Value").value);
+				oTree.getBinding("items").filter(oFilter, sap.ui.model.FilterType.Application);
+			}
 				//*******************************************//
 
 		});

@@ -81,6 +81,19 @@
 											change="onLiveChange"/>
 									</f:fields>
 								</f:FormElement>
+								<f:FormElement label="Ticket GAP">
+									<f:fields>
+										<Select
+											id="idGapSel"
+											forceSelection="false"
+											items="{
+												path: '/TicketSet',
+												sorter: { path: 'Gapjobkey', descending: 'true' }
+											}">
+											<core:Item key="{Gapjobkey}" text="{Descract}" />
+										</Select>
+									</f:fields>
+								</f:FormElement>
 							</f:formElements>
 						</f:FormContainer>
 					</f:formContainers>
