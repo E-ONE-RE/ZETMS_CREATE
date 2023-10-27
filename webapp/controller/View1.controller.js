@@ -981,6 +981,7 @@ sap.ui.define([
 				sap.ui.getCore().byId("multidaySel").setVisible(false);
 				sap.ui.getCore().byId("multidaySel").setEnabled(false);
 				sap.ui.getCore().byId("label_multidaySel").setVisible(false);
+				sap.ui.getCore().byId("idGap").setSelectedKey("");
 
 				this.handleRemoveSelection();
 				this.count = undefined;
@@ -1081,7 +1082,7 @@ sap.ui.define([
 					path: "/ListaCommesseGroupSet",
 
 					template: oTemplate,
-					filters: [fMonth, fYear, fFlag],
+					filters: [fMonth, fYear, fFlag]
 				});
 
 				oTableCommEx._oSearchField.setVisible(false);
@@ -1159,7 +1160,13 @@ sap.ui.define([
 					this.sCommessaId = aContexts.map(function(oContext) {
 						return oContext.getObject().Orderjob;
 					})[0];
-
+					
+					var oGapjobkey = sap.ui.getCore().byId("idGap");
+					var oFilter = new Filter("Orderjob", sap.ui.model.FilterOperator.EQ, this.sCommessaId);
+					oGapjobkey.getBinding("items").filter(oFilter, sap.ui.model.FilterType.Application);
+					oGapjobkey.setSelectedKey(aContexts.map(function(oContext) {
+						return oContext.getObject().Gapjobkey;
+					}));
 				}
 
 				oEvent.getSource().getBinding("items").filter([]);
@@ -1640,7 +1647,8 @@ sap.ui.define([
 										Calmonth: sSelectedMonth,
 										Calyear: sSelectedYear,
 										Giorno: sDay,
-										Ore: oData.results[j].Ore
+										Ore: oData.results[j].Ore,
+										Gapjobkey: oData.results[j].Gapjobkey
 									};
 
 									oUrlCopyParams.FromCommToExp = [];
@@ -3928,7 +3936,7 @@ sap.ui.define([
 								//    startDate: oFormatYYyyymmdd.parse(res)
 								//    }));
 
-								if (oData.results[i].Ore == 8.0) {
+								if (oData.results[i].Ore == oData.results[i].Oreg) {
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
@@ -3938,7 +3946,7 @@ sap.ui.define([
 									}));
 								}
 
-								if (oData.results[i].Ore < 8.0 & oData.results[i].Ore > 0.0) {
+								if (oData.results[i].Ore < oData.results[i].Oreg & oData.results[i].Ore > 0.0) {
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
@@ -3947,7 +3955,7 @@ sap.ui.define([
 									}));
 								}
 
-								if (oData.results[i].Ore > 8.0) {
+								if (oData.results[i].Ore > oData.results[i].Oreg) {
 
 									oCal1.addSpecialDate(new DateTypeRange({
 										startDate: oFormatYYyyymmdd.parse(res),
